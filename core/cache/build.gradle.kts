@@ -3,6 +3,9 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
+
+apply(from = rootProject.file("core.gradle"))
+
 android {
     namespace = "com.example.cache"
     compileSdk {
