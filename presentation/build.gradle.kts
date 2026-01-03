@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0" // или та версия
 }
 
 android {
