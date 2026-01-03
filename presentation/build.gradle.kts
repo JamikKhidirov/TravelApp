@@ -1,23 +1,19 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
 }
 
 android {
-    namespace = "com.example.travelapp"
+    namespace = "com.example.presentation"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.example.travelapp"
         minSdk = 24
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -36,7 +32,8 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-    buildFeatures {
+
+    buildFeatures{
         compose = true
     }
 }
@@ -58,11 +55,8 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    implementation(project(":core:cache"))
-    implementation(project(":core:network"))
     implementation(project(":data"))
     implementation(project(":domain"))
-    implementation(project(":presentation"))
-
-    
+    implementation(project(":core:cache"))
+    implementation(project(":core:network"))
 }
