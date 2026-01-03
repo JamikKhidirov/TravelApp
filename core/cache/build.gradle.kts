@@ -4,7 +4,7 @@ plugins {
 }
 
 
-apply(from = rootProject.file("core.gradle"))
+
 
 android {
     namespace = "com.example.cache"
@@ -36,6 +36,8 @@ android {
         jvmTarget = "11"
     }
 }
+
+
 
 dependencies {
     implementation(libs.androidx.core.ktx)
