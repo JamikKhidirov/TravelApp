@@ -1,8 +1,7 @@
 package com.example.network.data.productdata.orderline
 
-import com.example.network.data.productdata.DataRub
 
-
+import com.example.network.data.productdata.rub.DataRub
 
 
 data class OrderLineData(

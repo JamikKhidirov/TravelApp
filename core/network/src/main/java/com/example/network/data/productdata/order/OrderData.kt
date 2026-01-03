@@ -1,9 +1,8 @@
 package com.example.network.data.productdata.order
 
-import com.example.network.data.productdata.DurationData
-import com.example.network.data.productdata.OrderLineData
 
-
+import com.example.network.data.productdata.duration.DurationData
+import com.example.network.data.productdata.orderline.OrderLineData
 
 
 data class OrderData(
