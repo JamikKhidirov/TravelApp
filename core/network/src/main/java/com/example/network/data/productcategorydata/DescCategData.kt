@@ -1,0 +1,6 @@
+package com.example.network.data.productcategorydata
+
+data class DescCategData(
+    val id: Int,
+    val name: String
+)

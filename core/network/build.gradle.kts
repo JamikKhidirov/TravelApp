@@ -1,9 +1,12 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+
+    id("dagger.hilt.android.plugin")
+    kotlin("kapt")
 }
 
-apply(from = rootProject.file("core.gradle"))
+
 
 android {
     namespace = "com.example.network"
@@ -16,6 +19,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+
     }
 
     buildTypes {
@@ -34,7 +38,10 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
 }
+
+
 
 dependencies {
     implementation(libs.androidx.core.ktx)
@@ -45,4 +52,16 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation(project(":core:cache"))
+
+
+    // DI
+    implementation("com.google.dagger:hilt-android:2.57.2")
+    kapt("com.google.dagger:hilt-compiler:2.57.2")
+    implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
+
+    // Network
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:5.3.2")
 }
+
