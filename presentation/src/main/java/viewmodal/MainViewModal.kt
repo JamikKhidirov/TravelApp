@@ -1,5 +1,6 @@
 package viewmodal
 
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.ApiRepositoryImpl
@@ -21,10 +22,18 @@ class MainViewModal @Inject constructor(
 ): ViewModel() {
 
     private val _citiesState =
-        MutableStateFlow<NetworkResult<List<CityDto>>>(NetworkResult.Loading)
+        MutableStateFlow<List<CityDto>>(emptyList())
 
-    val citiesState: StateFlow<NetworkResult<List<CityDto>>> =
+    val citiesState: StateFlow<List<CityDto>> =
         _citiesState.asStateFlow()
+
+    val errorMessage: MutableStateFlow<String?> = MutableStateFlow(null)
+
+    val loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
+
+
+
 
     init {
         getCities()
@@ -32,8 +41,29 @@ class MainViewModal @Inject constructor(
 
     fun getCities(){
         viewModelScope.launch {
-            _citiesState.value = NetworkResult.Loading
-            _citiesState.value = repository.getCities()
+            loading.value = true
+
+            when(val result = repository.getCities()){
+
+                is NetworkResult.Success -> {
+                    val cities = result.data
+                    _citiesState.value = cities
+                    loading.value = false
+
+                }
+
+                is NetworkResult.Error -> {
+                    val errorMessageR = result.message
+                    errorMessage.value = errorMessageR
+                    loading.value = false
+
+                }
+
+                is NetworkResult.Loading -> {
+                    loading.value = true
+                }
+
+            }
         }
     }
 }
