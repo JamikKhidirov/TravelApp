@@ -1,9 +1,12 @@
 package com.example.network.setvice
 
+import com.example.network.state.WeGoApi
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 
+
+@WeGoApi
 interface WegoExcursionService {
 
     @GET("/cities/")
