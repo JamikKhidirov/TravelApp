@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.cache.datacache.data.CityEntity
+import com.example.domain.data.citydata.CityDto
 
 
 @Dao

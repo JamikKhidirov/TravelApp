@@ -1,14 +1,12 @@
-package viewmodal
+package viewmodals
 
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cache.datacache.dao.CityDao
 import com.example.data.ApiRepositoryImpl
 import com.example.domain.data.citydata.CityDto
 import com.example.domain.state.NetworkResult
-import com.example.network.setvice.ExcursionService
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModal @Inject constructor(
-    private val repository: ApiRepositoryImpl
+    private val repository: ApiRepositoryImpl,
+    private val dao: CityDao
 ): ViewModel() {
 
     private val _citiesState =
