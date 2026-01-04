@@ -1,11 +1,13 @@
 package com.example.network.setvice
 
+import com.example.domain.data.citydata.CityData
 import com.example.domain.data.citydata.CityDto
 import com.example.domain.data.countridata.CountriData
 import com.example.domain.data.productcategorydata.ProductDataCategory
 import com.example.domain.data.productdata.ProductData
 import  retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 
@@ -16,6 +18,15 @@ interface ExcursionService {
         @Query("api_key") key: String = "9bc84ec26f47bf3005dc55434b4b796a",
         @Query("username") user: String = "partners+tpo50@sputnik8.com"
     ):Response<List<CityDto>>
+
+
+    @GET("cities/{id}")
+    suspend fun getCitiesByID(
+        @Path("id") id: Int,
+        @Query("api_key") key: String = "9bc84ec26f47bf3005dc55434b4b796a",
+        @Query("username") user: String = "partners+tpo50@sputnik8.com",
+        @Query("lang") lang: String = "ru"
+    ): Response<CityData>
 
 
     @GET("countries")
