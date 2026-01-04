@@ -157,7 +157,7 @@ fun BottomMainScreen(
     ) {
         stickyHeader {
             TabRowMainScreen(
-                modifier = Modifier.padding(top = 5.dp),
+                modifier = Modifier.padding(top = 2.dp),
                 onClickTab = onClickTabCategory
             )
         }
