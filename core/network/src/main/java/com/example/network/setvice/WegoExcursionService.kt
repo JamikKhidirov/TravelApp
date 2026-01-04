@@ -32,6 +32,16 @@ interface WegoExcursionService {
 
     )
 
+    @GET(" /search/")
+    suspend fun searchList(
+        // Строковый поисковый запрос Любые строковые
+        @Query("query") query: String,
+        //	Код валюты для показа цен у товаров
+        //code из GET /currencies/
+        @Query("currency") code: String = "RUB"
+
+    )
+
 
 
 
