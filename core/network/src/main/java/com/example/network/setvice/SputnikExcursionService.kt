@@ -5,13 +5,16 @@ import com.example.domain.data.citydata.CityDto
 import com.example.domain.data.countridata.CountriData
 import com.example.domain.data.productcategorydata.ProductDataCategory
 import com.example.domain.data.productdata.ProductData
+import com.example.network.state.SputNikApi
 import  retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
 
-interface ExcursionService {
+
+@SputNikApi
+interface SputnikExcursionService {
 
     @GET("cities")
     suspend fun getCities():Response<List<CityDto>>
