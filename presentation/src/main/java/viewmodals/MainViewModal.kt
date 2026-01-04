@@ -2,6 +2,7 @@ package viewmodals
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cache.datacache.dao.CityDao
 import com.example.data.ApiRepositoryImpl
 import com.example.domain.data.citydata.CityDto
 import com.example.domain.state.NetworkResult
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModal @Inject constructor(
-    private val repository: ApiRepositoryImpl
+    private val repository: ApiRepositoryImpl,
+    private val dao: CityDao
 ): ViewModel() {
 
     private val _citiesState =
