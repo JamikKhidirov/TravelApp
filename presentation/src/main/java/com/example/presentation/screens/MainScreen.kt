@@ -20,9 +20,14 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
@@ -31,8 +36,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.domain.data.citydata.CityDto
+import com.example.presentation.uicomponents.tabrow.TabRowMainScreen
 import com.example.presentation.uicomponents.topbars.MainTopAppBars
 import com.example.presentation.uicomponents.vidjets.CityItem
+import com.example.presentation.uicomponents.vidjets.TabRowItem
 import viewmodals.MainViewModal
 
 
@@ -44,6 +51,8 @@ fun MainScreen(
     val cities = viewModel.citiesState.collectAsState()
     val loading = viewModel.loading.collectAsState()
     val errorMessage = viewModel.errorMessage.collectAsState()
+
+    var tab by remember { mutableStateOf("") }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -110,7 +119,9 @@ fun MainScreen(
                     cities = cities.value,
                     onCLickCity = {cityDto ->
 
-
+                    },
+                    onClickTabCategory = { tabStr ->
+                        tab = tabStr
                     }
                 )
             }
@@ -124,7 +135,8 @@ fun MainScreen(
 fun BottomMainScreen(
     paddingValues: PaddingValues,
     cities: List<CityDto>,
-    onCLickCity: (CityDto) -> Unit = {}
+    onCLickCity: (CityDto) -> Unit = {},
+    onClickTabCategory: (tab: String) -> Unit = {}
 ) {
     if (cities.isEmpty()) {
         Box(
@@ -143,6 +155,12 @@ fun BottomMainScreen(
             .fillMaxSize()
             .padding(paddingValues)
     ) {
+        stickyHeader {
+            TabRowMainScreen(
+                modifier = Modifier.padding(top = 5.dp),
+                onClickTab = onClickTabCategory
+            )
+        }
         items(cities, key = {city -> city.id}) { city ->
             CityItem(
                 city = city,

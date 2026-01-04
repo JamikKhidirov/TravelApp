@@ -45,7 +45,7 @@ fun MainTopAppBars(
         modifier = modifier,
         shadowElevation = 10.dp, // Реальная тень
         tonalElevation = 4.dp,  // Небольшое изменение оттенка (фишка Material 3)
-        color = MaterialTheme.colorScheme.onSecondary // Цвет фона теперь тут
+        color = MaterialTheme.colorScheme.background // Цвет фона теперь тут
     ) {
         TopAppBar(
             colors = TopAppBarDefaults.topAppBarColors(
