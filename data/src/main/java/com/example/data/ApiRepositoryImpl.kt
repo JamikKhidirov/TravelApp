@@ -31,7 +31,7 @@ class ApiRepositoryImpl @Inject constructor(
 
                 NetworkResult.Success(body)
             } else {
-                // Если сервер ответил ошибкой (например, 500), пробуем взять из кэша
+                // Если сервер ответил ошибкой, берем из кэша
                 getCitiesFromCache("Ошибка сервера: ${response.message()}")
             }
 
@@ -41,7 +41,6 @@ class ApiRepositoryImpl @Inject constructor(
         }
     }
 
-    // Вспомогательная функция для получения данных из кэша
     private suspend fun getCitiesFromCache(errorMessage: String): NetworkResult<List<CityDto>> {
         val cachedEntities = dao.getAll()
 
