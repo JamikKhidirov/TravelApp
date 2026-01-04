@@ -1,39 +1,37 @@
 package com.example.network.setvice
 
-import com.example.network.data.citydata.CityDto
-import com.example.network.data.countridata.CountriData
-import com.example.network.data.productdata.ProductData
-import com.example.network.data.productcategorydata.ProductDataCategory
+import com.example.domain.data.citydata.CityData
+import com.example.domain.data.citydata.CityDto
+import com.example.domain.data.countridata.CountriData
+import com.example.domain.data.productcategorydata.ProductDataCategory
+import com.example.domain.data.productdata.ProductData
+import  retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 
 interface ExcursionService {
 
     @GET("cities")
-    suspend fun getCities(
-        @Query("api_key") key: String = "9bc84ec26f47bf3005dc55434b4b796a",
-        @Query("username") user: String = "partners+tpo50@sputnik8.com"
-    ): List<CityDto>
+    suspend fun getCities():Response<List<CityDto>>
+
+
+    @GET("cities/{id}")
+    suspend fun getCitiesByID(
+        @Path("id") id: Int,
+        @Query("lang") lang: String = "ru"
+    ): Response<CityData>
 
 
     @GET("countries")
-    fun getCountries(
-        @Query("api_key") key: String = "9bc84ec26f47bf3005dc55434b4b796a",
-        @Query("username") user: String = "partners+tpo50@sputnik8.com"
-    ): List<CountriData>
+    suspend fun getCountries(): Response<List<CountriData>>
 
 
     @GET("categories")
-    fun getCategories(
-        @Query("api_key") key: String = "9bc84ec26f47bf3005dc55434b4b796a",
-        @Query("username") user: String = "partners+tpo50@sputnik8.com"
-    ): List<ProductDataCategory>
+    suspend fun getCategories(): Response<List<ProductDataCategory>>
 
     @GET("product")
-    fun getExcursion(
-        @Query("api_key") key: String = "9bc84ec26f47bf3005dc55434b4b796a",
-        @Query("username") user: String = "partners+tpo50@sputnik8.com"
-    ): List<ProductData>
+    suspend fun getExcursion(): Response<List<ProductData>>
 
 }
