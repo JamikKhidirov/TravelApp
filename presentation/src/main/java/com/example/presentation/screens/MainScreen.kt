@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.domain.data.citydata.CityDto
+import com.example.presentation.uicomponents.topbars.MainTopAppBars
 import com.example.presentation.uicomponents.vidjets.CityItem
 import viewmodals.MainViewModal
 
@@ -42,7 +43,14 @@ fun MainScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-
+            when{
+                loading.value == true -> {
+                    null
+                }
+                cities.value != null -> {
+                    MainTopAppBars(modifier = Modifier)
+                }
+            }
         }
     ) { paddingValues ->
         when {
@@ -85,7 +93,11 @@ fun MainScreen(
             else -> {
                 BottomMainScreen(
                     paddingValues = paddingValues,
-                    cities = cities.value
+                    cities = cities.value,
+                    onCLickCity = {cityDto ->
+
+
+                    }
                 )
             }
         }
@@ -97,7 +109,8 @@ fun MainScreen(
 @Composable
 fun BottomMainScreen(
     paddingValues: PaddingValues,
-    cities: List<CityDto>
+    cities: List<CityDto>,
+    onCLickCity: (CityDto) -> Unit = {}
 ) {
     if (cities.isEmpty()) {
         Box(
@@ -117,7 +130,10 @@ fun BottomMainScreen(
             .padding(paddingValues)
     ) {
         items(cities, key = {city -> city.id}) { city ->
-            CityItem(city = city)
+            CityItem(
+                city = city,
+                onClickCityDto = onCLickCity
+            )
         }
     }
 }

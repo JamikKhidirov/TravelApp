@@ -31,6 +31,7 @@ import com.example.domain.data.citydata.CityDto
 @Composable
 fun CityItem(
     city: CityDto,
+    onClickCityDto: (CityDto) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(
@@ -41,7 +42,10 @@ fun CityItem(
             .clickable { /* onClick */ },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
+        ),
+        onClick = {
+            onClickCityDto(city)
+        }
     ) {
         Row(
             modifier = Modifier
