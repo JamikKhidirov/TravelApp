@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.domain.data.citydata.CityDto
 import com.example.presentation.uicomponents.vidjets.CityItem
-import viewmodal.MainViewModal
+import viewmodals.MainViewModal
 
 
 @Composable
