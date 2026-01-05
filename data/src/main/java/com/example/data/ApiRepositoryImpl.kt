@@ -4,17 +4,17 @@ package com.example.data
 import com.example.cache.datacache.dao.CityDao
 import com.example.cache.datacache.data.toCityDto
 import com.example.cache.datacache.data.toCityEntity
-import com.example.domain.data.citydata.CityDto
+import com.example.domain.sputnikdata.citydata.CityDto
 import com.example.domain.state.NetworkResult
-import com.example.network.setvice.ExcursionService
-import dagger.hilt.android.scopes.ActivityScoped
+import com.example.network.setvice.SputnikExcursionService
+import com.example.network.state.SputNikApi
 import javax.inject.Inject
 import javax.inject.Singleton
 
 
 @Singleton
 class ApiRepositoryImpl @Inject constructor(
-    private val api: ExcursionService,
+    @SputNikApi private val api: SputnikExcursionService,
     private val dao: CityDao
 ){
 
