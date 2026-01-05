@@ -3,7 +3,7 @@ package com.example.network.interceptors
 import okhttp3.Interceptor
 import okhttp3.Response
 
-class AuthInterceptor (
+class AuthSputnikInterceptor (
     private val apiKey: String,
     private val username: String
 ): Interceptor {
