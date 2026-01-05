@@ -21,7 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.example.domain.data.citydata.CityDto
+import com.example.domain.sputnikdata.citydata.CityDto
 import com.example.presentation.uicomponents.tabrow.TabRowMainScreen
 import com.example.presentation.uicomponents.topbars.MainTopAppBars
 import com.example.presentation.uicomponents.vidjets.CityItem

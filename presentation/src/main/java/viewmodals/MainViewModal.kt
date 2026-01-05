@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cache.datacache.dao.CityDao
 import com.example.data.ApiRepositoryImpl
-import com.example.domain.data.citydata.CityDto
+import com.example.domain.sputnikdata.citydata.CityDto
 import com.example.domain.state.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
