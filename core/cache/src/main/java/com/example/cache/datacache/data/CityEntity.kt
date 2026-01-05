@@ -2,7 +2,7 @@ package com.example.cache.datacache.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.domain.data.citydata.CityDto
+import com.example.domain.sputnikdata.citydata.CityDto
 
 
 @Entity(tableName = "cities")
