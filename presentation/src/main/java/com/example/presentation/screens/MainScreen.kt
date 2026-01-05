@@ -1,174 +1,141 @@
 package com.example.presentation.screens
 
-
-import androidx.collection.longObjectMapOf
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.domain.data.citydata.CityDto
 import com.example.presentation.uicomponents.tabrow.TabRowMainScreen
 import com.example.presentation.uicomponents.topbars.MainTopAppBars
 import com.example.presentation.uicomponents.vidjets.CityItem
-import com.example.presentation.uicomponents.vidjets.TabRowItem
-import viewmodals.MainViewModal
+import viewmodals.MainViewModel
 
+// Константы для тестов
+const val TEST_TAG_LOADING_WHEEL = "loading_wheel"
+const val TEST_TAG_ERROR_TEXT = "error_text"
+const val TEST_TAG_CITY_LIST = "city_list"
+const val TEST_TAG_EMPTY_TEXT = "empty_text"
 
 @Composable
-@Preview(showBackground = true)
-fun MainScreen(
-    viewModel: MainViewModal = hiltViewModel()  // Исправлено: viewModel, не viewmodal
-) {
-    val cities = viewModel.citiesState.collectAsState()
-    val loading = viewModel.loading.collectAsState()
-    val errorMessage = viewModel.errorMessage.collectAsState()
+fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
+    val cities by viewModel.citiesState.collectAsState()
+    val isLoading by viewModel.loading.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
-    var tab by remember { mutableStateOf("") }
+    // ВАЖНО: для SwipeRefresh обычно используют отдельный флаг или тот же loading
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
         topBar = {
-            when{
-                loading.value == true -> {
-                    null
-                }
-                errorMessage.value != null -> {
-                    null
-                }
-                cities.value != null -> {
-                    MainTopAppBars(modifier = Modifier)
-                }
+            // Показываем TopBar только если нет ошибки и не идет первоначальная загрузка
+            if (errorMessage == null && !isLoading) {
+                MainTopAppBars()
             }
         }
     ) { paddingValues ->
-        when {
-            loading.value == true -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(64.dp),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-            errorMessage.value != null -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                        ) {
-                        Icon(
-                            imageVector = Icons.Default.Error,
-                            contentDescription = "Ошибка",
-                            tint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.size(64.dp)
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Проверьте подключение к интернету",
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = MaterialTheme.colorScheme.error,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(horizontal = 24.dp)
-                        )
-                    }
-                }
-            }
-            else -> {
-                BottomMainScreen(
-                    paddingValues = paddingValues,
-                    cities = cities.value,
-                    onCLickCity = {cityDto ->
-
-                    },
-                    onClickTabCategory = { tabStr ->
-                        tab = tabStr
-                    }
-                )
-            }
+        BaseScreenContainer(
+            isLoading = isLoading,
+            isRefreshing = isRefreshing,
+            errorMessage = errorMessage,
+            onRefresh = { viewModel.refresh() }, // Используем refresh() для корректной работы SwipeRefresh
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            // Если мы здесь — значит данные загружены успешно
+            BottomMainScreenContent(
+                cities = cities,
+                onCLickCity = { /* ... */ }
+            )
         }
     }
 }
 
-
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BaseScreenContainer(
+    isLoading: Boolean,
+    isRefreshing: Boolean,
+    errorMessage: String?,
+    onRefresh: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    // 1. Если это первая загрузка (данных еще нет)
+    if (isLoading && !isRefreshing) {
+        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(64.dp)
+                    .testTag(TEST_TAG_LOADING_WHEEL)
+            )
+        }
+    }
+    // 2. Если произошла ошибка
+    else if (errorMessage != null) {
+        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(
+                text = errorMessage,
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.testTag(TEST_TAG_ERROR_TEXT)
+            )
+        }
+    }
+    // 3. Основной контент с поддержкой SwipeRefresh
+    else {
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
+            modifier = modifier.fillMaxSize()
+        ) {
+            content()
+        }
+    }
+}
 
 @Composable
-fun BottomMainScreen(
-    paddingValues: PaddingValues,
+fun BottomMainScreenContent(
     cities: List<CityDto>,
-    onCLickCity: (CityDto) -> Unit = {},
-    onClickTabCategory: (tab: String) -> Unit = {}
+    onCLickCity: (CityDto) -> Unit
 ) {
     if (cities.isEmpty()) {
-        Box(
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(
+                text = "Города не найдены",
+                modifier = Modifier.testTag(TEST_TAG_EMPTY_TEXT)
+            )
+        }
+    } else {
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            contentAlignment = Alignment.Center
+                .testTag(TEST_TAG_CITY_LIST)
         ) {
-            Text("Города не найдены")
-        }
-        return
-    }
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-    ) {
-        stickyHeader {
-            TabRowMainScreen(
-                modifier = Modifier.padding(top = 2.dp),
-                onClickTab = onClickTabCategory
-            )
-        }
-        items(cities, key = {city -> city.id}) { city ->
-            CityItem(
-                city = city,
-                onClickCityDto = onCLickCity
-            )
+            stickyHeader {
+                TabRowMainScreen(
+                    modifier = Modifier.padding(top = 2.dp),
+                    onClickTab = { /* ... */ }
+                )
+            }
+            items(cities, key = { it.id }) { city ->
+                CityItem(city = city, onClickCityDto = onCLickCity)
+            }
         }
     }
 }
-
-
-
