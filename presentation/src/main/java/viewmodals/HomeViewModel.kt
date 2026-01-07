@@ -40,7 +40,7 @@ class HomeViewModel @Inject constructor(
         page: Int = 1,
         lang: String= "ru",
         country: Int = 0,
-        popular: Boolean = true
+        popular: Boolean = false
     ){
         viewModelScope.launch {
             try {

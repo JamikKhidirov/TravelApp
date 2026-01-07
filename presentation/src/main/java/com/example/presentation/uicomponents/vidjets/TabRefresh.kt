@@ -23,13 +23,12 @@ import androidx.compose.ui.unit.sp
 
 
 @Composable
-@Preview(showBackground = true)
 fun TabRefresh(
     onItemSelected: (titleTab: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Состояние: какой индекс выбран
-    var selectedIndex by remember { mutableIntStateOf(0) }
+    var selectedIndex by remember { mutableIntStateOf(1) }
 
     val items = listOf("Ближащие", "Популярные")
 
