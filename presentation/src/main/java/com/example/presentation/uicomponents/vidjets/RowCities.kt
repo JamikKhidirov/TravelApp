@@ -1,5 +1,6 @@
 package com.example.presentation.uicomponents.vidjets
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -22,11 +23,12 @@ fun RowCities(
     val state = rememberLazyListState()
 
     LazyRow(
-        modifier = modifier,
+        modifier = modifier
+            .animateContentSize(),
         state = state,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        items(results){ city ->
+        items(results, key = {}){ city ->
             ImagevidjetGetCities(
                 modifier = Modifier,
                 city = city,

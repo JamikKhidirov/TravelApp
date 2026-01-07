@@ -12,69 +12,46 @@ import hilt_aggregated_deps._com_example_network_di_NetworkApiModule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import retrofit2.http.Query
 import javax.inject.Inject
 import kotlin.collections.emptyList
 
-
-
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     @WeGoApi private val api: WegoExcursionService
-): ViewModel() {
+) : ViewModel() {
 
-    private var _citiesList: MutableStateFlow<List<City>> = MutableStateFlow(emptyList())
-    val cities: StateFlow<List<City>> = _citiesList.asStateFlow()
-
-
-
+    private val _popular = MutableStateFlow(true)
+    private val _cities = MutableStateFlow<List<City>>(emptyList())
+    val cities: StateFlow<List<City>> = _cities
 
     init {
-        fetchCoties()
+        _popular
+            .onEach { popular ->
+                loadCities(popular)
+            }
+            .launchIn(viewModelScope)
     }
 
-
-
-    fun fetchCoties(
-        page: Int = 1,
-        lang: String= "ru",
-        country: Int = 0,
-        popular: Boolean = false
-    ){
+    private fun loadCities(popular: Boolean) {
         viewModelScope.launch {
             try {
-                val response = api.getListCities(
-                    page = page,
-                    lang = lang,
-                    country = country,
-                    popular = popular
-                )
-
-                if (response.isSuccessful){
-                    response.body()?.data?.results?.let { list ->
-                        _citiesList.value = list
-                    } ?: Log.d("API", "Body or data is null")
+                val response = api.getListCities(popular = popular)
+                if (response.isSuccessful) {
+                    _cities.value = response.body()?.data?.results.orEmpty()
                 }
-                else{
-                    //Можно перехватьтить ошибку тут
-                    Log.e("API", "Response error: ${response.code()}")
-                }
+            } catch (e: Exception) {
+                Log.e("API", e.message ?: "error")
             }
-            catch (e: Exception){
-                Log.e("API", "Exception: ${e.localizedMessage}")
-            }
-
-
         }
     }
 
-
-    override fun onCleared() {
-        super.onCleared()
-        //Для очистки
-
+    fun setPopular(value: Boolean) {
+        _popular.value = value
     }
 }
-
 

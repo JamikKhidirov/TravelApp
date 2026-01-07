@@ -60,8 +60,8 @@ fun HomeScreen(
                 //что то делаем
             },
             onRefResh = {
-                viewModel.fetchCoties(
-                    popular = it
+                viewModel.setPopular(
+                    value = it
                 )
             }
         )
