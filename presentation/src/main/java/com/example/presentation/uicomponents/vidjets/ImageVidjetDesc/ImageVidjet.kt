@@ -1,19 +1,15 @@
 package com.example.presentation.uicomponents.vidjets.ImageVidjetDesc
 
 
-import androidx.compose.foundation.layout.Arrangement
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Badge
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -31,19 +27,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
 import com.example.domain.wegodata.citiesdata.City
 import com.example.presentation.R
 
 
 @Composable
-fun Imagevidjet(
+fun ImagevidjetGetCities(
     modifier: Modifier,
     city: City,
     onClickCity: (City) -> Unit
 ){
     Card(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .width(200.dp) // ОБЯЗАТЕЛЬНО: укажите ширину для LazyRow
+            .height(260.dp),
 
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.elevatedCardElevation(
@@ -63,8 +62,14 @@ fun Imagevidjet(
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(city.preview) // URL изображения
-                    .crossfade(true)    // Плавное появление
+                    .crossfade(true)
                     .build(),
+                onError = {
+                    Log.e("CoilError", "Ошибка загрузки: ${it.result.throwable.message}")
+                    Log.e("CoilError", "Ошибка! URL: '${city.preview}'")
+                    Log.e("CoilError", "Причина: ${it.result.throwable}")
+
+                },
                 contentDescription = "Photo of ${city.name}",
                 placeholder = painterResource(R.drawable.ic_launcher_background),
                 modifier = Modifier
@@ -91,7 +96,7 @@ fun Imagevidjet(
                 )
 
                 Text(
-                    text = city.country,
+                    text = "${city.itemsCount.toString()} экскурсий и билетов",
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White,
 
@@ -99,30 +104,4 @@ fun Imagevidjet(
         }
     }
 }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFF0F0F0)
-@Composable
-fun ImagevidjetPreview() {
-    // Создаем тестовые данные
-    val mockCity = City(
-        id = 1,
-        name = "Париж",
-        slug = "paris",
-        preview = "https://wgt-prod-storage.s3.amazonaws.com/media/CACHE/images/world/attraction/4795/tmpz7s8s0gu/d48d08b802ab48574335007b0fffc401.jpg", // В превью картинка может не загрузиться без интернета
-        itemsCount = 124,
-        country = "Франция"
-    )
-
-    // Отображаем виджет
-    MaterialTheme {
-        Imagevidjet(
-            modifier = Modifier
-                .padding(16.dp)
-                .width(250.dp)
-                .height(400.dp), // Ограничиваем ширину для наглядности
-            city = mockCity,
-            onClickCity = { /* Действие при клике */ }
-        )
-    }
 }

@@ -22,13 +22,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.domain.wegodata.citiesdata.City
 import com.example.presentation.uicomponents.search.SearchCard
+import com.example.presentation.uicomponents.vidjets.RowCities
 import com.example.presentation.uicomponents.vidjets.TabRefresh
+import viewmodals.HomeViewModel
 
 
 @Composable
 @Preview(showBackground = true)
-fun HomeScreen(){
+fun HomeScreen(
+    viewModel: HomeViewModel = hiltViewModel()
+){
+
+    val cities = viewModel.cities.collectAsStateWithLifecycle()
+
 
     val state = rememberLazyListState()
 
@@ -44,7 +54,11 @@ fun HomeScreen(){
 
         BottomHomeScreen(
             paddingValues = paddingValues,
-            state = state
+            state = state,
+            list = cities.value,
+            onClickCities = { city ->
+                //что то делаем
+            }
         )
     }
 
@@ -55,7 +69,9 @@ fun HomeScreen(){
 @Composable
 fun BottomHomeScreen(
     paddingValues: PaddingValues,
-    state: LazyListState
+    state: LazyListState,
+    list: List<City>,
+    onClickCities: (City) -> Unit
 ){
 
     LazyColumn(
@@ -88,7 +104,11 @@ fun BottomHomeScreen(
 
         //В ров список ближащих или популярных мест
         item {
-
+            RowCities(
+                modifier = Modifier,
+                results = list,
+                onClickCity = onClickCities
+            )
         }
 
         //Популярные места

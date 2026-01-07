@@ -29,16 +29,16 @@ interface WegoExcursionService {
     ): Response<CountryResponse>
 
 
-    @GET("cities")
+    @GET("cities/")
     suspend fun getListCities(
         //Для плагинации
-        @Query("page") page: Int,
+        @Query("page") page: Int = 1,
         @Query("lang") lang: String= "ru",
         //Уникальный айди страны к кому хотим сделать поиск
         //id из GET /search/ или GET /countries/
-        @Query("country") country: Int,
+        @Query("country") country: Int = 0,
         //Если trye то сортировка по популярности
-        @Query("popular") popular: Boolean
+        @Query("popular") popular: Boolean = true
     ): Response<CityResponse>
 
 

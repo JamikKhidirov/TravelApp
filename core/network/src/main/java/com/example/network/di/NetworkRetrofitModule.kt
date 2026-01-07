@@ -41,7 +41,7 @@ object NetworkRetrofitModule {
         okHttpClient: OkHttpClient
     ): Retrofit{
         return Retrofit.Builder()
-            .baseUrl("https://app.wegotrip.com/api/v3/")
+            .baseUrl("https://app.wegotrip.com/api/v2/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
