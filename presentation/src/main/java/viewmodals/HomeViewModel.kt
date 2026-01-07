@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import retrofit2.http.Query
 import javax.inject.Inject
 import kotlin.collections.emptyList
 
@@ -35,10 +36,20 @@ class HomeViewModel @Inject constructor(
 
 
 
-    fun fetchCoties(){
+    fun fetchCoties(
+        page: Int = 1,
+        lang: String= "ru",
+        country: Int = 0,
+        popular: Boolean = true
+    ){
         viewModelScope.launch {
             try {
-                val response = api.getListCities()
+                val response = api.getListCities(
+                    page = page,
+                    lang = lang,
+                    country = country,
+                    popular = popular
+                )
 
                 if (response.isSuccessful){
                     response.body()?.data?.results?.let { list ->

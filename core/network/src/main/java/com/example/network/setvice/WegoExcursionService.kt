@@ -38,7 +38,7 @@ interface WegoExcursionService {
         //id из GET /search/ или GET /countries/
         @Query("country") country: Int = 0,
         //Если trye то сортировка по популярности
-        @Query("popular") popular: Boolean = true
+        @Query("popular") popular: Boolean = false
     ): Response<CityResponse>
 
 
