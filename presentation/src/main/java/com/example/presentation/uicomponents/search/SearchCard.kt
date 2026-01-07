@@ -28,10 +28,9 @@ import kotlinx.serialization.builtins.MapSerializer
 
 
 @Composable
-@Preview(showBackground = true)
 fun SearchCard(
     modifier: Modifier = Modifier,
-    onClickSeacrCard: () -> Unit = {}
+    onClickSeacrCard: () -> Unit
 ){
 
     ElevatedCard(

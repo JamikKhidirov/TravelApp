@@ -2,6 +2,8 @@ package com.example.presentation.screens
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.content.res.Configuration.UI_MODE_TYPE_WATCH
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -17,9 +19,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import com.example.presentation.uicomponents.search.SearchCard
+import com.example.presentation.uicomponents.vidjets.TabRefresh
 
 
 @Composable
@@ -64,12 +68,25 @@ fun BottomHomeScreen(
         stickyHeader {
             SearchCard(
                 modifier = Modifier
-                    .padding(top = 10.dp)
+                    .padding(top = 10.dp),
+                onClickSeacrCard = {
+
+                }
             )
         }
 
-        //Таб и список ближащих или популярныъ мест
-        //В ров список
+        //Таб обновления популярных илии ближащих мест
+        item {
+            TabRefresh(
+                modifier = Modifier,
+                onItemSelected = { tabItem: String ->
+
+                }
+            )
+        }
+
+
+        //В ров список ближащих или популярных мест
         item {
 
         }
