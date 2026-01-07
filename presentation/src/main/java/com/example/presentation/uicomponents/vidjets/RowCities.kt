@@ -28,9 +28,11 @@ fun RowCities(
         state = state,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        items(results, key = {}){ city ->
+        items(results, key = {
+            it.id
+        }){ city ->
             ImagevidjetGetCities(
-                modifier = Modifier,
+                modifier = Modifier.animateItem(), // 🔥 ВОТ ОНО,
                 city = city,
                 onClickCity = onClickCity
             )
