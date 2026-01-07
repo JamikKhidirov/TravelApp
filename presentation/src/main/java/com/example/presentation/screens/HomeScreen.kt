@@ -58,6 +58,11 @@ fun HomeScreen(
             list = cities.value,
             onClickCities = { city ->
                 //что то делаем
+            },
+            onRefResh = {
+                viewModel.fetchCoties(
+                    popular = it
+                )
             }
         )
     }
@@ -71,7 +76,8 @@ fun BottomHomeScreen(
     paddingValues: PaddingValues,
     state: LazyListState,
     list: List<City>,
-    onClickCities: (City) -> Unit
+    onClickCities: (City) -> Unit,
+    onRefResh: (Boolean) -> Unit
 ){
 
     LazyColumn(
@@ -97,7 +103,10 @@ fun BottomHomeScreen(
             TabRefresh(
                 modifier = Modifier,
                 onItemSelected = { tabItem: String ->
-
+                    when(tabItem){
+                        "Ближащие" -> onRefResh(false)
+                        "Популярные" -> onRefResh(true)
+                    }
                 }
             )
         }
