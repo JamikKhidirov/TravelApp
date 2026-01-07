@@ -66,6 +66,7 @@ fun BottomHomeScreen(
     ) {
 
         stickyHeader {
+            //Поиск стран и городов куда хочет поехать пользователей
             SearchCard(
                 modifier = Modifier
                     .padding(top = 10.dp),
