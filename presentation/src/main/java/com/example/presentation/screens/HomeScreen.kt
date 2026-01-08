@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.content.res.Configuration.UI_MODE_TYPE_WATCH
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,9 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -131,13 +134,22 @@ fun BottomHomeScreen(
         //Популярные места
         //В ров тоже список
         item {
-            RowCities<Attraction>(
-                modifier = Modifier.padding(top = 20.dp),
-                results = listAttraction,
-                onClickCity = {
+            Column {
+                Text(
+                    text = "Еще популярные места",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 20.dp)
+                )
+                RowCities<Attraction>(
+                    modifier = Modifier.padding(top = 10.dp),
+                    results = listAttraction,
+                    onClickCity = {
 
-                }
-            )
+                    }
+                )
+            }
+
         }
 
 
