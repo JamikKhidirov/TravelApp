@@ -63,12 +63,22 @@ class HomeViewModel @Inject constructor(
     init {
         _popular
             .onEach { popular ->
+                // При смене таба сбрасываем пагинацию
+                citiesPage = 1
+                isEndReachedCities = false
+                _cities.value = emptyList()
                 loadCities(popular)
             }
             .launchIn(viewModelScope)
 
+        attractionPage = 1
+        isEndReachedAttraction = false
+        _attractionList.value = emptyList()
         loadAttreaction()
 
+        popularToursPage = 1
+        isEndReachedPopularTours = false
+        _popularTours.value = emptyList()
         loadPopular()
     }
 
@@ -86,10 +96,10 @@ class HomeViewModel @Inject constructor(
                 )
                 if (response.isSuccessful) {
                     val newItems = response.body()?.data?.results.orEmpty()
-                    if (newItems.isNotEmpty()) isEndReachedCities = true
+                    if (newItems.isEmpty()) isEndReachedCities = true
 
                     else {
-                        _cities.value += cities.value + newItems
+                        _cities.value = _cities.value + newItems
                     }
                     citiesPage++
                 }
@@ -103,7 +113,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun loadAttreaction(){
-        if (_isNextCitiesPageLoading.value || isEndReachedCities) return
+        if (_isNextAttractionPageLoading.value || isEndReachedAttraction) return
         viewModelScope.launch {
             _isNextAttractionPageLoading.value = true
             try {
@@ -116,7 +126,7 @@ class HomeViewModel @Inject constructor(
                         isEndReachedAttraction = true
                     }
                     else{
-                        _attractionList.value += _attractionList.value + newItems
+                        _attractionList.value = _attractionList.value + newItems
                         attractionPage++
                     }
                 }
@@ -162,7 +172,7 @@ class HomeViewModel @Inject constructor(
                         isEndReachedPopularTours = true
                     }
                     else{
-                        _popularTours.value +=  _popularTours.value + newItems
+                        _popularTours.value = _popularTours.value + newItems
                         popularToursPage++
                     }
                 }
