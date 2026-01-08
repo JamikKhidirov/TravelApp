@@ -2,6 +2,7 @@ package com.example.presentation.uicomponents.vidjets
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -26,7 +27,8 @@ fun <T: DisplayableItem> RowCities(
     LazyRow(
         modifier = modifier,
         state = state,
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        contentPadding = PaddingValues(start = 15.dp)
     ) {
         items(results, key = {
             it.id
