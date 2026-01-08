@@ -1,6 +1,9 @@
 package com.example.presentation.uicomponents.vidjets
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,19 +18,25 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.node.TouchBoundsExpansion
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.domain.wegodata.productpopular.Tour
 import com.example.domain.wegodata.productpopular.TourAuthor
 import com.example.domain.wegodata.productpopular.TourCity
@@ -36,123 +45,116 @@ import com.example.domain.wegodata.productpopular.TourTags
 
 @Composable
 fun PopularTourItem(
-    tour: Tour ,
+    modifier: Modifier = Modifier,
+    tour: Tour,
     onClick: () -> Unit
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 10.dp, vertical = 6.dp)
-            .height(400.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+        modifier = modifier
+            .fillMaxWidth()// Чуть шире, чем города, так как информации больше
+            .height(380.dp)
+            .padding(vertical = 8.dp)
+            .padding(horizontal = 15.dp),
+        shape = RoundedCornerShape(24.dp), // Более мягкие углы
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 6.dp),
+        onClick = onClick
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(10.dp)
-        ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            // 1. Изображение на весь фон
             AsyncImage(
-                model = tour.preview ?: tour.cover,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(tour.preview ?: tour.cover)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = tour.title,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(200.dp)
-                    .clip(RoundedCornerShape(10.dp)),
+                modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
 
-            Spacer(modifier = Modifier.width(10.dp))
+            // 2. Градиентная подложка, чтобы текст всегда читался
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.1f),
+                                Color.Black.copy(alpha = 0.8f)
+                            ),
+                            startY = 300f // Градиент начинается ближе к низу
+                        )
+                    )
+            )
 
+            // 3. Контент поверх изображения
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = tour.title,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
+                // Верхняя часть: Рейтинг или бейдж (если есть)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Surface(
+                        color = Color.White.copy(alpha = 0.9f),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            text = "⭐ ${tour.rating}",
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
 
-                Text(
-                    text = "${tour.city.name} • ${tour.duration}",
-                    fontSize = 12.sp,
-                    color = Color.Gray,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
+                // Нижняя часть: Инфо о туре
+                Column {
+                    Text(
+                        text = tour.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color.White,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        fontWeight = FontWeight.Bold
+                    )
 
-                Text(
-                    text = "${tour.price.toInt()} ${tour.currency}",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 6.dp)
-                )
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = "${tour.city.name} • ${tour.duration}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.White.copy(alpha = 0.8f)
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "${tour.price.toInt()} ${tour.currency}",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = Color.White,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                        if (tour.exprice > tour.price) {
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "${tour.exprice.toInt()}",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    textDecoration = TextDecoration.LineThrough
+                                ),
+                                color = Color.White.copy(alpha = 0.6f)
+                            )
+                        }
+                    }
+                }
             }
         }
-    }
-}
-
-
-
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-    name = "Popular tour item"
-)
-@Composable
-fun PopularTourItemPreview() {
-    val mockCity = TourCity(
-        id = 1,
-        name = "Санкт-Петербург",
-        slug = "saint-petersburg"
-    )
-
-    val mockTags = TourTags(
-        audioguide = true,
-        available = true,
-        hit = true,
-        celebration = false,
-        excursions = true,
-        citys = true
-    )
-
-    val mockAuthor = TourAuthor(
-        avatar = "https://picsum.photos/100/100",
-        name = "Travel Guide",
-        bio = "Лучший гид по ночному Петербургу",
-        nickname = "night_guide"
-    )
-
-    val mockTour = Tour(
-        id = 1,
-        title = "Ночная экскурсия по крышам",
-        slug = "night-roofs-tour",
-        cover = "https://picsum.photos/400/300",
-        preview = "https://picsum.photos/400/300?random=1",
-        price = 4500.0,
-        exprice = 5500.0,
-        currency = "₽",
-        currencyCode = "RUB",
-        rating = 4.8,
-        reviewsCount = 123,
-        ratingsCount = 200,
-        category = "Экскурсия",
-        city = mockCity,
-        duration = "3 часа",
-        durationMin = 180,
-        durationMax = 180,
-        type = 1,
-        tags = mockTags,
-        locale = "ru",
-        author = mockAuthor
-    )
-
-    MaterialTheme {
-        PopularTourItem(
-            tour = mockTour,
-            onClick = {}
-        )
     }
 }
