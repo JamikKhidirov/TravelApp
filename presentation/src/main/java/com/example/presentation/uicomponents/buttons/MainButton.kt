@@ -28,7 +28,7 @@ fun MainButton(
         onClick = onClickButton,
         shape = RoundedCornerShape(15.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Magenta
+            containerColor = Color(0XFFFF8C00)
         )
     ) {
         Text(
