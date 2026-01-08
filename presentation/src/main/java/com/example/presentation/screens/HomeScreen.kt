@@ -139,7 +139,7 @@ fun BottomHomeScreen(
                     text = "Еще популярные места",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 20.dp)
+                    modifier = Modifier.padding(top = 20.dp, start = 15.dp)
                 )
                 RowCities<Attraction>(
                     modifier = Modifier.padding(top = 10.dp),
