@@ -3,6 +3,7 @@ package com.example.network.di
 import com.example.network.interceptors.AuthSputnikInterceptor
 import com.example.network.interceptors.AuthWeGoInterceptor
 import com.example.network.state.SputNikApi
+import com.example.network.state.WeGo
 import com.example.network.state.WeGoApi
 import dagger.Module
 import dagger.Provides
@@ -10,6 +11,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 
@@ -37,13 +39,15 @@ object NetworkOkhttpModule {
 
     @Provides
     @Singleton
-    @WeGoApi
+    @WeGoApi(WeGo.CITIES)
     fun provideWegoApiOkhttp(): OkHttpClient{
         return OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
             .addInterceptor(AuthWeGoInterceptor())
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
             .build()
     }
 }

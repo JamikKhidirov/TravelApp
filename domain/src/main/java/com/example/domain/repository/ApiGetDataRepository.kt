@@ -1,8 +1,8 @@
 package com.example.domain.repository
 
-import com.example.domain.data.citydata.CityDto
-import com.example.domain.data.productcategorydata.ProductDataCategory
-import com.example.domain.data.productdata.ProductData
+import com.example.domain.sputnikdata.citydata.CityDto
+import com.example.domain.sputnikdata.productcategorydata.ProductDataCategory
+import com.example.domain.sputnikdata.productdata.ProductData
 
 
 interface ApiGetDataRepository {
