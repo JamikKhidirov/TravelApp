@@ -40,6 +40,8 @@ fun HomeScreen(
 
     val cities = viewModel.cities.collectAsStateWithLifecycle()
 
+    val attraction = viewModel.attractionList.collectAsStateWithLifecycle()
+
 
     val state = rememberLazyListState()
 
@@ -64,7 +66,8 @@ fun HomeScreen(
                 viewModel.setPopular(
                     value = it
                 )
-            }
+            },
+            listAttraction = attraction.value
         )
     }
 
@@ -76,7 +79,8 @@ fun HomeScreen(
 fun BottomHomeScreen(
     paddingValues: PaddingValues,
     state: LazyListState,
-    listCity: List<City>,
+    listCity: List<DisplayableItem>,
+    listAttraction: List<DisplayableItem>,
     onClickCities: (DisplayableItem) -> Unit,
     onRefResh: (Boolean) -> Unit
 ){
@@ -125,7 +129,13 @@ fun BottomHomeScreen(
         //Популярные места
         //В ров тоже список
         item {
+            RowCities(
+                modifier = Modifier.padding(top = 20.dp),
+                results = listAttraction,
+                onClickCity = {
 
+                }
+            )
         }
 
 

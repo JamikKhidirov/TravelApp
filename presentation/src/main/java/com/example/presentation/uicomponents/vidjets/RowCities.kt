@@ -34,7 +34,7 @@ fun RowCities(
         }){ city ->
             ImagevidjetGetCities(
                 modifier = Modifier.animateItem(), // 🔥 ВОТ ОНО,
-                city = city,
+                displayItem = city,
                 onClickCity = onClickCity
             )
         }

@@ -3,6 +3,7 @@ package viewmodals
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.domain.model.DisplayableItem
 import com.example.domain.wegodata.citiesdata.City
 import com.example.domain.wegodata.citiesdata.CityResponse
 import com.example.network.setvice.WegoExcursionService
@@ -29,12 +30,21 @@ class HomeViewModel @Inject constructor(
     private val _cities = MutableStateFlow<List<City>>(emptyList())
     val cities: StateFlow<List<City>> = _cities
 
+
+    private var _attractionList:
+            MutableStateFlow<List<DisplayableItem>> = MutableStateFlow(emptyList())
+
+    val attractionList = _attractionList.asStateFlow()
+
+
     init {
         _popular
             .onEach { popular ->
                 loadCities(popular)
             }
             .launchIn(viewModelScope)
+
+        loadAttreaction()
     }
 
     private fun loadCities(popular: Boolean) {
@@ -46,6 +56,21 @@ class HomeViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.e("API", e.message ?: "error")
+            }
+        }
+    }
+
+    fun loadAttreaction(){
+        viewModelScope.launch {
+            try {
+                val response = api.getListattraction()
+
+                if (response.isSuccessful){
+                    _attractionList.value = response.body()?.results!!
+                }
+            }
+            catch (e: Exception){
+                Log.d("API", e.message ?: "Ошибка неизветсная")
             }
         }
     }

@@ -37,7 +37,7 @@ import com.example.presentation.R
 @Composable
 fun ImagevidjetGetCities(
     modifier: Modifier,
-    city: DisplayableItem,
+    displayItem: DisplayableItem,
     onClickCity: (DisplayableItem) -> Unit
 ){
     Card(
@@ -51,7 +51,7 @@ fun ImagevidjetGetCities(
             pressedElevation = 2.dp
         ),
         onClick = {
-            onClickCity(city)
+            onClickCity(displayItem)
         }
     ) {
         Box(
@@ -62,16 +62,16 @@ fun ImagevidjetGetCities(
             // Загрузка изображения через Coil
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(city.preview) // URL изображения
+                    .data(displayItem.preview) // URL изображения
                     .crossfade(true)
                     .build(),
                 onError = {
                     Log.e("CoilError", "Ошибка загрузки: ${it.result.throwable.message}")
-                    Log.e("CoilError", "Ошибка! URL: '${city.preview}'")
+                    Log.e("CoilError", "Ошибка! URL: '${displayItem.preview}'")
                     Log.e("CoilError", "Причина: ${it.result.throwable}")
 
                 },
-                contentDescription = "Photo of ${city.name}",
+                contentDescription = "Photo of ${displayItem.name}",
                 placeholder = painterResource(R.drawable.ic_launcher_background),
                 modifier = Modifier
                     .fillMaxSize()
@@ -90,14 +90,14 @@ fun ImagevidjetGetCities(
             ) {
 
                 Text(
-                    text = city.name,
+                    text = displayItem.name,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
 
                 Text(
-                    text = "${city.itemsCount.toString()} экскурсий и билетов",
+                    text = "${displayItem.itemsCount.toString()} экскурсий и билетов",
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White,
 
