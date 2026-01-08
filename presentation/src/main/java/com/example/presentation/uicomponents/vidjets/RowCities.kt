@@ -15,10 +15,10 @@ import com.example.presentation.uicomponents.vidjets.ImageVidjetDesc.Imagevidjet
 
 
 @Composable
-fun RowCities(
+fun <T: DisplayableItem> RowCities(
     modifier: Modifier = Modifier,
-    results: List<DisplayableItem>,
-    onClickCity: (DisplayableItem) -> Unit
+    results: List<T>,
+    onClickCity: (T) -> Unit
 ){
 
     val state = rememberLazyListState()

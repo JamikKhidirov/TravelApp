@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
@@ -25,6 +26,7 @@ import androidx.core.view.WindowCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.model.DisplayableItem
+import com.example.domain.wegodata.attractiondata.Attraction
 import com.example.domain.wegodata.citiesdata.City
 import com.example.presentation.uicomponents.search.SearchCard
 import com.example.presentation.uicomponents.vidjets.RowCities
@@ -79,8 +81,8 @@ fun HomeScreen(
 fun BottomHomeScreen(
     paddingValues: PaddingValues,
     state: LazyListState,
-    listCity: List<DisplayableItem>,
-    listAttraction: List<DisplayableItem>,
+    listCity: List<City>,
+    listAttraction: List<Attraction>,
     onClickCities: (DisplayableItem) -> Unit,
     onRefResh: (Boolean) -> Unit
 ){
@@ -119,7 +121,7 @@ fun BottomHomeScreen(
 
         //В ров список ближащих или популярных мест
         item {
-            RowCities(
+            RowCities<City>(
                 modifier = Modifier,
                 results = listCity,
                 onClickCity = onClickCities
@@ -129,7 +131,7 @@ fun BottomHomeScreen(
         //Популярные места
         //В ров тоже список
         item {
-            RowCities(
+            RowCities<Attraction>(
                 modifier = Modifier.padding(top = 20.dp),
                 results = listAttraction,
                 onClickCity = {

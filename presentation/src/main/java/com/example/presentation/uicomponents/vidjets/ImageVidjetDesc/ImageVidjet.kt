@@ -35,10 +35,10 @@ import com.example.presentation.R
 
 
 @Composable
-fun ImagevidjetGetCities(
+fun <T: DisplayableItem> ImagevidjetGetCities(
     modifier: Modifier,
-    displayItem: DisplayableItem,
-    onClickCity: (DisplayableItem) -> Unit
+    displayItem: T,
+    onClickCity: (T) -> Unit
 ){
     Card(
         modifier = modifier

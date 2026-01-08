@@ -1,6 +1,7 @@
 package com.example.domain.wegodata.attractiondata
 
 import com.example.domain.model.DisplayableItem
+import com.google.gson.annotations.SerializedName
 
 
 data class AttractionResponse(
@@ -8,5 +9,6 @@ data class AttractionResponse(
     val pages: Int,
     val current: Int,
     val next: Int?,
-    val results: List<DisplayableItem>
+    @SerializedName("results")
+    val results: List<Attraction>
 )

@@ -2,6 +2,7 @@ package com.example.network.di
 
 import com.example.network.interceptors.AuthWeGoInterceptor
 import com.example.network.state.SputNikApi
+import com.example.network.state.WeGo
 import com.example.network.state.WeGoApi
 import dagger.Module
 import dagger.Provides
@@ -35,13 +36,28 @@ object NetworkRetrofitModule {
 
     @Provides
     @Singleton
-    @WeGoApi
+    @WeGoApi(WeGo.CITIES)
     fun provideRetrofitWeGo(
-        @WeGoApi
+        @WeGoApi(WeGo.CITIES)
         okHttpClient: OkHttpClient
     ): Retrofit{
         return Retrofit.Builder()
             .baseUrl("https://app.wegotrip.com/api/v2/")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+
+    @Provides
+    @Singleton
+    @WeGoApi(WeGo.ATTRACTION)
+    fun provideRetrofitWeGoV3(
+        @WeGoApi(WeGo.CITIES)
+        okHttpClient: OkHttpClient
+    ): Retrofit{
+        return Retrofit.Builder()
+            .baseUrl("https://app.wegotrip.com/api/v3/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

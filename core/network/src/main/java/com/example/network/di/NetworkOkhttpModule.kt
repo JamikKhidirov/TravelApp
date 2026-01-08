@@ -3,6 +3,7 @@ package com.example.network.di
 import com.example.network.interceptors.AuthSputnikInterceptor
 import com.example.network.interceptors.AuthWeGoInterceptor
 import com.example.network.state.SputNikApi
+import com.example.network.state.WeGo
 import com.example.network.state.WeGoApi
 import dagger.Module
 import dagger.Provides
@@ -38,7 +39,7 @@ object NetworkOkhttpModule {
 
     @Provides
     @Singleton
-    @WeGoApi
+    @WeGoApi(WeGo.CITIES)
     fun provideWegoApiOkhttp(): OkHttpClient{
         return OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().apply {

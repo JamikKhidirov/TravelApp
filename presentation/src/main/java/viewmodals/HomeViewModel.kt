@@ -4,12 +4,14 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.DisplayableItem
+import com.example.domain.wegodata.attractiondata.Attraction
 import com.example.domain.wegodata.citiesdata.City
 import com.example.domain.wegodata.citiesdata.CityResponse
 import com.example.network.setvice.WegoExcursionService
+import com.example.network.setvice.WegoExcursionServiveV3
+import com.example.network.state.WeGo
 import com.example.network.state.WeGoApi
 import dagger.hilt.android.lifecycle.HiltViewModel
-import hilt_aggregated_deps._com_example_network_di_NetworkApiModule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +25,8 @@ import kotlin.collections.emptyList
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    @WeGoApi private val api: WegoExcursionService
+    @WeGoApi(WeGo.CITIES) private val api: WegoExcursionService,
+    @WeGoApi(WeGo.ATTRACTION) private val attractionApi: WegoExcursionServiveV3
 ) : ViewModel() {
 
     private val _popular = MutableStateFlow(true)
@@ -32,7 +35,7 @@ class HomeViewModel @Inject constructor(
 
 
     private var _attractionList:
-            MutableStateFlow<List<DisplayableItem>> = MutableStateFlow(emptyList())
+            MutableStateFlow<List<Attraction>> = MutableStateFlow(emptyList())
 
     val attractionList = _attractionList.asStateFlow()
 
@@ -55,7 +58,7 @@ class HomeViewModel @Inject constructor(
                     _cities.value = response.body()?.data?.results.orEmpty()
                 }
             } catch (e: Exception) {
-                Log.e("API", e.message ?: "error")
+                Log.e("API", e.message ?: "Неизвестная ошибка")
             }
         }
     }
@@ -63,14 +66,25 @@ class HomeViewModel @Inject constructor(
     fun loadAttreaction(){
         viewModelScope.launch {
             try {
-                val response = api.getListattraction()
+                val response = attractionApi.getListattraction()
 
                 if (response.isSuccessful){
-                    _attractionList.value = response.body()?.results!!
+                    _attractionList.value = response.body()?.results ?: emptyList()
+                    // ЛОГ 1: Проверка размера списка из API
+                    Log.d("DEBUG_DATA", "API Attractions success: size = ${response.body()?.results}")
+                    // Этот лог покажет, пришел ли вообще объект ответа
+                    Log.d("DEBUG_DATA", "Raw Body: ${response.body()}")
+
+                }
+                else{
+                    Log.e("API", "Ошибка сервера: ${response.code()}")
                 }
             }
             catch (e: Exception){
-                Log.d("API", e.message ?: "Ошибка неизветсная")
+                Log.d("API", e.message ?: "Неизвестная ошибка")
+                // Это выведет ПОЛНУЮ ошибку. Посмотрите её в Logcat.
+                // Там будет написано что-то вроде "Expected BEGIN_ARRAY but was STRING" или "Malformed JSON"
+                Log.e("API_DEBUG", "Ошибка парсинга или сети", e)
             }
         }
     }
