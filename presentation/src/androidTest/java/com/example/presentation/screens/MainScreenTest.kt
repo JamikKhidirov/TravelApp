@@ -4,7 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import com.example.domain.data.citydata.CityDto
+import com.example.domain.sputnikdata.citydata.CityDto
 import org.junit.Rule
 import org.junit.Test
 
