@@ -7,6 +7,7 @@ import android.content.res.Configuration.UI_MODE_TYPE_WATCH
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,6 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.model.DisplayableItem
 import com.example.domain.wegodata.attractiondata.Attraction
 import com.example.domain.wegodata.citiesdata.City
+import com.example.presentation.uicomponents.buttons.MainButton
 import com.example.presentation.uicomponents.search.SearchCard
 import com.example.presentation.uicomponents.vidjets.RowCities
 import com.example.presentation.uicomponents.vidjets.TabRefresh
@@ -72,7 +74,16 @@ fun HomeScreen(
                     value = it
                 )
             },
-            listAttraction = attraction.value
+            listAttraction = attraction.value,
+            onClickAttraction = { attraction ->
+
+            },
+            onClickTopBarAllVizBtn = {
+
+            },
+            onClickAllVizPopularBtn = {
+
+            }
         )
     }
 
@@ -86,8 +97,11 @@ fun BottomHomeScreen(
     state: LazyListState,
     listCity: List<City>,
     listAttraction: List<Attraction>,
-    onClickCities: (DisplayableItem) -> Unit,
-    onRefResh: (Boolean) -> Unit
+    onClickCities: (City) -> Unit,
+    onClickAttraction: (Attraction) -> Unit,
+    onRefResh: (Boolean) -> Unit,
+    onClickTopBarAllVizBtn: () -> Unit,
+    onClickAllVizPopularBtn: ()-> Unit
 ){
 
     LazyColumn(
@@ -132,6 +146,13 @@ fun BottomHomeScreen(
                 )
                 if (listCity.isNotEmpty()){
                     //Кнопка показать все
+                    MainButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 10.dp)
+                            .padding(top = 10.dp),
+                        onClickButton = onClickTopBarAllVizBtn
+                    )
                 }
             }
         }
@@ -152,15 +173,18 @@ fun BottomHomeScreen(
                 RowCities<Attraction>(
                     modifier = Modifier.padding(top = 10.dp),
                     results = listAttraction,
-                    onClickCity = {
-
-                    }
+                    onClickCity = onClickAttraction
                 )
 
                 if (listAttraction.isNotEmpty()){
-
                     //Кнопка показать все
-
+                    MainButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 10.dp)
+                            .padding(top = 10.dp),
+                        onClickButton = onClickAllVizPopularBtn
+                    )
                 }
 
             }
