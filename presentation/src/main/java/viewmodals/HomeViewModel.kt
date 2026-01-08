@@ -7,6 +7,7 @@ import com.example.domain.model.DisplayableItem
 import com.example.domain.wegodata.attractiondata.Attraction
 import com.example.domain.wegodata.citiesdata.City
 import com.example.domain.wegodata.citiesdata.CityResponse
+import com.example.domain.wegodata.productpopular.Tour
 import com.example.network.setvice.WegoExcursionService
 import com.example.network.setvice.WegoExcursionServiveV3
 import com.example.network.state.WeGo
@@ -40,6 +41,13 @@ class HomeViewModel @Inject constructor(
     val attractionList = _attractionList.asStateFlow()
 
 
+
+    private val _popularTours: MutableStateFlow<List<Tour>> = MutableStateFlow(emptyList())
+    val popularTours: StateFlow<List<Tour>> = _popularTours.asStateFlow()
+
+
+
+
     init {
         _popular
             .onEach { popular ->
@@ -48,6 +56,8 @@ class HomeViewModel @Inject constructor(
             .launchIn(viewModelScope)
 
         loadAttreaction()
+
+        loadPopular()
     }
 
     private fun loadCities(popular: Boolean) {
@@ -85,6 +95,42 @@ class HomeViewModel @Inject constructor(
                 // Это выведет ПОЛНУЮ ошибку. Посмотрите её в Logcat.
                 // Там будет написано что-то вроде "Expected BEGIN_ARRAY but was STRING" или "Malformed JSON"
                 Log.e("API_DEBUG", "Ошибка парсинга или сети", e)
+            }
+        }
+    }
+
+
+    fun loadPopular(
+        page: Int? = null,
+        lang: String? = null,
+        currency: String = "RUB",
+        country: Int? = null,
+        city: Int? = null,
+        attraction: Int? = null,
+        order: String = "popularity"
+    ){
+        viewModelScope.launch {
+            try {
+                val response = api.getPopularProducts(
+                    page = page,
+                    lang = lang,
+                    currency = currency,
+                    country = country,
+                    city = city,
+                    attraction = attraction,
+                    popularity = order
+                )
+
+                Log.d("API", "${response.body()?.data?.results?.size}")
+                if (response.isSuccessful) {
+                    Log.d("API", "${response.body()?.data?.results}")
+                    response.body()?.data?.results?.let {
+                        _popularTours.value = it
+                    }
+                }
+            }
+            catch (e: Exception){
+                Log.d("API", "Ошибка: ${e.message}")
             }
         }
     }

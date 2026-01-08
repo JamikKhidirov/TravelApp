@@ -54,26 +54,26 @@ interface WegoExcursionService {
     ): Response<CityDetailResponse>
 
 
-    @GET("products/popular")
+    @GET("products/popular/")
     suspend fun getPopularProducts(
         //Для плагинации
-        @Query("page") page: Int,
+        @Query("page") page: Int?,
         //Код языка товаров (контент, описание)
-        @Query("lang") lang: String = "ru",
+        @Query("lang") lang: String? = "ru",
         //Код валют для показа цен у товары
-        @Query("currency") currency: String = "RUB",
+        @Query("currency") currency: String? = "RUB",
         //Уникальный айди страны к кому хотим сделать поиск
         //	id из GET /search/ или GET /countries/
-        @Query("country") country: Int,
+        @Query("country") country: Int?,
         //Уникальный идентификатор города
         //id из GET /search/ или GET /cities/
-        @Query("city") city: Int,
+        @Query("city") city: Int? = null,
         //Уникальный индентификатор достопримечательности
         //id из GET /search/ или GET /attractions/
-        @Query("attraction") attraction: String,
+        @Query("attraction") attraction: Int?,
         //Тип сортировки
         //popularity (по умолчанию) или random
-        @Query("order") popularity: String
+        @Query("order") popularity: String?
     ): Response<TourResponse>
 
 
@@ -91,24 +91,6 @@ interface WegoExcursionService {
         @Query("page") page: Int
     ): Response<ReviewsResponse>
 
-
-
 }
 
 
-interface WegoExcursionServiveV3 {
-
-    @GET("attractions/")
-    //Функция будет возаращать список достопримечательностей
-    suspend fun getListattraction(
-        //Для плагинации
-        @Query("page") page: Int = 1,
-        @Query("lang") lang: String= "ru",
-        //Уникальный айди страны к кому хотим сделать поиск
-        @Query("country") country: Int = 3017382,
-        //Уникальный идентификатор города
-        //id из GET /search/ или GET /cities/
-        @Query("city") city: Int = 3,
-        @Query("popular") popular: Boolean = true
-    ): Response<AttractionResponse>
-}

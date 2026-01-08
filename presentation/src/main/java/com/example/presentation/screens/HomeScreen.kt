@@ -7,10 +7,12 @@ import android.content.res.Configuration.UI_MODE_TYPE_WATCH
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -31,7 +33,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.model.DisplayableItem
 import com.example.domain.wegodata.attractiondata.Attraction
 import com.example.domain.wegodata.citiesdata.City
+import com.example.domain.wegodata.productpopular.Tour
+import com.example.presentation.uicomponents.buttons.MainButton
 import com.example.presentation.uicomponents.search.SearchCard
+import com.example.presentation.uicomponents.vidjets.PopularTourItem
 import com.example.presentation.uicomponents.vidjets.RowCities
 import com.example.presentation.uicomponents.vidjets.TabRefresh
 import viewmodals.HomeViewModel
@@ -44,8 +49,8 @@ fun HomeScreen(
 ){
 
     val cities = viewModel.cities.collectAsStateWithLifecycle()
-
     val attraction = viewModel.attractionList.collectAsStateWithLifecycle()
+    val popularTours = viewModel.popularTours.collectAsStateWithLifecycle()
 
 
     val state = rememberLazyListState()
@@ -72,7 +77,20 @@ fun HomeScreen(
                     value = it
                 )
             },
-            listAttraction = attraction.value
+            listAttraction = attraction.value,
+            listPopular = popularTours.value,
+            onClickAttraction = { attraction ->
+
+            },
+            onClickPopular = {
+
+            },
+            onClickTopBarAllVizBtn = {
+
+            },
+            onClickAllVizPopularBtn = {
+
+            }
         )
     }
 
@@ -86,8 +104,13 @@ fun BottomHomeScreen(
     state: LazyListState,
     listCity: List<City>,
     listAttraction: List<Attraction>,
-    onClickCities: (DisplayableItem) -> Unit,
-    onRefResh: (Boolean) -> Unit
+    listPopular: List<Tour>,
+    onClickCities: (City) -> Unit,
+    onClickAttraction: (Attraction) -> Unit,
+    onClickPopular: (Tour) -> Unit,
+    onRefResh: (Boolean) -> Unit,
+    onClickTopBarAllVizBtn: () -> Unit,
+    onClickAllVizPopularBtn: ()-> Unit
 ){
 
     LazyColumn(
@@ -124,36 +147,84 @@ fun BottomHomeScreen(
 
         //В ров список ближащих или популярных мест
         item {
-            RowCities<City>(
-                modifier = Modifier,
-                results = listCity,
-                onClickCity = onClickCities
-            )
+            Column {
+                RowCities<City>(
+                    modifier = Modifier,
+                    results = listCity,
+                    onClickCity = onClickCities
+                )
+                if (listCity.isNotEmpty()){
+                    //Кнопка показать все
+                    MainButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 10.dp)
+                            .padding(top = 10.dp),
+                        onClickButton = onClickTopBarAllVizBtn
+                    )
+                }
+            }
         }
 
         //Популярные места
         //В ров тоже список
         item {
             Column {
-                Text(
-                    text = "Еще популярные места",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 20.dp, start = 15.dp)
-                )
+                if (listAttraction.isNotEmpty()){
+                    Text(
+                        text = "Еще популярные места",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(top = 25.dp, start = 15.dp)
+                    )
+                }
+
                 RowCities<Attraction>(
                     modifier = Modifier.padding(top = 10.dp),
                     results = listAttraction,
-                    onClickCity = {
-
-                    }
+                    onClickCity = onClickAttraction
                 )
+
+                if (listAttraction.isNotEmpty()){
+                    //Кнопка показать все
+                    MainButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 10.dp)
+                            .padding(top = 10.dp),
+                        onClickButton = onClickAllVizPopularBtn
+                    )
+                }
+
             }
 
         }
 
 
         //Список все экскурсии и билеты
+        //items
+        // 🔽 Вертикальный список популярных туров
+        if (listPopular.isNotEmpty()) {
+            item {
+                Text(
+                    text = "Популярные туры",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 25.dp, start = 15.dp, bottom = 8.dp)
+                )
+
+            }
+        }
+
+        items(
+            items = listPopular,
+            key = { it.id }
+        ) { tour ->
+            PopularTourItem(
+                tour = tour,
+                onClick = { onClickPopular(tour) }
+            )
+        }
 
     }
 }
