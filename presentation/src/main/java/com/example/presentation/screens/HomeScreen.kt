@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -32,8 +33,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.model.DisplayableItem
 import com.example.domain.wegodata.attractiondata.Attraction
 import com.example.domain.wegodata.citiesdata.City
+import com.example.domain.wegodata.productpopular.Tour
 import com.example.presentation.uicomponents.buttons.MainButton
 import com.example.presentation.uicomponents.search.SearchCard
+import com.example.presentation.uicomponents.vidjets.PopularTourItem
 import com.example.presentation.uicomponents.vidjets.RowCities
 import com.example.presentation.uicomponents.vidjets.TabRefresh
 import viewmodals.HomeViewModel
@@ -46,8 +49,8 @@ fun HomeScreen(
 ){
 
     val cities = viewModel.cities.collectAsStateWithLifecycle()
-
     val attraction = viewModel.attractionList.collectAsStateWithLifecycle()
+    val popularTours = viewModel.popularTours.collectAsStateWithLifecycle()
 
 
     val state = rememberLazyListState()
@@ -75,7 +78,11 @@ fun HomeScreen(
                 )
             },
             listAttraction = attraction.value,
+            listPopular = popularTours.value,
             onClickAttraction = { attraction ->
+
+            },
+            onClickPopular = {
 
             },
             onClickTopBarAllVizBtn = {
@@ -97,8 +104,10 @@ fun BottomHomeScreen(
     state: LazyListState,
     listCity: List<City>,
     listAttraction: List<Attraction>,
+    listPopular: List<Tour>,
     onClickCities: (City) -> Unit,
     onClickAttraction: (Attraction) -> Unit,
+    onClickPopular: (Tour) -> Unit,
     onRefResh: (Boolean) -> Unit,
     onClickTopBarAllVizBtn: () -> Unit,
     onClickAllVizPopularBtn: ()-> Unit
@@ -166,7 +175,7 @@ fun BottomHomeScreen(
                         text = "Еще популярные места",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(top = 20.dp, start = 15.dp)
+                        modifier = Modifier.padding(top = 25.dp, start = 15.dp)
                     )
                 }
 
@@ -194,6 +203,28 @@ fun BottomHomeScreen(
 
         //Список все экскурсии и билеты
         //items
+        // 🔽 Вертикальный список популярных туров
+        if (listPopular.isNotEmpty()) {
+            item {
+                Text(
+                    text = "Популярные туры",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 25.dp, start = 15.dp, bottom = 8.dp)
+                )
+
+            }
+        }
+
+        items(
+            items = listPopular,
+            key = { it.id }
+        ) { tour ->
+            PopularTourItem(
+                tour = tour,
+                onClick = { onClickPopular(tour) }
+            )
+        }
 
     }
 }

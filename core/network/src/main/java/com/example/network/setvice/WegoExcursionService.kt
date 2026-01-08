@@ -54,7 +54,7 @@ interface WegoExcursionService {
     ): Response<CityDetailResponse>
 
 
-    @GET("products/popular")
+    @GET("products/popular/")
     suspend fun getPopularProducts(
         //Для плагинации
         @Query("page") page: Int,
@@ -67,10 +67,10 @@ interface WegoExcursionService {
         @Query("country") country: Int,
         //Уникальный идентификатор города
         //id из GET /search/ или GET /cities/
-        @Query("city") city: Int,
+        @Query("city") city: Int? = null,
         //Уникальный индентификатор достопримечательности
         //id из GET /search/ или GET /attractions/
-        @Query("attraction") attraction: String,
+        @Query("attraction") attraction: Int,
         //Тип сортировки
         //popularity (по умолчанию) или random
         @Query("order") popularity: String
