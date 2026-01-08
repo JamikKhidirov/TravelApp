@@ -101,12 +101,12 @@ class HomeViewModel @Inject constructor(
 
 
     fun loadPopular(
-        page: Int = 1,
-        lang: String = "ru",
+        page: Int? = null,
+        lang: String? = null,
         currency: String = "RUB",
-        country: Int = 1,
+        country: Int? = null,
         city: Int? = null,
-        attraction: Int = 3,
+        attraction: Int? = null,
         order: String = "popularity"
     ){
         viewModelScope.launch {

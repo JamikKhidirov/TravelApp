@@ -57,23 +57,23 @@ interface WegoExcursionService {
     @GET("products/popular/")
     suspend fun getPopularProducts(
         //Для плагинации
-        @Query("page") page: Int,
+        @Query("page") page: Int?,
         //Код языка товаров (контент, описание)
-        @Query("lang") lang: String = "ru",
+        @Query("lang") lang: String? = "ru",
         //Код валют для показа цен у товары
-        @Query("currency") currency: String = "RUB",
+        @Query("currency") currency: String? = "RUB",
         //Уникальный айди страны к кому хотим сделать поиск
         //	id из GET /search/ или GET /countries/
-        @Query("country") country: Int,
+        @Query("country") country: Int?,
         //Уникальный идентификатор города
         //id из GET /search/ или GET /cities/
         @Query("city") city: Int? = null,
         //Уникальный индентификатор достопримечательности
         //id из GET /search/ или GET /attractions/
-        @Query("attraction") attraction: Int,
+        @Query("attraction") attraction: Int?,
         //Тип сортировки
         //popularity (по умолчанию) или random
-        @Query("order") popularity: String
+        @Query("order") popularity: String?
     ): Response<TourResponse>
 
 

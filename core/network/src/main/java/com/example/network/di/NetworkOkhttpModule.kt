@@ -33,7 +33,8 @@ object NetworkOkhttpModule {
                     apiKey = "9bc84ec26f47bf3005dc55434b4b796a",
                     username = "partners+tpo50@sputnik8.com"
                 )
-            ).build()
+            )
+            .build()
     }
 
 
