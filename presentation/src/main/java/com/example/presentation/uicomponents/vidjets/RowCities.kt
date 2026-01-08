@@ -24,8 +24,7 @@ fun <T: DisplayableItem> RowCities(
     val state = rememberLazyListState()
 
     LazyRow(
-        modifier = modifier
-            .animateContentSize(),
+        modifier = modifier,
         state = state,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {

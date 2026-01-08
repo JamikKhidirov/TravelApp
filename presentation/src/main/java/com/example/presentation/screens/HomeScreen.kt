@@ -124,23 +124,31 @@ fun BottomHomeScreen(
 
         //В ров список ближащих или популярных мест
         item {
-            RowCities<City>(
-                modifier = Modifier,
-                results = listCity,
-                onClickCity = onClickCities
-            )
+            Column {
+                RowCities<City>(
+                    modifier = Modifier,
+                    results = listCity,
+                    onClickCity = onClickCities
+                )
+                if (listCity.isNotEmpty()){
+                    //Кнопка показать все
+                }
+            }
         }
 
         //Популярные места
         //В ров тоже список
         item {
             Column {
-                Text(
-                    text = "Еще популярные места",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 20.dp, start = 15.dp)
-                )
+                if (listAttraction.isNotEmpty()){
+                    Text(
+                        text = "Еще популярные места",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(top = 20.dp, start = 15.dp)
+                    )
+                }
+
                 RowCities<Attraction>(
                     modifier = Modifier.padding(top = 10.dp),
                     results = listAttraction,
@@ -148,12 +156,20 @@ fun BottomHomeScreen(
 
                     }
                 )
+
+                if (listAttraction.isNotEmpty()){
+
+                    //Кнопка показать все
+
+                }
+
             }
 
         }
 
 
         //Список все экскурсии и билеты
+        //items
 
     }
 }
