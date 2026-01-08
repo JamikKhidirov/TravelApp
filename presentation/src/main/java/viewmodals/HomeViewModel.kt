@@ -33,17 +33,29 @@ class HomeViewModel @Inject constructor(
     private val _popular = MutableStateFlow(true)
     private val _cities = MutableStateFlow<List<City>>(emptyList())
     val cities: StateFlow<List<City>> = _cities
+    private val _isNextCitiesPageLoading = MutableStateFlow(false)
+    val isNextCitiesPageLoading: StateFlow<Boolean> = _isNextCitiesPageLoading.asStateFlow()
+    private var citiesPage: Int = 1
+    private var isEndReachedCities = false
+
 
 
     private var _attractionList:
             MutableStateFlow<List<Attraction>> = MutableStateFlow(emptyList())
-
     val attractionList = _attractionList.asStateFlow()
+    private val _isNextAttractionPageLoading = MutableStateFlow(false)
+    val isNextAttractionPageLoading: StateFlow<Boolean> = _isNextAttractionPageLoading.asStateFlow()
+    private var attractionPage: Int = 1
+    private var isEndReachedAttraction = false
 
 
 
     private val _popularTours: MutableStateFlow<List<Tour>> = MutableStateFlow(emptyList())
     val popularTours: StateFlow<List<Tour>> = _popularTours.asStateFlow()
+    private val _isNextPopularPageLoading = MutableStateFlow(false)
+    val isNextPopularPageLoading: StateFlow<Boolean> = _isNextPopularPageLoading.asStateFlow()
+    private var popularToursPage: Int = 1
+    private var isEndReachedPopularTours = false
 
 
 
@@ -51,40 +63,72 @@ class HomeViewModel @Inject constructor(
     init {
         _popular
             .onEach { popular ->
+                // При смене таба сбрасываем пагинацию
+                citiesPage = 1
+                isEndReachedCities = false
+                _cities.value = emptyList()
                 loadCities(popular)
             }
             .launchIn(viewModelScope)
 
+        attractionPage = 1
+        isEndReachedAttraction = false
+        _attractionList.value = emptyList()
         loadAttreaction()
 
+        popularToursPage = 1
+        isEndReachedPopularTours = false
+        _popularTours.value = emptyList()
         loadPopular()
     }
 
-    private fun loadCities(popular: Boolean) {
+    fun loadCities(
+        popular: Boolean
+    ) {
+        // Если уже грузим или данные закончились — выходим
+        if (_isNextCitiesPageLoading.value || isEndReachedCities) return
         viewModelScope.launch {
+            _isNextCitiesPageLoading.value = true
             try {
-                val response = api.getListCities(popular = popular)
+                val response = api.getListCities(
+                    popular = popular,
+                    page = citiesPage + 1
+                )
                 if (response.isSuccessful) {
-                    _cities.value = response.body()?.data?.results.orEmpty()
+                    val newItems = response.body()?.data?.results.orEmpty()
+                    if (newItems.isEmpty()) isEndReachedCities = true
+
+                    else {
+                        _cities.value = _cities.value + newItems
+                    }
+                    citiesPage++
                 }
             } catch (e: Exception) {
                 Log.e("API", e.message ?: "Неизвестная ошибка")
+            }
+            finally {
+                _isNextCitiesPageLoading.value = false
             }
         }
     }
 
     fun loadAttreaction(){
+        if (_isNextAttractionPageLoading.value || isEndReachedAttraction) return
         viewModelScope.launch {
+            _isNextAttractionPageLoading.value = true
             try {
-                val response = attractionApi.getListattraction()
-
+                val response = attractionApi.getListattraction(
+                    page = attractionPage + 1
+                )
                 if (response.isSuccessful){
-                    _attractionList.value = response.body()?.results ?: emptyList()
-                    // ЛОГ 1: Проверка размера списка из API
-                    Log.d("DEBUG_DATA", "API Attractions success: size = ${response.body()?.results}")
-                    // Этот лог покажет, пришел ли вообще объект ответа
-                    Log.d("DEBUG_DATA", "Raw Body: ${response.body()}")
-
+                    val newItems = response.body()?.results.orEmpty()
+                    if (newItems.isEmpty()){
+                        isEndReachedAttraction = true
+                    }
+                    else{
+                        _attractionList.value = _attractionList.value + newItems
+                        attractionPage++
+                    }
                 }
                 else{
                     Log.e("API", "Ошибка сервера: ${response.code()}")
@@ -92,9 +136,9 @@ class HomeViewModel @Inject constructor(
             }
             catch (e: Exception){
                 Log.d("API", e.message ?: "Неизвестная ошибка")
-                // Это выведет ПОЛНУЮ ошибку. Посмотрите её в Logcat.
-                // Там будет написано что-то вроде "Expected BEGIN_ARRAY but was STRING" или "Malformed JSON"
-                Log.e("API_DEBUG", "Ошибка парсинга или сети", e)
+            }
+            finally {
+                _isNextAttractionPageLoading.value = false
             }
         }
     }
@@ -109,7 +153,9 @@ class HomeViewModel @Inject constructor(
         attraction: Int? = null,
         order: String = "popularity"
     ){
+        if (_isNextPopularPageLoading.value || isEndReachedPopularTours) return
         viewModelScope.launch {
+            _isNextPopularPageLoading.value = true
             try {
                 val response = api.getPopularProducts(
                     page = page,
@@ -120,17 +166,22 @@ class HomeViewModel @Inject constructor(
                     attraction = attraction,
                     popularity = order
                 )
-
-                Log.d("API", "${response.body()?.data?.results?.size}")
                 if (response.isSuccessful) {
-                    Log.d("API", "${response.body()?.data?.results}")
-                    response.body()?.data?.results?.let {
-                        _popularTours.value = it
+                    val newItems = response.body()?.data?.results.orEmpty()
+                    if (newItems.isEmpty()){
+                        isEndReachedPopularTours = true
+                    }
+                    else{
+                        _popularTours.value = _popularTours.value + newItems
+                        popularToursPage++
                     }
                 }
             }
             catch (e: Exception){
                 Log.d("API", "Ошибка: ${e.message}")
+            }
+            finally {
+                _isNextPopularPageLoading.value = false
             }
         }
     }
