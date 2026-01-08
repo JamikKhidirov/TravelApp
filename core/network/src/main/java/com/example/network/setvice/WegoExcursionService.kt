@@ -91,8 +91,6 @@ interface WegoExcursionService {
         @Query("page") page: Int
     ): Response<ReviewsResponse>
 
-
-
 }
 
 
