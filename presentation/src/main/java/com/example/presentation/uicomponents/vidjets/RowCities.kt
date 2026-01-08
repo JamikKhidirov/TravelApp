@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.domain.model.DisplayableItem
 import com.example.domain.wegodata.citiesdata.City
 import com.example.presentation.uicomponents.vidjets.ImageVidjetDesc.ImagevidjetGetCities
 
@@ -16,8 +17,8 @@ import com.example.presentation.uicomponents.vidjets.ImageVidjetDesc.Imagevidjet
 @Composable
 fun RowCities(
     modifier: Modifier = Modifier,
-    results: List<City>,
-    onClickCity: (City) -> Unit
+    results: List<DisplayableItem>,
+    onClickCity: (DisplayableItem) -> Unit
 ){
 
     val state = rememberLazyListState()

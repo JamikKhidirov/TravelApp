@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.domain.model.DisplayableItem
 import com.example.domain.wegodata.citiesdata.City
 import com.example.presentation.uicomponents.search.SearchCard
 import com.example.presentation.uicomponents.vidjets.RowCities
@@ -55,7 +56,7 @@ fun HomeScreen(
         BottomHomeScreen(
             paddingValues = paddingValues,
             state = state,
-            list = cities.value,
+            listCity = cities.value,
             onClickCities = { city ->
                 //что то делаем
             },
@@ -75,8 +76,8 @@ fun HomeScreen(
 fun BottomHomeScreen(
     paddingValues: PaddingValues,
     state: LazyListState,
-    list: List<City>,
-    onClickCities: (City) -> Unit,
+    listCity: List<City>,
+    onClickCities: (DisplayableItem) -> Unit,
     onRefResh: (Boolean) -> Unit
 ){
 
@@ -116,7 +117,7 @@ fun BottomHomeScreen(
         item {
             RowCities(
                 modifier = Modifier,
-                results = list,
+                results = listCity,
                 onClickCity = onClickCities
             )
         }

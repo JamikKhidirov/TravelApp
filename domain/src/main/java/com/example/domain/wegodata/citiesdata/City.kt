@@ -1,13 +1,13 @@
 package com.example.domain.wegodata.citiesdata
 
-
+import com.example.domain.model.DisplayableItem
 
 
 data class City(
-    val id: Int,
-    val name: String,
+    override val id: Int,
+    override val name: String,
     val slug: String,
-    val preview: String,
-    val itemsCount: Int,
+    override val preview: String,
+    override val itemsCount: Int,
     val country: String
-)
+): DisplayableItem{}

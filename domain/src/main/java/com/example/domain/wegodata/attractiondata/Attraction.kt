@@ -1,13 +1,12 @@
 package com.example.domain.wegodata.attractiondata
 
-
-
+import com.example.domain.model.DisplayableItem
 
 
 data class Attraction(
-    val id: Int,
-    val name: String,
+    override val id: Int,
+    override val name: String,
     val slug: String,
-    val preview: String,
-    val itemsCount: Int
-)
+    override val preview: String,
+    override val itemsCount: Int
+): DisplayableItem

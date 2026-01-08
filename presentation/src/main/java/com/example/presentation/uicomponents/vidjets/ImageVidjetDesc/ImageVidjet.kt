@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
+import com.example.domain.model.DisplayableItem
 import com.example.domain.wegodata.citiesdata.City
 import com.example.presentation.R
 
@@ -36,8 +37,8 @@ import com.example.presentation.R
 @Composable
 fun ImagevidjetGetCities(
     modifier: Modifier,
-    city: City,
-    onClickCity: (City) -> Unit
+    city: DisplayableItem,
+    onClickCity: (DisplayableItem) -> Unit
 ){
     Card(
         modifier = modifier
