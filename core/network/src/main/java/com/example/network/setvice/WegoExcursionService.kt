@@ -43,17 +43,18 @@ interface WegoExcursionService {
 
 
 
-    @GET("attractions")
+    @GET("attractions/")
     //Функция будет возаращать список достопримечательностей
     suspend fun getListattraction(
         //Для плагинации
-        @Query("page") page: Int,
+        @Query("page") page: Int = 1,
         @Query("lang") lang: String= "ru",
         //Уникальный айди страны к кому хотим сделать поиск
-        @Query("country") country: Int,
+        @Query("country") country: Int = 0,
         //Уникальный идентификатор города
         //id из GET /search/ или GET /cities/
-        @Query("city") city: Int
+        @Query("city") city: Int = 0,
+        @Query("popular") popular: Boolean = true
     ): Response<AttractionResponse>
 
     @GET("search")
