@@ -54,6 +54,10 @@ class HomeViewModel @Inject constructor(
     val popularTours: StateFlow<List<Tour>> = _popularTours.asStateFlow()
     private val _isNextPopularPageLoading = MutableStateFlow(false)
     val isNextPopularPageLoading: StateFlow<Boolean> = _isNextPopularPageLoading.asStateFlow()
+
+    private val _isPopularEndReached = MutableStateFlow(false)
+    val isPopularEndReached: StateFlow<Boolean> = _isPopularEndReached
+
     private var popularToursPage: Int = 1
     private var isEndReachedPopularTours = false
 
@@ -92,7 +96,7 @@ class HomeViewModel @Inject constructor(
             try {
                 val response = api.getListCities(
                     popular = popular,
-                    page = citiesPage + 1
+                    page = citiesPage
                 )
                 if (response.isSuccessful) {
                     val newItems = response.body()?.data?.results.orEmpty()
@@ -118,7 +122,7 @@ class HomeViewModel @Inject constructor(
             _isNextAttractionPageLoading.value = true
             try {
                 val response = attractionApi.getListattraction(
-                    page = attractionPage + 1
+                    page = attractionPage
                 )
                 if (response.isSuccessful){
                     val newItems = response.body()?.results.orEmpty()
@@ -170,6 +174,7 @@ class HomeViewModel @Inject constructor(
                     val newItems = response.body()?.data?.results.orEmpty()
                     if (newItems.isEmpty()){
                         isEndReachedPopularTours = true
+                        _isPopularEndReached.value = true
                     }
                     else{
                         _popularTours.value = _popularTours.value + newItems

@@ -2,9 +2,13 @@ package com.example.presentation.uicomponents.vidjets
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -13,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -52,6 +57,7 @@ fun <T: DisplayableItem> RowCities(
         modifier = modifier,
         state = state,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
         contentPadding = PaddingValues(start = 15.dp)
     ) {
         items(results, key = {
@@ -68,9 +74,10 @@ fun <T: DisplayableItem> RowCities(
         if (isLoading) {
             item {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(30.dp).padding(8.dp),
-                    strokeWidth = 2.dp,
-                    color = Color.Blue
+                    modifier = Modifier.size(62.dp).padding(8.dp)
+                        .wrapContentSize(Alignment.Center),
+                    strokeWidth = 5.dp,
+                    color = Color(0XFFFF8C00)
                 )
             }
         }
