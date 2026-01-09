@@ -27,7 +27,7 @@ fun Modifier.shimerEffect(): Modifier = composed {
         initialValue = -2 * size.width.toFloat(),
         targetValue = 2 * size.width.toFloat(),
         animationSpec = infiniteRepeatable(
-            animation = tween(1500)
+            animation = tween(2000)
         ),
         label = "shimmerOffset"
     )
