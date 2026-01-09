@@ -41,6 +41,7 @@ import com.example.domain.wegodata.productpopular.Tour
 import com.example.presentation.modifiers.shimerEffect
 import com.example.presentation.uicomponents.buttons.MainButton
 import com.example.presentation.uicomponents.dowloads.ShimmerPlaceholder
+import com.example.presentation.uicomponents.dowloads.items.PopularTourItemShimmer
 import com.example.presentation.uicomponents.dowloads.items.RowItemsShimmerPlaceHolder
 import com.example.presentation.uicomponents.search.SearchCard
 import com.example.presentation.uicomponents.vidjets.PopularTourItem
@@ -287,6 +288,12 @@ fun BottomHomeScreen(
             }
         }
 
+        if (listPopular.isEmpty()){
+           item {
+               PopularTourItemShimmer()
+           }
+        }
+
         items(
             items = listPopular,
             key = { it.id }
@@ -310,17 +317,5 @@ fun BottomHomeScreen(
             }
         }
 
-        if (isPopularEndReached && listPopular.isNotEmpty()) {
-            item {
-                Text(
-                    text = "Вы посмотрели все туры",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    textAlign = TextAlign.Center,
-                    color = Color.Gray
-                )
-            }
-        }
     }
 }

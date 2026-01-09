@@ -2,11 +2,13 @@ package com.example.presentation.uicomponents.dowloads.items
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,10 +24,12 @@ fun RowItemsShimmerPlaceHolder(
     Column(
         modifier = modifier
     ) {
-        Row( modifier = Modifier.padding(start = 15.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        LazyRow(
+            modifier = Modifier,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            contentPadding = PaddingValues(start = 15.dp)
         ) {
-            repeat(5) { // Показываем 5 фейковых карточек в ряд
+            items(5){
                 ShimmerPlaceholder(
                     modifier = Modifier
                         .width(200.dp) // ОБЯЗАТЕЛЬНО: укажите ширину для LazyRow
