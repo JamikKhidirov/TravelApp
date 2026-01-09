@@ -276,7 +276,7 @@ fun BottomHomeScreen(
         }
 
         // Индикатор загрузки в самом низу экрана для туров
-        if (isNextPopularLoading) {
+        if (isNextPopularLoading && listPopular.isNotEmpty()) {
             item {
                 Box(Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(

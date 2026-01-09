@@ -71,7 +71,7 @@ fun <T: DisplayableItem> RowCities(
         }
 
         // Индикатор загрузки в конце горизонтального списка
-        if (isLoading) {
+        if (isLoading && results.isNotEmpty()) {
             item {
                 CircularProgressIndicator(
                     modifier = Modifier.size(62.dp).padding(8.dp)
