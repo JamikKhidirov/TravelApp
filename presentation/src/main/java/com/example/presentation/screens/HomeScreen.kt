@@ -1,9 +1,5 @@
 package com.example.presentation.screens
 
-import android.app.Activity
-import android.content.Context
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import android.content.res.Configuration.UI_MODE_TYPE_WATCH
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -20,28 +15,19 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.view.WindowCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.imageLoader
-import com.example.domain.model.DisplayableItem
 import com.example.domain.wegodata.attractiondata.Attraction
 import com.example.domain.wegodata.citiesdata.City
 import com.example.domain.wegodata.productpopular.Tour
@@ -53,16 +39,11 @@ import com.example.presentation.uicomponents.vidjets.TabRefresh
 import viewmodals.HomeViewModel
 
 
-
-
 @Composable
 @Preview(showBackground = true)
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ){
-
-    val context = LocalContext.current
-    val imageLoader = context.imageLoader
 
     val cities = viewModel.cities.collectAsStateWithLifecycle()
     val attraction = viewModel.attractionList.collectAsStateWithLifecycle()
@@ -72,17 +53,12 @@ fun HomeScreen(
     val isNextPopularLoading = viewModel.isNextPopularPageLoading.collectAsStateWithLifecycle()
     val isNextAttractionLoading = viewModel.isNextAttractionPageLoading.collectAsStateWithLifecycle()
 
+    val isPopularEndReached =
+        viewModel.isPopularEndReached.collectAsStateWithLifecycle()
+
+
 
     val state = rememberLazyListState()
-
-
-    DisposableEffect(Unit) {
-
-        onDispose {
-            imageLoader.memoryCache?.clear()
-            imageLoader.diskCache?.clear()
-        }
-    }
 
 
     Scaffold(
@@ -98,6 +74,7 @@ fun HomeScreen(
             paddingValues = paddingValues,
             state = state,
             listCity = cities.value,
+            isPopularEndReached = isPopularEndReached.value,
             onClickCities = { city ->
                 //что то делаем
             },
@@ -159,7 +136,8 @@ fun BottomHomeScreen(
     onClickPopular: (Tour) -> Unit,
     onRefResh: (Boolean) -> Unit,
     onClickTopBarAllVizBtn: () -> Unit,
-    onClickAllVizPopularBtn: ()-> Unit
+    onClickAllVizPopularBtn: () -> Unit,
+    isPopularEndReached: Boolean
 ){
 
     // Отслеживаем конец основного списка
@@ -171,8 +149,11 @@ fun BottomHomeScreen(
     }
 
 
-    LaunchedEffect(shouldLoadMorePopular.value) {
-        if (shouldLoadMorePopular.value && !isNextPopularLoading) {
+    LaunchedEffect(
+        shouldLoadMorePopular.value,
+        isPopularEndReached
+    ) {
+        if (shouldLoadMorePopular.value && !isNextPopularLoading && !isPopularEndReached) {
             onLoadMorePopular()
         }
     }
@@ -299,11 +280,24 @@ fun BottomHomeScreen(
             item {
                 Box(Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(
-                        modifier = Modifier.size(30.dp).padding(8.dp),
-                        strokeWidth = 2.dp,
-                        color = Color.Blue
+                        modifier = Modifier.size(62.dp).padding(8.dp),
+                        strokeWidth = 5.dp,
+                        color = Color(0XFFFF8C00)
                     )
                 }
+            }
+        }
+
+        if (isPopularEndReached && listPopular.isNotEmpty()) {
+            item {
+                Text(
+                    text = "Вы посмотрели все туры",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    textAlign = TextAlign.Center,
+                    color = Color.Gray
+                )
             }
         }
     }

@@ -24,7 +24,5 @@ class MainActivity : ComponentActivity() {
         }
 
     }
-
-
 }
 
