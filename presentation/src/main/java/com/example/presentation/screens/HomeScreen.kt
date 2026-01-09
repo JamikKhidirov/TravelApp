@@ -20,6 +20,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
@@ -28,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,6 +40,7 @@ import androidx.core.view.WindowCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.imageLoader
 import com.example.domain.model.DisplayableItem
 import com.example.domain.wegodata.attractiondata.Attraction
 import com.example.domain.wegodata.citiesdata.City
@@ -56,6 +59,9 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ){
 
+    val context = LocalContext.current
+    val imageLoader = context.imageLoader
+
     val cities = viewModel.cities.collectAsStateWithLifecycle()
     val attraction = viewModel.attractionList.collectAsStateWithLifecycle()
     val popularTours = viewModel.popularTours.collectAsStateWithLifecycle()
@@ -66,6 +72,15 @@ fun HomeScreen(
 
 
     val state = rememberLazyListState()
+
+
+    DisposableEffect(Unit) {
+
+        onDispose {
+            imageLoader.memoryCache?.clear()
+            imageLoader.diskCache?.clear()
+        }
+    }
 
 
     Scaffold(
