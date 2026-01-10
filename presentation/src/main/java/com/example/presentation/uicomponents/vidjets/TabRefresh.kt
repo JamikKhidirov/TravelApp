@@ -43,7 +43,7 @@ fun TabRefresh(
 
             Text(
                 text = title,
-                color = if (isSelected) Color.Black else Color.Gray,
+                color = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                 style = if (isSelected) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,

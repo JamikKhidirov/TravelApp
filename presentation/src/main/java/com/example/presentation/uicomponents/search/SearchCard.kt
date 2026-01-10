@@ -1,6 +1,7 @@
 package com.example.presentation.uicomponents.search
 
 import android.R
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,18 +34,23 @@ fun SearchCard(
     onClickSeacrCard: () -> Unit
 ){
 
-    ElevatedCard(
+    Card(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 15.dp),
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = 5.dp,
-            pressedElevation = 0.dp,
+            pressedElevation = 2.dp,
         ),
         onClick = onClickSeacrCard,
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        )
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        border = BorderStroke(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant
+            )
+
 
     ) {
         Row(
