@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -24,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +43,11 @@ import com.example.domain.wegodata.attractiondata.Attraction
 import com.example.domain.wegodata.citiesdata.City
 import com.example.domain.wegodata.productpopular.Tour
 import com.example.presentation.modifiers.shimerEffect
+import com.example.presentation.screens.components.attractionsSection
+import com.example.presentation.screens.components.citiesSection
+import com.example.presentation.screens.components.toursSection
+import com.example.presentation.states.actions.HomeAction
+import com.example.presentation.states.screen.HomeUiState
 import com.example.presentation.uicomponents.buttons.MainButton
 import com.example.presentation.uicomponents.dowloads.ShimmerPlaceholder
 import com.example.presentation.uicomponents.dowloads.items.PopularTourItemShimmer
@@ -57,17 +64,7 @@ import viewmodals.HomeViewModel
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ){
-
-    val cities = viewModel.cities.collectAsStateWithLifecycle()
-    val attraction = viewModel.attractionList.collectAsStateWithLifecycle()
-    val popularTours = viewModel.popularTours.collectAsStateWithLifecycle()
-
-    val isNextCitiesLoading = viewModel.isNextCitiesPageLoading.collectAsStateWithLifecycle()
-    val isNextPopularLoading = viewModel.isNextPopularPageLoading.collectAsStateWithLifecycle()
-    val isNextAttractionLoading = viewModel.isNextAttractionPageLoading.collectAsStateWithLifecycle()
-
-    val isPopularEndReached =
-        viewModel.isPopularEndReached.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 
 
@@ -75,249 +72,66 @@ fun HomeScreen(
 
 
     Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-
-        bottomBar = {
-
-        }
-    ) { paddingValues ->
-
+        modifier = Modifier.fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {paddingValues ->
         BottomHomeScreen(
             paddingValues = paddingValues,
-            state = state,
-            listCity = cities.value,
-            isPopularEndReached = isPopularEndReached.value,
-            onClickCities = { city ->
-                //что то делаем
-            },
-            onRefResh = {
-                viewModel.setPopular(
-                    value = it
-                )
-            },
-            listAttraction = attraction.value,
-            listPopular = popularTours.value,
-            onClickAttraction = { attraction ->
-
-            },
-            onClickPopular = {
-
-            },
-            onClickTopBarAllVizBtn = {
-
-            },
-            onClickAllVizPopularBtn = {
-
-            },
-            isNextPopularLoading = isNextPopularLoading.value ,
-            onLoadMorePopular = {
-                viewModel.loadPopular()
-            },
-            isNextCitiesLoading = isNextCitiesLoading.value,
-            onLoadMoreCities = {
-                viewModel.loadCities(
-                    popular = true
-                )
-            },
-            isNextAttractionLoading = isNextAttractionLoading.value,
-            onLoadMoreAttraction = {
-                viewModel.loadAttreaction()
-            }
+            uiState = uiState,
+            onAction = viewModel::handleAction
         )
     }
-
 }
 
 
 
 @Composable
 fun BottomHomeScreen(
+    uiState: HomeUiState,
     paddingValues: PaddingValues,
-    state: LazyListState,
-    listCity: List<City>,
-    listAttraction: List<Attraction>,
-    listPopular: List<Tour>,
-    isNextPopularLoading: Boolean,
-    onLoadMorePopular: () -> Unit,
-    isNextCitiesLoading: Boolean,
-    onLoadMoreCities: () -> Unit,
-    isNextAttractionLoading: Boolean,
-    onLoadMoreAttraction: () -> Unit,
-    onClickCities: (City) -> Unit,
-    onClickAttraction: (Attraction) -> Unit,
-    onClickPopular: (Tour) -> Unit,
-    onRefResh: (Boolean) -> Unit,
-    onClickTopBarAllVizBtn: () -> Unit,
-    onClickAllVizPopularBtn: () -> Unit,
-    isPopularEndReached: Boolean
-){
+    onAction: (HomeAction) -> Unit
+) {
+    val state = rememberLazyListState()
 
-    // Отслеживаем конец основного списка
-    val shouldLoadMorePopular = remember {
-        derivedStateOf {
-            val lastVisibleItem = state.layoutInfo.visibleItemsInfo.lastOrNull() ?: return@derivedStateOf false
-            lastVisibleItem.index >= state.layoutInfo.totalItemsCount - 1
-        }
-    }
-
-
-    LaunchedEffect(
-        shouldLoadMorePopular.value,
-        isPopularEndReached
-    ) {
-        if (shouldLoadMorePopular.value && !isNextPopularLoading && !isPopularEndReached) {
-            onLoadMorePopular()
-        }
+    // Слушаем конец списка для туров
+    OnBottomReached(state = state) {
+        onAction(HomeAction.LoadMoreTours)
     }
 
     LazyColumn(
         state = state,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = paddingValues
     ) {
-
+        // 1. Поиск
         stickyHeader {
-            //Поиск стран и городов куда хочет поехать пользователей
             SearchCard(
                 modifier = Modifier
-                    .padding(top = 10.dp),
+                    .statusBarsPadding()
+                    ,
                 onClickSeacrCard = {
 
                 }
             )
         }
 
-        //Таб обновления популярных илии ближащих мест
+        // 2. Табы
         item {
             TabRefresh(
-                modifier = Modifier,
-                onItemSelected = { tabItem: String ->
-                    when(tabItem){
-                        "Ближащие" -> onRefResh(false)
-                        "Популярные" -> onRefResh(true)
-                    }
+                onItemSelected = { tab ->
+                    onAction(HomeAction.ChangeTab(isPopular = tab == "Популярные"))
                 }
             )
         }
 
+        // 3. Секция Городов
+        citiesSection(uiState, onAction)
 
-        //В ров список ближащих или популярных мест
-        item {
-            if (listCity.isEmpty()) {
-                RowItemsShimmerPlaceHolder(
-                    modifier = Modifier
-                )
-            }
+        // 4. Секция Достопримечательностей
+        attractionsSection(uiState, onAction)
 
-            Column {
-                RowCities<City>(
-                    modifier = Modifier,
-                    results = listCity,
-                    onClickCity = onClickCities,
-                    isLoading = isNextCitiesLoading,
-                    onLoadMore = onLoadMoreCities
-                )
-                if (listCity.isNotEmpty()) {
-                    //Кнопка показать все
-                    MainButton(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 10.dp)
-                            .padding(top = 10.dp),
-                        onClickButton = onClickTopBarAllVizBtn
-                    )
-                }
-            }
-
-        }
-
-        //Популярные места
-        //В ров тоже список
-        item {
-            Column {
-                if (listAttraction.isNotEmpty()){
-                    Text(
-                        text = "Еще популярные места",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(top = 25.dp, start = 15.dp)
-                    )
-                }
-
-                if (listAttraction.isEmpty()){
-                    RowItemsShimmerPlaceHolder()
-                }
-
-                RowCities<Attraction>(
-                    modifier = Modifier.padding(top = 10.dp),
-                    results = listAttraction,
-                    onClickCity = onClickAttraction,
-                    isLoading = isNextAttractionLoading,
-                    onLoadMore = onLoadMoreAttraction
-                )
-
-                if (listAttraction.isNotEmpty()){
-                    //Кнопка показать все
-                    MainButton(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 10.dp)
-                            .padding(top = 10.dp),
-                        onClickButton = onClickAllVizPopularBtn
-                    )
-                }
-
-            }
-
-        }
-
-
-        //Список все экскурсии и билеты
-        //items
-        // 🔽 Вертикальный список популярных туров
-        if (listPopular.isNotEmpty()) {
-            item {
-                Text(
-                    text = "Популярные туры",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 25.dp, start = 15.dp, bottom = 8.dp)
-                )
-
-            }
-        }
-
-        if (listPopular.isEmpty()){
-           item {
-               PopularTourItemShimmer()
-           }
-        }
-
-        items(
-            items = listPopular,
-            key = { it.id }
-        ) { tour ->
-            PopularTourItem(
-                tour = tour,
-                onClick = { onClickPopular(tour) }
-            )
-        }
-
-        // Индикатор загрузки в самом низу экрана для туров
-        if (isNextPopularLoading && listPopular.isNotEmpty()) {
-            item {
-                Box(Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(62.dp).padding(8.dp),
-                        strokeWidth = 5.dp,
-                        color = Color(0XFFFF8C00)
-                    )
-                }
-            }
-        }
-
+        // 5. Вертикальный список Туров
+        toursSection(uiState, onAction)
     }
 }
+

@@ -5,13 +5,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.DisplayableItem
 import com.example.domain.wegodata.attractiondata.Attraction
+import com.example.domain.wegodata.attractiondata.AttractionResponse
 import com.example.domain.wegodata.citiesdata.City
 import com.example.domain.wegodata.citiesdata.CityResponse
 import com.example.domain.wegodata.productpopular.Tour
+import com.example.domain.wegodata.productpopular.TourResponse
 import com.example.network.setvice.WegoExcursionService
 import com.example.network.setvice.WegoExcursionServiveV3
 import com.example.network.state.WeGo
 import com.example.network.state.WeGoApi
+import com.example.presentation.states.actions.HomeAction
+import com.example.presentation.states.screen.HomeUiState
+import com.example.presentation.states.ui.PaginationState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +24,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import retrofit2.http.Query
 import javax.inject.Inject
 import kotlin.collections.emptyList
@@ -30,169 +37,107 @@ class HomeViewModel @Inject constructor(
     @WeGoApi(WeGo.ATTRACTION) private val attractionApi: WegoExcursionServiveV3
 ) : ViewModel() {
 
-    private val _popular = MutableStateFlow(true)
-    private val _cities = MutableStateFlow<List<City>>(emptyList())
-    val cities: StateFlow<List<City>> = _cities
-    private val _isNextCitiesPageLoading = MutableStateFlow(false)
-    val isNextCitiesPageLoading: StateFlow<Boolean> = _isNextCitiesPageLoading.asStateFlow()
-    private var citiesPage: Int = 1
-    private var isEndReachedCities = false
-
-
-
-    private var _attractionList:
-            MutableStateFlow<List<Attraction>> = MutableStateFlow(emptyList())
-    val attractionList = _attractionList.asStateFlow()
-    private val _isNextAttractionPageLoading = MutableStateFlow(false)
-    val isNextAttractionPageLoading: StateFlow<Boolean> = _isNextAttractionPageLoading.asStateFlow()
-    private var attractionPage: Int = 1
-    private var isEndReachedAttraction = false
-
-
-
-    private val _popularTours: MutableStateFlow<List<Tour>> = MutableStateFlow(emptyList())
-    val popularTours: StateFlow<List<Tour>> = _popularTours.asStateFlow()
-    private val _isNextPopularPageLoading = MutableStateFlow(false)
-    val isNextPopularPageLoading: StateFlow<Boolean> = _isNextPopularPageLoading.asStateFlow()
-
-    private val _isPopularEndReached = MutableStateFlow(false)
-    val isPopularEndReached: StateFlow<Boolean> = _isPopularEndReached
-
-    private var popularToursPage: Int = 1
-    private var isEndReachedPopularTours = false
-
-
-
+    private val _uiState = MutableStateFlow(HomeUiState())
+    val uiState = _uiState.asStateFlow()
 
     init {
-        _popular
-            .onEach { popular ->
-                // При смене таба сбрасываем пагинацию
-                citiesPage = 1
-                isEndReachedCities = false
-                _cities.value = emptyList()
-                loadCities(popular)
-            }
-            .launchIn(viewModelScope)
-
-        attractionPage = 1
-        isEndReachedAttraction = false
-        _attractionList.value = emptyList()
-        loadAttreaction()
-
-        popularToursPage = 1
-        isEndReachedPopularTours = false
-        _popularTours.value = emptyList()
-        loadPopular()
+        // Первичная загрузка
+        handleAction(HomeAction.LoadMoreCities)
+        handleAction(HomeAction.LoadMoreAttractions)
+        handleAction(HomeAction.LoadMoreTours)
     }
 
-    fun loadCities(
-        popular: Boolean
-    ) {
-        // Если уже грузим или данные закончились — выходим
-        if (_isNextCitiesPageLoading.value || isEndReachedCities) return
-        viewModelScope.launch {
-            _isNextCitiesPageLoading.value = true
-            try {
-                val response = api.getListCities(
-                    popular = popular,
-                    page = citiesPage
-                )
-                if (response.isSuccessful) {
-                    val newItems = response.body()?.data?.results.orEmpty()
-                    if (newItems.isEmpty()) isEndReachedCities = true
+    fun handleAction(action: HomeAction) {
+        when (action) {
+            is HomeAction.ChangeTab -> {
+                // Сбрасываем только города при смене таба
+                _uiState.update { it.copy(
+                    isPopularTab = action.isPopular,
+                    citiesState = PaginationState()
+                ) }
+                handleAction(HomeAction.LoadMoreCities)
+            }
+            HomeAction.LoadMoreCities -> {
+                executeLoad(
+                    stateSelector = { it.citiesState },
+                    updateState = { old, new -> old.copy(citiesState = new) }
+                ) { page -> api.getListCities(page = page, popular = _uiState.value.isPopularTab) }
+            }
+            HomeAction.LoadMoreAttractions -> {
+                executeLoad(
+                    stateSelector = { it.attractionState },
+                    updateState = { old, new -> old.copy(attractionState = new) }
+                ) { page -> attractionApi.getListattraction(page = page) }
+            }
+            HomeAction.LoadMoreTours -> {
+                executeLoad(
+                    stateSelector = { it.popularToursState },
+                    updateState = { old, new -> old.copy(popularToursState = new) }
+                ) { page -> api.getPopularProducts(page = page, attraction = null, country = null, popularity = "popularity") }
+            }
 
-                    else {
-                        _cities.value = _cities.value + newItems
+            is HomeAction.OnCityClick -> {
+                // Здесь будет: navigationController.navigate("city/${action.city.id}")
+            }
+
+            is HomeAction.OnAttractionClick -> {
+                //Открываение экрана аттракционов
+            }
+            is HomeAction.OnTourClick -> {
+                //Открывание экрана Туров
+            }
+            HomeAction.SeeAllAttractions -> {
+                //Открывание экрана всех атракционов обработка нажаитя на кноку
+            }
+        }
+    }
+
+    // ТА САМАЯ УНИВЕРСАЛЬНАЯ ФУНКЦИЯ
+    private fun <T> executeLoad(
+        stateSelector: (HomeUiState) -> PaginationState<T>,
+        updateState: (HomeUiState, PaginationState<T>) -> HomeUiState,
+        call: suspend (Int) -> Response<*>
+    ) {
+        val currentPagination = stateSelector(_uiState.value)
+        if (currentPagination.isLoading || currentPagination.isEndReached) return
+
+        viewModelScope.launch {
+            // 1. Ставим флаг загрузки
+            _uiState.update { updateState(it, currentPagination.copy(isLoading = true)) }
+
+            try {
+                val response = call(currentPagination.page)
+                if (response.isSuccessful) {
+                    val newItems = extractList<T>(response) // Тот самый маппинг
+
+                    _uiState.update { state ->
+                        updateState(state, currentPagination.copy(
+                            items = currentPagination.items + newItems,
+                            page = currentPagination.page + 1,
+                            isLoading = false,
+                            isEndReached = newItems.isEmpty()
+                        ))
                     }
-                    citiesPage++
                 }
             } catch (e: Exception) {
-                Log.e("API", e.message ?: "Неизвестная ошибка")
-            }
-            finally {
-                _isNextCitiesPageLoading.value = false
-            }
-        }
-    }
-
-    fun loadAttreaction(){
-        if (_isNextAttractionPageLoading.value || isEndReachedAttraction) return
-        viewModelScope.launch {
-            _isNextAttractionPageLoading.value = true
-            try {
-                val response = attractionApi.getListattraction(
-                    page = attractionPage
-                )
-                if (response.isSuccessful){
-                    val newItems = response.body()?.results.orEmpty()
-                    if (newItems.isEmpty()){
-                        isEndReachedAttraction = true
-                    }
-                    else{
-                        _attractionList.value = _attractionList.value + newItems
-                        attractionPage++
-                    }
-                }
-                else{
-                    Log.e("API", "Ошибка сервера: ${response.code()}")
-                }
-            }
-            catch (e: Exception){
-                Log.d("API", e.message ?: "Неизвестная ошибка")
-            }
-            finally {
-                _isNextAttractionPageLoading.value = false
+                _uiState.update { updateState(it, currentPagination.copy(isLoading = false)) }
             }
         }
     }
 
 
-    fun loadPopular(
-        page: Int? = null,
-        lang: String? = null,
-        currency: String = "RUB",
-        country: Int? = null,
-        city: Int? = null,
-        attraction: Int? = null,
-        order: String = "popularity"
-    ){
-        if (_isNextPopularPageLoading.value || isEndReachedPopularTours) return
-        viewModelScope.launch {
-            _isNextPopularPageLoading.value = true
-            try {
-                val response = api.getPopularProducts(
-                    page = page,
-                    lang = lang,
-                    currency = currency,
-                    country = country,
-                    city = city,
-                    attraction = attraction,
-                    popularity = order
-                )
-                if (response.isSuccessful) {
-                    val newItems = response.body()?.data?.results.orEmpty()
-                    if (newItems.isEmpty()){
-                        isEndReachedPopularTours = true
-                        _isPopularEndReached.value = true
-                    }
-                    else{
-                        _popularTours.value = _popularTours.value + newItems
-                        popularToursPage++
-                    }
-                }
-            }
-            catch (e: Exception){
-                Log.d("API", "Ошибка: ${e.message}")
-            }
-            finally {
-                _isNextPopularPageLoading.value = false
-            }
+    // Пример того, как мы "выпрямляем" разные ответы API
+    private fun <T> extractList(response: Response<*>): List<T> {
+        val body = response.body() ?: return emptyList()
+
+        return when (body) {
+            is CityResponse -> body.data.results as List<T>  // Берем из data.results
+            is AttractionResponse -> body.results as List<T> // Берем напрямую из results
+            is TourResponse -> body.data.results as List<T>
+            else -> emptyList()
         }
     }
 
-    fun setPopular(value: Boolean) {
-        _popular.value = value
-    }
+
 }
 
