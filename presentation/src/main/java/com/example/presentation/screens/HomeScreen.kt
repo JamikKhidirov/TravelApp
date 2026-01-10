@@ -1,5 +1,6 @@
 package com.example.presentation.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -74,7 +76,8 @@ fun HomeScreen(
 
     Scaffold(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
 
         bottomBar = {
 
@@ -217,7 +220,7 @@ fun BottomHomeScreen(
                     isLoading = isNextCitiesLoading,
                     onLoadMore = onLoadMoreCities
                 )
-                if (listCity.isNotEmpty()){
+                if (listCity.isNotEmpty()) {
                     //Кнопка показать все
                     MainButton(
                         modifier = Modifier
@@ -228,7 +231,6 @@ fun BottomHomeScreen(
                     )
                 }
             }
-
 
         }
 

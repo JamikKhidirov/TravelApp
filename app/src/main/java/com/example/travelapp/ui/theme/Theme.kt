@@ -14,27 +14,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80,
-    background = Color.Black
+    primary = OrangeMain,
+    onPrimary = Color.Black,
+    secondary = OrangeLight,
+    background = DarkBack,
+    surface = DarkSurface,
+    onBackground = Color.White,
+    surfaceVariant = Color(0xFF2C2C2C), // Базовый цвет скелетона в темной теме
+    onSurfaceVariant = Color(0xFF3D3D3D), // Цвет "блика" шиммера,
+    outline = Color.Gray // Для рамок поиска
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,
-    background = Color.White
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
+    primary = OrangeMain,
     onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    secondary = OrangeDark,
+    background = LightBack,
+    surface = Color.White,
+    onBackground = Color.Black,
+    surfaceVariant = Color(0xFFE0E0E0), // Базовый цвет скелетона в светлой теме
+    onSurfaceVariant = Color(0xFFF5F5F5), // Цвет "блика" шиммера, // Цвет неактивного текста (темно-серый)
+    outline = Color.LightGray
 )
 
 @Composable
