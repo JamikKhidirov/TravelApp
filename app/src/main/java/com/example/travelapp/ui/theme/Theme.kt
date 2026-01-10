@@ -20,8 +20,8 @@ private val DarkColorScheme = darkColorScheme(
     background = DarkBack,
     surface = DarkSurface,
     onBackground = Color.White,
-    onSurface = Color.White,
-    onSurfaceVariant = Color.Gray,
+    surfaceVariant = Color(0xFF2C2C2C), // Базовый цвет скелетона в темной теме
+    onSurfaceVariant = Color(0xFF3D3D3D), // Цвет "блика" шиммера,
     outline = Color.Gray // Для рамок поиска
 )
 
@@ -32,8 +32,8 @@ private val LightColorScheme = lightColorScheme(
     background = LightBack,
     surface = Color.White,
     onBackground = Color.Black,
-    onSurface = Color.Black,
-    onSurfaceVariant = Color(0xFF757575), // Цвет неактивного текста (темно-серый)
+    surfaceVariant = Color(0xFFE0E0E0), // Базовый цвет скелетона в светлой теме
+    onSurfaceVariant = Color(0xFFF5F5F5), // Цвет "блика" шиммера, // Цвет неактивного текста (темно-серый)
     outline = Color.LightGray
 )
 
