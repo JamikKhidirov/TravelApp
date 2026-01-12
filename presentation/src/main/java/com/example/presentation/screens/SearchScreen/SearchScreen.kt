@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -21,10 +22,13 @@ fun SearchScreen(){
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary)
+            .background(MaterialTheme.colorScheme.background)
     ) { paddingValues ->
         SearchBottomScreen(
-            paddingValues = paddingValues
+            paddingValues = paddingValues,
+            onBarSeacrch = { searchText ->
+
+            }
         )
     }
 }
@@ -32,11 +36,23 @@ fun SearchScreen(){
 
 @Composable
 fun SearchBottomScreen(
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    onBarSeacrch: (String) -> Unit
 ){
-    SearchBar(
-        modifier = Modifier.fillMaxWidth()
-            .padding(horizontal = 15.dp)
-    ) {  }
+    LazyColumn(
+        modifier = Modifier.fillMaxSize()
+            .padding(paddingValues)
+    ) {
+
+        item {
+            SearchBar(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(horizontal = 15.dp),
+                onTextValue = onBarSeacrch
+            )
+        }
+
+
+    }
 
 }

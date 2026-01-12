@@ -90,13 +90,13 @@ fun BottomHomeScreen(
             )
         }
 
-        // 3. Секция Городов
+        // Секция Городов
         citiesSection(uiState, onAction)
 
-        // 4. Секция Достопримечательностей
+        //Секция Достопримечательностей
         attractionsSection(uiState, onAction)
 
-        // 5. Вертикальный список Туров
+        //Вертикальный список Туров
         toursSection(uiState, onAction)
     }
 }

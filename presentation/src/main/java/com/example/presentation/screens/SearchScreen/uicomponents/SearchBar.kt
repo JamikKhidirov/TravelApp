@@ -45,7 +45,7 @@ fun SearchBar(
             disabledIndicatorColor = Color.Transparent,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
-            disabledContainerColor = MaterialTheme.colorScheme.background
+            disabledContainerColor = MaterialTheme.colorScheme.surface
         ),
 
         placeholder = {
@@ -54,7 +54,8 @@ fun SearchBar(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
                 modifier = Modifier.padding(start = 10.dp),
-                fontSize = 19.sp
+                fontSize = 19.sp,
+                color = Color.Gray
             )
         },
 
