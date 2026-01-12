@@ -68,6 +68,12 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended:1.7.0")
     implementation("io.coil-kt:coil-compose:2.7.0")
 
+    // Эта зависимость обязательна для работы Preview
+    debugImplementation("androidx.compose.ui:ui-tooling")
+
+    // Также должна быть эта (она у вас скорее всего есть)
+    implementation("androidx.compose.ui:ui-tooling-preview")
+
 
     implementation(project(":data"))
     implementation(project(":domain"))
