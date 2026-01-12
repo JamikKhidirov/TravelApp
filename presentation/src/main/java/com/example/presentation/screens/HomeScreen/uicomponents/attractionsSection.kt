@@ -1,4 +1,4 @@
-package com.example.presentation.screens.components
+package com.example.presentation.screens.HomeScreen.uicomponents
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
