@@ -74,7 +74,10 @@ fun SearchBottomScreen(
         item {
             Text(
                 text = "Популярные места",
-                modifier = Modifier.padding(15.dp),
+                modifier = Modifier.padding(
+                    start = 15.dp,
+                    top = 10.dp
+                ),
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold
             )
