@@ -43,6 +43,7 @@ android {
 }
 
 dependencies {
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -67,6 +68,13 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.3.0")
     implementation("androidx.compose.material:material-icons-extended:1.7.0")
     implementation("io.coil-kt:coil-compose:2.7.0")
+
+
+
+    implementation("androidx.navigation:navigation-compose:$2.8.5")
+
+    // Для типобезопасности также нужна библиотека сериализации
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 
     // Эта зависимость обязательна для работы Preview
     debugImplementation("androidx.compose.ui:ui-tooling")
