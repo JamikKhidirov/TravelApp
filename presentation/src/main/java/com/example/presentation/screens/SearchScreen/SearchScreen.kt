@@ -60,9 +60,10 @@ fun SearchBottomScreen(
     popularList: List<String>? = null,
     onHistory: (String) -> Unit
 
-){Box(
+){ Box(
     modifier = Modifier
         .fillMaxSize()
+        .padding(paddingValues)
         .background(MaterialTheme.colorScheme.background)
 ) {
     // 1. СПИСОК (Кладем первым, чтобы он был "под" поиском)
@@ -82,7 +83,29 @@ fun SearchBottomScreen(
                 fontWeight = FontWeight.Bold
             )
         }
-        // ... ваши items для популярных мест и истории
+        if (popularList?.isNotEmpty() == true){
+
+            // ... ваши items для популярных мест и истории
+
+        }
+
+
+        if(history.isNotEmpty()){
+            item {
+                Text(
+                    text = "Вы искали",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(
+                            start = 15.dp,
+                            top = 20.dp)
+                )
+            }
+
+            //тут список историй
+        }
+
     }
 
 

@@ -1,8 +1,13 @@
 package com.example.presentation.screens.SearchScreen.uicomponents
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Icon
@@ -19,6 +24,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -27,52 +34,58 @@ import kotlin.math.sin
 
 
 @Composable
-@Preview(showBackground = true)
 fun SearchBar(
     modifier: Modifier = Modifier,
     onTextValue: (String) -> Unit = {}
-){
-
+) {
     var textValue by remember { mutableStateOf("") }
 
-    TextField(
+    BasicTextField(
         value = textValue,
-        modifier = modifier,
-        onValueChange = onTextValue,
-        shape = RoundedCornerShape(15.dp),
-        singleLine = true,
-        colors = TextFieldDefaults.colors(
-            disabledIndicatorColor = Color.Transparent,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            disabledContainerColor = MaterialTheme.colorScheme.surface
-        ),
-
-        placeholder = {
-            Text(
-                text = "Город, экскурсия, билет, доставка",
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1,
-                modifier = Modifier.padding(start = 10.dp),
-                fontSize = 19.sp,
-                color = Color.Gray
-            )
+        onValueChange = {
+            textValue = it
+            onTextValue(it)
         },
-
-        trailingIcon = {
-            if (textValue.isNotEmpty()){
-                IconButton(
-                    modifier = Modifier.size(32.dp),
-                    onClick = {
-                        textValue = ""
-                    }
-                ) {
-                    Icon(
-                        Icons.Default.Clear,
-                        contentDescription = "Иконка для очистки"
+        modifier = modifier
+            .fillMaxWidth()
+            .height(56.dp), // Высота как у стандартного TextField
+        singleLine = true,
+        textStyle = TextStyle(fontSize = 19.sp),
+        // Здесь мы настраиваем внешний вид через DecorationBox
+        decorationBox = { innerTextField ->
+            TextFieldDefaults.DecorationBox(
+                value = textValue,
+                innerTextField = innerTextField,
+                enabled = true,
+                singleLine = true,
+                visualTransformation = VisualTransformation.None,
+                interactionSource = remember { MutableInteractionSource() },
+                contentPadding = PaddingValues(start = 20.dp, end = 10.dp),
+                placeholder = {
+                    Text(
+                        text = "Город, экскурсия, билет, доставка",
+                        fontSize = 19.sp,
+                        color = Color.Gray,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
-                }
-            }
+                },
+                trailingIcon = {
+                    if (textValue.isNotEmpty()) {
+                        IconButton(onClick = { textValue = "" }) {
+                            Icon(Icons.Default.Clear, contentDescription = null)
+                        }
+                    }
+                },
+                shape = RoundedCornerShape(15.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                    focusedContainerColor = MaterialTheme.colorScheme.surface
+                )
+            )
         }
     )
 }
