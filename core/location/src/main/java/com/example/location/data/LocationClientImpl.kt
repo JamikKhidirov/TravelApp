@@ -28,6 +28,8 @@ class LocationClientImpl @Inject constructor(
 ): LocationClient {
 
 
+
+    @SuppressLint("MissingPermission")
     override suspend fun getCurrentlocation(): Location {
         return try {
             fusedClient.getCurrentLocation(
@@ -39,6 +41,8 @@ class LocationClientImpl @Inject constructor(
         } as Location
     }
 
+
+    @SuppressLint("MissingPermission")
     override fun getLocationUpdates(intervalMillis: Long): Flow<Location?> = callbackFlow {
 
         val request = LocationRequest.Builder(
