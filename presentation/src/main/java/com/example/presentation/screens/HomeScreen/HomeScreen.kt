@@ -1,5 +1,10 @@
 package com.example.presentation.screens.HomeScreen
 
+import android.Manifest
+import android.widget.Toast
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,8 +14,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -32,6 +39,32 @@ fun HomeScreen(
 ){
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    val context = LocalContext.current
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) {permission ->
+        if (permission[Manifest.permission.ACCESS_FINE_LOCATION] == true
+            || permission[Manifest.permission.ACCESS_COARSE_LOCATION] == true){
+            //Разрешение на точную геолокацию выдан вытвскиваем геолокацию
+        }
+        else {
+
+            Toast.makeText(context, "Без локации мы не найдем туры рядом", Toast.LENGTH_LONG).show()
+        }
+    }
+
+
+    LaunchedEffect(
+        Unit
+    ) {
+       permissionLauncher.launch(
+           arrayOf(
+               Manifest.permission.ACCESS_FINE_LOCATION,
+               Manifest.permission.ACCESS_COARSE_LOCATION
+           )
+       )
+    }
 
 
     val state = rememberLazyListState()
@@ -48,7 +81,6 @@ fun HomeScreen(
         )
     }
 }
-
 
 
 @Composable
