@@ -49,8 +49,8 @@ fun HomeScreen(
             //Разрешение на точную геолокацию выдан вытвскиваем геолокацию
         }
         else {
-
             Toast.makeText(context, "Без локации мы не найдем туры рядом", Toast.LENGTH_LONG).show()
+
         }
     }
 

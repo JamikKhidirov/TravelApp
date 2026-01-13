@@ -66,11 +66,8 @@ dependencies {
     kapt("com.google.dagger:hilt-compiler:2.57.2")
     implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
     implementation("androidx.compose.material3:material3:1.3.0")
-    implementation("androidx.compose.material:material-icons-extended:1.7.0")
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
     implementation("io.coil-kt:coil-compose:2.7.0")
-
-
-
     implementation("androidx.navigation:navigation-compose:$2.8.5")
 
     // Для типобезопасности также нужна библиотека сериализации
@@ -83,9 +80,11 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
 
 
+
     implementation(project(":data"))
     implementation(project(":domain"))
     implementation(project(":core:cache"))
     implementation(project(":core:network"))
+    implementation(project(":core:location"))
 }
 
