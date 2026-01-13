@@ -60,7 +60,7 @@ fun SearchBar(
                 singleLine = true,
                 visualTransformation = VisualTransformation.None,
                 interactionSource = remember { MutableInteractionSource() },
-                contentPadding = PaddingValues(start = 20.dp, end = 10.dp),
+                contentPadding = PaddingValues(start = 20.dp),
                 placeholder = {
                     Text(
                         text = "Город, экскурсия, билет, доставка",
@@ -78,12 +78,17 @@ fun SearchBar(
                     }
                 },
                 shape = RoundedCornerShape(15.dp),
+                // 2. ВОЗВРАЩАЕМ ВАШИ ЦВЕТА
                 colors = TextFieldDefaults.colors(
+                    // Цвет самого контейнера (фона)
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    disabledContainerColor = MaterialTheme.colorScheme.surface,
+
+                    // Убираем полоски снизу, как было в вашем коде
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                    focusedContainerColor = MaterialTheme.colorScheme.surface
+                    disabledIndicatorColor = Color.Transparent
                 )
             )
         }

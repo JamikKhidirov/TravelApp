@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -130,7 +131,11 @@ fun SearchBottomScreen(
                 }
             )
 
-            TextButton(onClick = { /* отмена */ }) {
+            TextButton(
+                modifier = Modifier
+                    .padding(end = 15.dp),
+                onClick = { /* отмена */ }
+            ) {
                 Text(
                     text = "Отмена",
                     fontSize = 18.sp,
