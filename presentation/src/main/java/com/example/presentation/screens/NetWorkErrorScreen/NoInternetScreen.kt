@@ -1,5 +1,7 @@
 package com.example.presentation.screens.NetWorkErrorScreen
 
+import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,16 +27,20 @@ import com.example.presentation.uicomponents.buttons.MainButton
 
 
 @Composable
-@Preview(showBackground = true)
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
 fun NoInternetScreen(
     onRetry: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .background(MaterialTheme.colorScheme.background),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+
     ) {
         Icon(
             imageVector = Icons.Default.WifiOff,
@@ -48,6 +54,7 @@ fun NoInternetScreen(
             text = "Что-то пошло не так",
             style = MaterialTheme.typography.titleLarge,
             fontSize = 22.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(top = 15.dp)
         )

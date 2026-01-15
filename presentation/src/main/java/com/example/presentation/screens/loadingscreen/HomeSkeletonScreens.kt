@@ -62,16 +62,15 @@ internal fun HomeSkeletonScreen(
                 repeat(2) {
                     ShimmerPlaceholder(
                         modifier = Modifier
-                            .width(110.dp)      // ≈ длине слова
-                            .height(24.dp)
-                           ,     // 20.sp + жирность
+                            .width(110.dp)
+                            .height(24.dp),
                         shape = RoundedCornerShape(15.dp)
                     )
                 }
             }
         }
 
-        /* 3. citiesSection – горизонтальный RowCities */
+        // citiesSection – горизонтальный RowCities
         item {
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 15.dp),
@@ -80,7 +79,7 @@ internal fun HomeSkeletonScreen(
                 items(4) {
                     ShimmerPlaceholder(
                         modifier = Modifier
-                            .width(200.dp) // ОБЯЗАТЕЛЬНО: укажите ширину для LazyRow
+                            .width(200.dp)
                             .height(260.dp),
                         shape = RoundedCornerShape(15.dp)
                     )
@@ -120,7 +119,7 @@ internal fun HomeSkeletonScreen(
                     items(3) {
                         ShimmerPlaceholder(
                             modifier = Modifier
-                                .width(200.dp) // ОБЯЗАТЕЛЬНО: укажите ширину для LazyRow
+                                .width(200.dp)
                                 .height(260.dp),
                             shape = RoundedCornerShape(12.dp)
                         )

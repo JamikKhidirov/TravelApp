@@ -72,6 +72,10 @@ fun HomeScreen(
 
     val state = rememberLazyListState()
 
+    val isFirstLoading = uiState.isGlobalLoading &&
+            uiState.citiesState.items.isEmpty() &&
+            uiState.popularToursState.items.isEmpty()
+
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -79,7 +83,9 @@ fun HomeScreen(
     ) {paddingValues ->
 
         when{
-            uiState.isGlobalLoading && uiState.citiesState.items.isEmpty() -> {
+            uiState.isGlobalLoading &&
+                    uiState.citiesState.items.isEmpty() &&
+                    uiState.popularToursState.items.isEmpty() -> {
                 HomeSkeletonScreen()
             }
 
