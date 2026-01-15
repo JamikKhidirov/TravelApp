@@ -43,6 +43,8 @@ class HomeViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
+
+
         // Первичная загрузка
         handleAction(HomeAction.LoadMoreCities)
         handleAction(HomeAction.LoadMoreAttractions)

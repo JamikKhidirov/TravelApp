@@ -25,7 +25,10 @@ import com.example.presentation.screens.OnBottomReached
 import com.example.presentation.screens.HomeScreen.uicomponents.attractionsSection
 import com.example.presentation.screens.HomeScreen.uicomponents.citiesSection
 import com.example.presentation.screens.HomeScreen.uicomponents.toursSection
+import com.example.presentation.screens.NetWorkErrorScreen.NoInternetScreen
+import com.example.presentation.screens.loadingscreen.HomeSkeletonScreen
 import com.example.presentation.states.actions.HomeAction
+import com.example.presentation.states.network.UiError
 import com.example.presentation.states.screen.HomeUiState
 import com.example.presentation.uicomponents.search.SearchCard
 import com.example.presentation.uicomponents.vidjets.TabRefresh
@@ -74,11 +77,27 @@ fun HomeScreen(
         modifier = Modifier.fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {paddingValues ->
-        BottomHomeScreen(
-            paddingValues = paddingValues,
-            uiState = uiState,
-            onAction = viewModel::handleAction
-        )
+
+        when{
+            uiState.isGlobalLoading && uiState.citiesState.items.isEmpty() -> {
+                HomeSkeletonScreen()
+            }
+
+            uiState.error == UiError.NoInternet -> {
+                NoInternetScreen(onRetry = {
+                    viewModel.handleAction(HomeAction.Retry)
+                })
+            }
+
+            else -> {
+                BottomHomeScreen(
+                    paddingValues = paddingValues,
+                    uiState = uiState,
+                    onAction = viewModel::handleAction
+                )
+            }
+        }
+
     }
 }
 
