@@ -28,7 +28,6 @@ class LocationClientImpl @Inject constructor(
 ): LocationClient {
 
 
-
     @SuppressLint("MissingPermission")
     override suspend fun getCurrentlocation(): Location {
         return try {
@@ -50,23 +49,17 @@ class LocationClientImpl @Inject constructor(
             intervalMillis
         ).apply {
             setMinUpdateDistanceMeters(2.0f) //метод для обновления через какое смешение будет обновляться 3 метра
-        }.build()
+         }.build()
 
         val locationCallback = object : LocationCallback(){
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
-
                 locationResult.lastLocation?.let { location ->
                     // Отправляем локацию в поток
                     trySend(location)
                 }
             }
-
-            override fun onLocationAvailability(p0: LocationAvailability) {
-                super.onLocationAvailability(p0)
-            }
         }
-
         fusedClient.requestLocationUpdates(
             request,
             locationCallback,

@@ -15,6 +15,7 @@ import com.example.network.setvice.WegoExcursionServiveV3
 import com.example.network.state.WeGo
 import com.example.network.state.WeGoApi
 import com.example.presentation.states.actions.HomeAction
+import com.example.presentation.states.network.UiError
 import com.example.presentation.states.screen.HomeUiState
 import com.example.presentation.states.ui.PaginationState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import retrofit2.http.Query
+import java.io.IOException
 import javax.inject.Inject
 import kotlin.collections.emptyList
 
@@ -89,6 +91,14 @@ class HomeViewModel @Inject constructor(
             HomeAction.SeeAllAttractions -> {
                 //Открывание экрана всех атракционов обработка нажаитя на кноку
             }
+
+            HomeAction.Retry -> {
+                _uiState.update { it.copy(error = null) }
+
+                handleAction(HomeAction.LoadMoreCities)
+                handleAction(HomeAction.LoadMoreAttractions)
+                handleAction(HomeAction.LoadMoreTours)
+            }
         }
     }
 
@@ -102,28 +112,53 @@ class HomeViewModel @Inject constructor(
         if (currentPagination.isLoading || currentPagination.isEndReached) return
 
         viewModelScope.launch {
-            // 1. Ставим флаг загрузки
-            _uiState.update { updateState(it, currentPagination.copy(isLoading = true)) }
+            _uiState.update {
+                it.copy(
+                    isGlobalLoading = true,
+                    error = null
+                )
+            }
 
             try {
                 val response = call(currentPagination.page)
+
                 if (response.isSuccessful) {
-                    val newItems = extractList<T>(response) // Тот самый маппинг
+                    val newItems = extractList<T>(response)
 
                     _uiState.update { state ->
-                        updateState(state, currentPagination.copy(
-                            items = currentPagination.items + newItems,
-                            page = currentPagination.page + 1,
-                            isLoading = false,
-                            isEndReached = newItems.isEmpty()
-                        ))
+                        updateState(
+                            state.copy(isGlobalLoading = false),
+                            currentPagination.copy(
+                                items = currentPagination.items + newItems,
+                                page = currentPagination.page + 1,
+                                isLoading = false,
+                                isEndReached = newItems.isEmpty()
+                            )
+                        )
                     }
+                } else {
+                    throw Exception("Server error")
+                }
+
+            } catch (e: IOException) {
+                //НЕТ ИНТЕРНЕТА
+                _uiState.update {
+                    it.copy(
+                        isGlobalLoading = false,
+                        error = UiError.NoInternet
+                    )
                 }
             } catch (e: Exception) {
-                _uiState.update { updateState(it, currentPagination.copy(isLoading = false)) }
+                _uiState.update {
+                    it.copy(
+                        isGlobalLoading = false,
+                        error = UiError.Unknown(e.message)
+                    )
+                }
             }
         }
     }
+
 
 
     // Пример того, как мы "выпрямляем" разные ответы API

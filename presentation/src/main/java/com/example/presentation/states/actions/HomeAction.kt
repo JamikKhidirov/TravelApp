@@ -16,4 +16,7 @@ sealed interface HomeAction{
 
     object SeeAllAttractions: HomeAction
 
+
+    object Retry : HomeAction
+
 }
