@@ -134,12 +134,14 @@ fun SearchBottomScreen(
             TextButton(
                 modifier = Modifier
                     .padding(end = 15.dp),
-                onClick = { /* отмена */ }
+                onClick = {
+                    //Обработка кнопки отмены
+                }
             ) {
                 Text(
                     text = "Отмена",
                     fontSize = 18.sp,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
