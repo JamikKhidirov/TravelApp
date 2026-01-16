@@ -1,7 +1,6 @@
-package com.example.navigation
+package com.example.navigation.destnation
 
 import kotlinx.serialization.Serializable
-
 
 @Serializable
 sealed class Screen {

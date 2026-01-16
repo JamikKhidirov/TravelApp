@@ -29,7 +29,7 @@ class LocationClientImpl @Inject constructor(
 
 
     @SuppressLint("MissingPermission")
-    override suspend fun getCurrentlocation(): Location {
+    override suspend fun getCurrentlocation(): Location  {
         return try {
             fusedClient.getCurrentLocation(
                 Priority.PRIORITY_HIGH_ACCURACY,
