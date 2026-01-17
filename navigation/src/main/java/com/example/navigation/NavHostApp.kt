@@ -1,0 +1,28 @@
+package com.example.navigation
+
+
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import com.example.navigation.destination.ScreenDestination
+import com.example.presentation.screens.HomeScreen.HomeScreen
+import com.example.presentation.screens.SearchScreen.SearchScreen
+
+
+@Composable
+fun NavHostApp(
+    navHostController: NavHostController
+) {
+    NavHost(navController = navHostController,
+        startDestination = ScreenDestination.HomeScreen){
+
+        composable<ScreenDestination.HomeScreen>{
+            HomeScreen()
+        }
+
+        composable<ScreenDestination.SearchScreen>{
+            SearchScreen()
+        }
+    }
+}

@@ -1,8 +1,10 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
 
     id("dagger.hilt.android.plugin")
+    id("org.jetbrains.kotlin.plugin.serialization")
     kotlin("kapt")
 }
 
@@ -35,19 +37,24 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    buildFeatures{
+        compose = true
+    }
 }
 
 dependencies {
+    // Используйте проверенную стабильную версию 2.8.5
     implementation("androidx.navigation:navigation-compose:2.8.5")
-
     // Для типобезопасности также нужна библиотека сериализации
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation(project(":presentation"))
 
 
     implementation("com.google.dagger:hilt-android:2.57.2")

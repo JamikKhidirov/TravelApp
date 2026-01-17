@@ -8,4 +8,7 @@ plugins {
 
 
     id("com.google.dagger.hilt.android") version "2.57.2" apply false
+
+    // ... ваши текущие плагины
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0" // Версия должна совпадать с версией Kotlin
 }

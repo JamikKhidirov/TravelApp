@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 
+    id("org.jetbrains.kotlin.plugin.serialization")
+
     id("dagger.hilt.android.plugin")
     kotlin("kapt")
 }
@@ -68,7 +70,6 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.3.0")
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
     implementation("io.coil-kt:coil-compose:2.7.0")
-    implementation("androidx.navigation:navigation-compose:$2.8.5")
 
     // Для типобезопасности также нужна библиотека сериализации
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
