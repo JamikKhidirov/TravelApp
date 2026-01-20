@@ -93,14 +93,11 @@ fun SearchBar(
                     }
                 },
                 shape = RoundedCornerShape(15.dp),
-                // 2. ВОЗВРАЩАЕМ ВАШИ ЦВЕТА
                 colors = TextFieldDefaults.colors(
-                    // Цвет самого контейнера (фона)
                     unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                     focusedContainerColor = MaterialTheme.colorScheme.surface,
                     disabledContainerColor = MaterialTheme.colorScheme.surface,
 
-                    // Убираем полоски снизу, как было в вашем коде
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent
