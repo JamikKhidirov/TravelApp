@@ -38,10 +38,6 @@ fun SearchScreen(){
     Scaffold(
         modifier = Modifier.fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-        ,
-        topBar = {
-
-        }
     ) { paddingValues ->
         SearchBottomScreen(
             paddingValues = paddingValues,
@@ -71,14 +67,14 @@ fun SearchBottomScreen(
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         // ВАЖНО: делаем отступ сверху, чтобы первый элемент не спрятался под поиском
-        contentPadding = PaddingValues(top = 80.dp)
+        contentPadding = PaddingValues(top = 70.dp)
     ) {
         item {
             Text(
                 text = "Популярные места",
                 modifier = Modifier.padding(
                     start = 15.dp,
-                    top = 10.dp
+                    top = 5.dp
                 ),
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold
@@ -100,7 +96,8 @@ fun SearchBottomScreen(
                     modifier = Modifier
                         .padding(
                             start = 15.dp,
-                            top = 20.dp)
+                            top = 20.dp
+                        )
                 )
             }
 
@@ -113,13 +110,11 @@ fun SearchBottomScreen(
     Surface(
         modifier = Modifier.align(Alignment.TopCenter),
         color = MaterialTheme.colorScheme.background, // Чтобы список не просвечивал сквозь поиск
-        shadowElevation = 4.dp // Добавим тень, чтобы отделить от списка при скролле
+        shadowElevation = 2.dp // Добавим тень, чтобы отделить от списка при скролле
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding() // Учитываем системную панель
-                .padding(vertical = 8.dp),
+                .fillMaxWidth(), // Учитываем системную панель
             verticalAlignment = Alignment.CenterVertically
         ) {
             SearchBar(
