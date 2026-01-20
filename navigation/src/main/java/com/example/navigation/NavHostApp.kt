@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.navigation.destination.ScreenDestination
+import com.example.presentation.destination.ScreenDestination
 import com.example.presentation.screens.HomeScreen.HomeScreen
 import com.example.presentation.screens.SearchScreen.SearchScreen
 
@@ -19,14 +19,14 @@ fun NavHostApp(
 
         composable<ScreenDestination.HomeScreen>{
             HomeScreen(
-                onNavSearchScreenClick = {
-                    navHostController.navigate(ScreenDestination.SearchScreen)
-                }
+                navHostController = navHostController
             )
         }
 
         composable<ScreenDestination.SearchScreen>{
-            SearchScreen()
+            SearchScreen(
+                navHostController = navHostController
+            )
         }
     }
 }

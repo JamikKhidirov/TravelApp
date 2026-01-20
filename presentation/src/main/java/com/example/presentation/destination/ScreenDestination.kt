@@ -1,9 +1,6 @@
-package com.example.navigation.destination
+package com.example.presentation.destination
 
 import kotlinx.serialization.Serializable
-
-
-
 
 @Serializable
 sealed interface ScreenDestination {

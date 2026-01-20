@@ -26,13 +26,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import androidx.navigationevent.NavigationEventHistory
+import com.example.presentation.destination.ScreenDestination
 import com.example.presentation.screens.SearchScreen.uicomponents.SearchBar
 
 
 @Composable
-@Preview(showBackground = true)
-fun SearchScreen(){
+fun SearchScreen(
+    navHostController: NavHostController
+){
 
 
     Scaffold(
@@ -42,6 +45,7 @@ fun SearchScreen(){
         SearchBottomScreen(
             paddingValues = paddingValues,
             history = listOf(),
+            navHostController = navHostController,
             onHistory = {
 
             }
@@ -55,6 +59,7 @@ fun SearchBottomScreen(
     paddingValues: PaddingValues,
     history: List<String>,
     popularList: List<String>? = null,
+    navHostController: NavHostController,
     onHistory: (String) -> Unit
 
 ){ Box(
@@ -131,6 +136,7 @@ fun SearchBottomScreen(
                     .padding(end = 15.dp),
                 onClick = {
                     //Обработка кнопки отмены
+                    navHostController.popBackStack()
                 }
             ) {
                 Text(

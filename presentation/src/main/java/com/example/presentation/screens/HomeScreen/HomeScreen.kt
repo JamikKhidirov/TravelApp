@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.presentation.destination.ScreenDestination
 import com.example.presentation.screens.OnBottomReached
 import com.example.presentation.screens.HomeScreen.uicomponents.attractionsSection
 import com.example.presentation.screens.HomeScreen.uicomponents.citiesSection
@@ -46,7 +47,7 @@ import viewmodals.HomeViewModel
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    onNavSearchScreenClick: () -> Unit
+    navHostController: NavHostController
 ){
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -108,7 +109,7 @@ fun HomeScreen(
                     paddingValues = paddingValues,
                     uiState = uiState,
                     onAction = viewModel::handleAction,
-                    onNavSearchScreenClick = onNavSearchScreenClick
+                    navHostController = navHostController
                 )
             }
         }
@@ -122,7 +123,7 @@ fun BottomHomeScreen(
     uiState: HomeUiState,
     paddingValues: PaddingValues,
     onAction: (HomeAction) -> Unit,
-    onNavSearchScreenClick: () -> Unit
+    navHostController: NavHostController
 ) {
     val state = rememberLazyListState()
 
@@ -142,7 +143,9 @@ fun BottomHomeScreen(
                 modifier = Modifier
                     .statusBarsPadding()
                     ,
-                onClickSeacrCard = onNavSearchScreenClick
+                onClickSeacrCard = {
+                    navHostController.navigate(ScreenDestination.SearchScreen)
+                }
             )
         }
 
