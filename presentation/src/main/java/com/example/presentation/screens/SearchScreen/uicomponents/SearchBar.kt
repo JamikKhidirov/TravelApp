@@ -18,12 +18,16 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
@@ -36,25 +40,34 @@ import kotlin.math.sin
 @Composable
 fun SearchBar(
     modifier: Modifier = Modifier,
-    onTextValue: (String) -> Unit = {}
+    query: String,
+    onQueryChange: (String) -> Unit,
 ) {
-    var textValue by remember { mutableStateOf("") }
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusRequester = remember { FocusRequester() }
+    val focusModifier = modifier.focusRequester(focusRequester)
+
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+        keyboardController?.show()
+    }
+
 
     BasicTextField(
-        value = textValue,
-        onValueChange = {
-            textValue = it
-            onTextValue(it)
-        },
+        value = query,
+        onValueChange = onQueryChange,
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp), // Высота как у стандартного TextField
+            .height(56.dp)
+            .then(focusModifier),
         singleLine = true,
         textStyle = TextStyle(fontSize = 19.sp),
         // Здесь мы настраиваем внешний вид через DecorationBox
         decorationBox = { innerTextField ->
             TextFieldDefaults.DecorationBox(
-                value = textValue,
+                value = query,
                 innerTextField = innerTextField,
                 enabled = true,
                 singleLine = true,
@@ -71,8 +84,10 @@ fun SearchBar(
                     )
                 },
                 trailingIcon = {
-                    if (textValue.isNotEmpty()) {
-                        IconButton(onClick = { textValue = "" }) {
+                    if (query.isNotEmpty()) {
+                        IconButton(onClick = {
+                            onQueryChange("")
+                        }) {
                             Icon(Icons.Default.Clear, contentDescription = null)
                         }
                     }

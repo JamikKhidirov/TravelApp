@@ -17,7 +17,9 @@ import androidx.navigation.NavHostController
 
 @Composable
 fun SearchBarVidjet(
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit
 ){
     Surface(
         modifier = Modifier,
@@ -33,9 +35,8 @@ fun SearchBarVidjet(
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = 15.dp),
-                onTextValue = {
-
-                }
+                query = searchQuery,
+                onQueryChange = onSearchQueryChange,
             )
 
             TextButton(

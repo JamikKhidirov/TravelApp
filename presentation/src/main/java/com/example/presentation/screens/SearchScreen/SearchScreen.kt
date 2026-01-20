@@ -3,34 +3,31 @@ package com.example.presentation.screens.SearchScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import androidx.navigationevent.NavigationEventHistory
-import com.example.presentation.destination.ScreenDestination
-import com.example.presentation.screens.SearchScreen.uicomponents.SearchBar
 import com.example.presentation.screens.SearchScreen.uicomponents.SearchBarVidjet
 
 
@@ -40,18 +37,27 @@ fun SearchScreen(
     navHostController: NavHostController = rememberNavController()
 ){
 
+    var searchQuery by remember { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) { paddingValues ->
+
+        LaunchedEffect(Unit) {
+            //Открываем клавиатуру при входе на экран
+            keyboardController?.show()
+        }
+
         SearchBottomScreen(
             paddingValues = paddingValues,
             history = listOf(),
+            searchQuery = searchQuery,
+            onSearchQueryChange = { searchQuery = it },
             navHostController = navHostController,
-            onHistory = {
-
-            }
+            onHistory = { }
         )
     }
 }
@@ -61,8 +67,10 @@ fun SearchScreen(
 fun SearchBottomScreen(
     paddingValues: PaddingValues,
     history: List<String>,
-    popularList: List<String>? = null,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
     navHostController: NavHostController,
+    popularList: List<String>? = null,
     onHistory: (String) -> Unit
 
 ){ Box(
@@ -114,9 +122,10 @@ fun SearchBottomScreen(
 
     }
 
-
     SearchBarVidjet(
-        navHostController = navHostController
+        navHostController = navHostController,
+        searchQuery = searchQuery,
+        onSearchQueryChange = onSearchQueryChange
     )
 }
 }
