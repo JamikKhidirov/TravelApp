@@ -27,14 +27,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import androidx.navigationevent.NavigationEventHistory
 import com.example.presentation.destination.ScreenDestination
 import com.example.presentation.screens.SearchScreen.uicomponents.SearchBar
+import com.example.presentation.screens.SearchScreen.uicomponents.SearchBarVidjet
 
 
 @Composable
+@Preview(showBackground = true)
 fun SearchScreen(
-    navHostController: NavHostController
+    navHostController: NavHostController = rememberNavController()
 ){
 
 
@@ -112,40 +115,8 @@ fun SearchBottomScreen(
     }
 
 
-    Surface(
-        modifier = Modifier.align(Alignment.TopCenter),
-        color = MaterialTheme.colorScheme.background, // Чтобы список не просвечивал сквозь поиск
-        shadowElevation = 2.dp // Добавим тень, чтобы отделить от списка при скролле
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(), // Учитываем системную панель
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            SearchBar(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 15.dp),
-                onTextValue = {
-
-                }
-            )
-
-            TextButton(
-                modifier = Modifier
-                    .padding(end = 15.dp),
-                onClick = {
-                    //Обработка кнопки отмены
-                    navHostController.popBackStack()
-                }
-            ) {
-                Text(
-                    text = "Отмена",
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
-    }
+    SearchBarVidjet(
+        navHostController = navHostController
+    )
 }
 }

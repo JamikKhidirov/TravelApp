@@ -1,4 +1,4 @@
-package com.example.presentation.screens.loadingscreen
+package com.example.presentation.screens.LoadingScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
