@@ -44,9 +44,9 @@ import viewmodals.HomeViewModel
 
 
 @Composable
-@Preview(showBackground = true)
 fun HomeScreen(
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
+    onNavSearchScreenClick: () -> Unit
 ){
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -107,7 +107,8 @@ fun HomeScreen(
                 BottomHomeScreen(
                     paddingValues = paddingValues,
                     uiState = uiState,
-                    onAction = viewModel::handleAction
+                    onAction = viewModel::handleAction,
+                    onNavSearchScreenClick = onNavSearchScreenClick
                 )
             }
         }
@@ -120,7 +121,8 @@ fun HomeScreen(
 fun BottomHomeScreen(
     uiState: HomeUiState,
     paddingValues: PaddingValues,
-    onAction: (HomeAction) -> Unit
+    onAction: (HomeAction) -> Unit,
+    onNavSearchScreenClick: () -> Unit
 ) {
     val state = rememberLazyListState()
 
@@ -140,9 +142,7 @@ fun BottomHomeScreen(
                 modifier = Modifier
                     .statusBarsPadding()
                     ,
-                onClickSeacrCard = {
-
-                }
+                onClickSeacrCard = onNavSearchScreenClick
             )
         }
 

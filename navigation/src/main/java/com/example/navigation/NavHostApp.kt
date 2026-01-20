@@ -18,7 +18,11 @@ fun NavHostApp(
         startDestination = ScreenDestination.HomeScreen){
 
         composable<ScreenDestination.HomeScreen>{
-            HomeScreen()
+            HomeScreen(
+                onNavSearchScreenClick = {
+                    navHostController.navigate(ScreenDestination.SearchScreen)
+                }
+            )
         }
 
         composable<ScreenDestination.SearchScreen>{
