@@ -56,6 +56,8 @@ dependencies {
     implementation("androidx.room:room-ktx:${room_version}")
 
 
+    implementation(project(":core:network"))
+
     implementation(project(":domain"))
 
     implementation(libs.androidx.core.ktx)

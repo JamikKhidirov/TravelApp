@@ -14,10 +14,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.presentation.states.actions.HomeAction
-import com.example.presentation.states.screen.HomeUiState
-import com.example.presentation.uicomponents.dowloads.items.PopularTourItemShimmer
-import com.example.presentation.uicomponents.vidjets.PopularTourItem
+import com.example.home.action.HomeAction
+import com.example.home.state.HomeUiState
+import com.example.uikit.uicomponents.dowloads.items.PopularTourItemShimmer
+import com.example.uikit.uicomponents.vidjets.PopularTourItem
 
 
 fun LazyListScope.toursSection(

@@ -29,9 +29,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
-import com.example.domain.model.DisplayableItem
-import com.example.domain.wegodata.citiesdata.City
-import com.example.presentation.R
+import com.example.common.model.DisplayableItem
+import com.example.uikit.R
 
 
 @Composable
@@ -72,7 +71,7 @@ fun <T: DisplayableItem> ImagevidjetGetCities(
 
                 },
                 contentDescription = "Photo of ${displayItem.name}",
-                placeholder = painterResource(R.drawable.ic_launcher_background),
+                placeholder = painterResource(R.drawable.placeholder),
                 modifier = Modifier
                     .fillMaxSize()
                     .height(180.dp)

@@ -1,10 +1,10 @@
 package com.example.network.setvice
 
-import com.example.domain.sputnikdata.citydata.CityData
-import com.example.domain.sputnikdata.citydata.CityDto
-import com.example.domain.sputnikdata.countridata.CountriData
-import com.example.domain.sputnikdata.productcategorydata.ProductDataCategory
-import com.example.domain.sputnikdata.productdata.ProductData
+import com.example.network.sputnikdata.citydata.CityData
+import com.example.network.sputnikdata.citydata.CityDto
+import com.example.network.sputnikdata.countridata.CountriData
+import com.example.network.sputnikdata.productcategorydata.ProductDataCategory
+import com.example.network.sputnikdata.productdata.ProductData
 import com.example.network.state.SputNikApi
 import  retrofit2.Response
 import retrofit2.http.GET

@@ -87,5 +87,6 @@ dependencies {
     implementation(project(":core:cache"))
     implementation(project(":core:network"))
     implementation(project(":core:location"))
+    implementation(project(":core:common"))
 }
 

@@ -21,9 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.domain.model.DisplayableItem
-import com.example.domain.wegodata.citiesdata.City
-import com.example.uikit.uicomponents.vidjets.ImageVidjetDesc.ImagevidjetGetCities
+import com.example.common.model.DisplayableItem
 
 
 

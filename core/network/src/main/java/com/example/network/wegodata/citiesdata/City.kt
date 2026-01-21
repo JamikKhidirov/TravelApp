@@ -1,6 +1,6 @@
 package com.example.network.wegodata.citiesdata
 
-import com.example.domain.model.DisplayableItem
+import com.example.common.model.DisplayableItem
 
 
 data class City(
@@ -10,4 +10,4 @@ data class City(
     override val preview: String,
     override val itemsCount: Int,
     val country: String
-): DisplayableItem{}
+): DisplayableItem {}

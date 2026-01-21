@@ -2,7 +2,7 @@ package com.example.cache.datacache.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.domain.sputnikdata.citydata.CityDto
+import com.example.network.sputnikdata.citydata.CityDto
 
 
 @Entity(tableName = "cities")
@@ -14,7 +14,7 @@ data class CityEntity(
     val country_id: Int
 )
 
-fun CityEntity.toCityDto(): CityDto{
+fun CityEntity.toCityDto(): CityDto {
     return CityDto(
         id = this.id,
         name = this.name,

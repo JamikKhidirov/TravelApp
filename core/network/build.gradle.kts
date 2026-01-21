@@ -53,10 +53,10 @@ dependencies {
     // Hilt WorkManager
 
 
-    implementation(project(":core:cache"))
 
     api("androidx.hilt:hilt-work:1.3.0")
     api("androidx.work:work-runtime-ktx:2.11.0")
+    implementation(project(":core:common"))
 
 
 

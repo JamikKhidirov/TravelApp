@@ -37,10 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.domain.wegodata.productpopular.Tour
-import com.example.domain.wegodata.productpopular.TourAuthor
-import com.example.domain.wegodata.productpopular.TourCity
-import com.example.domain.wegodata.productpopular.TourTags
+import com.example.network.wegodata.productpopular.Tour
+
 
 
 @Composable

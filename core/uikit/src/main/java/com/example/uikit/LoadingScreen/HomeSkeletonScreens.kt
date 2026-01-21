@@ -19,15 +19,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.presentation.uicomponents.dowloads.ShimmerPlaceholder
-import com.example.presentation.uicomponents.dowloads.items.PopularTourItemShimmer
-
-
+import com.example.uikit.uicomponents.dowloads.ShimmerPlaceholder
+import com.example.uikit.uicomponents.dowloads.items.PopularTourItemShimmer
 
 
 @Composable
 @Preview(showBackground = true)
-internal fun HomeSkeletonScreen(
+fun HomeSkeletonScreen(
     paddingValues: PaddingValues = PaddingValues()
 ) {
 

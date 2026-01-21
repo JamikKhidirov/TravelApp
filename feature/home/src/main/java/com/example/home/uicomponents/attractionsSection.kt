@@ -8,12 +8,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.domain.wegodata.attractiondata.Attraction
-import com.example.presentation.states.actions.HomeAction
-import com.example.presentation.states.screen.HomeUiState
-import com.example.presentation.uicomponents.buttons.MainButton
-import com.example.presentation.uicomponents.dowloads.items.RowItemsShimmerPlaceHolder
-import com.example.presentation.uicomponents.vidjets.RowCities
+import com.example.home.action.HomeAction
+import com.example.home.state.HomeUiState
+import com.example.network.wegodata.attractiondata.Attraction
+import com.example.uikit.uicomponents.buttons.MainButton
+import com.example.uikit.uicomponents.dowloads.items.RowItemsShimmerPlaceHolder
+import com.example.uikit.uicomponents.vidjets.RowCities
 
 
 fun LazyListScope.attractionsSection(

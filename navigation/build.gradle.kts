@@ -57,6 +57,7 @@ dependencies {
     implementation(project(":presentation"))
     implementation(project(":feature:home"))
     implementation(project(":feature:search"))
+    implementation(project(":core:common"))
 
 
     implementation("com.google.dagger:hilt-android:2.57.2")

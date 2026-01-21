@@ -1,6 +1,7 @@
 package com.example.network.wegodata.attractiondata
 
-import com.example.domain.model.DisplayableItem
+
+import com.example.common.model.DisplayableItem
 import com.google.gson.annotations.SerializedName
 
 
