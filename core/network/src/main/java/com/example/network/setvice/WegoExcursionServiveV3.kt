@@ -1,6 +1,8 @@
 package com.example.network.setvice
 
-import com.example.domain.wegodata.attractiondata.AttractionResponse
+
+
+import com.example.network.wegodata.attractiondata.AttractionResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

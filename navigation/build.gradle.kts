@@ -55,6 +55,8 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(project(":presentation"))
+    implementation(project(":feature:home"))
+    implementation(project(":feature:search"))
 
 
     implementation("com.google.dagger:hilt-android:2.57.2")

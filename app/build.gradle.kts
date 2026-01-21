@@ -80,11 +80,16 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     implementation(project(":core:cache"))
+    implementation(project(":core:common"))
     implementation(project(":core:network"))
+    implementation(project(":core:location"))
+    implementation(project(":core:uikit"))
     implementation(project(":data"))
     implementation(project(":domain"))
+    implementation(project(":feature:home"))
+    implementation(project(":feature:search"))
     implementation(project(":presentation"))
-    implementation(project(":core:location"))
+
     implementation(project(":navigation"))
 
 

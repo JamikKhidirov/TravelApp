@@ -1,13 +1,13 @@
 package com.example.network.setvice
 
 
-import com.example.domain.wegodata.attractiondata.AttractionResponse
-import com.example.domain.wegodata.citiesdata.CityResponse
-import com.example.domain.wegodata.contrydata.CountryResponse
-import com.example.domain.wegodata.datareviews.ReviewsResponse
-import com.example.domain.wegodata.productdatailinfodata.TourDetailResponse
-import com.example.domain.wegodata.productpopular.TourResponse
-import com.example.domain.wegodata.searchdata.CityDetailResponse
+import com.example.network.wegodata.attractiondata.AttractionResponse
+import com.example.network.wegodata.citiesdata.CityResponse
+import com.example.network.wegodata.contrydata.CountryResponse
+import com.example.network.wegodata.datareviews.ReviewsResponse
+import com.example.network.wegodata.productdatailinfodata.TourDetailResponse
+import com.example.network.wegodata.productpopular.TourResponse
+import com.example.network.wegodata.searchdata.CityDetailResponse
 import com.example.network.state.WeGoApi
 import retrofit2.Response
 import retrofit2.http.GET
