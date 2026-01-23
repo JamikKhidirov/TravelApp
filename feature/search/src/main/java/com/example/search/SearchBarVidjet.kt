@@ -1,4 +1,4 @@
-package com.example.presentation.screens.SearchScreen.uicomponents
+package com.example.search
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.search.uicomponents.SearchBar
 
 
 @Composable

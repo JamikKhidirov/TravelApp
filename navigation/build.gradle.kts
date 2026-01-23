@@ -45,21 +45,20 @@ android {
 
 dependencies {
     // Используйте проверенную стабильную версию 2.8.5
-    implementation("androidx.navigation:navigation-compose:2.8.5")
+    implementation(libs.androidx.navigation.compose)
     // Для типобезопасности также нужна библиотека сериализации
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation(project(":presentation"))
     implementation(project(":feature:home"))
     implementation(project(":feature:search"))
     implementation(project(":core:common"))
 
 
-    implementation("com.google.dagger:hilt-android:2.57.2")
-    kapt("com.google.dagger:hilt-compiler:2.57.2")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 }

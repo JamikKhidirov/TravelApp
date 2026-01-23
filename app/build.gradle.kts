@@ -88,7 +88,6 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":feature:home"))
     implementation(project(":feature:search"))
-    implementation(project(":presentation"))
 
     implementation(project(":navigation"))
 

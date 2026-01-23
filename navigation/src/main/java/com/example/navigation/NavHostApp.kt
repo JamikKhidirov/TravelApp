@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.common.ScreenDestination
 import com.example.home.HomeScreen
-import com.example.presentation.screens.SearchScreen.SearchScreen
+import com.example.search.SearchScreen
 
 
 @Composable
