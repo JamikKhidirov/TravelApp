@@ -52,24 +52,25 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     // Hilt WorkManager
 
-
-
-    api("androidx.hilt:hilt-work:1.3.0")
-    api("androidx.work:work-runtime-ktx:2.11.0")
-    implementation(project(":core:common"))
-
+    api(libs.androidx.hilt.work)
+    api(libs.androidx.work.runtime.ktx)
 
 
     // DI
-    implementation("com.google.dagger:hilt-android:2.57.2")
-    kapt("com.google.dagger:hilt-compiler:2.57.2")
-    implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     // Network
-    api("com.squareup.retrofit2:retrofit:3.0.0")
-    api("com.squareup.retrofit2:converter-gson:3.0.0")
-    api("com.squareup.okhttp3:logging-interceptor:5.3.2")
+    api(libs.retrofit)
+    api(libs.converter.gson)
+    api(libs.logging.interceptor)
+
+    debugImplementation(libs.library)
+
+
+    implementation(project(":core:common"))
     implementation(project(":domain"))
-    debugImplementation("com.github.chuckerteam.chucker:library:4.2.0")
+
 }
 
