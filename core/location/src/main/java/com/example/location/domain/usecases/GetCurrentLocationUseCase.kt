@@ -11,7 +11,7 @@ class GetCurrentLocationUseCase @Inject constructor(
     private val locationClient: LocationClient
 ) {
 
-    suspend operator fun invoke(): Location{
+    suspend operator fun invoke(): Location {
         return locationClient.getCurrentlocation()
     }
 }
