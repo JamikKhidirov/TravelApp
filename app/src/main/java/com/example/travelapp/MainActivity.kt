@@ -3,6 +3,7 @@ package com.example.travelapp
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -20,18 +21,29 @@ class MainActivity : ComponentActivity() {
 
 
     private val locationPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            //Разрешение выдано можно вытаскивать геолоквцию пользователя
-        } else {
-            // Показать сообщение: "Нужно разрешение для работы с геолокацией"
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permission ->
+        if (permission[Manifest.permission.ACCESS_FINE_LOCATION] == true
+            || permission[Manifest.permission.ACCESS_COARSE_LOCATION] == true){
+            //Разрешение на  геолокацию есть можем вытаскивать геолокацию
+        }
+        else {
+            Toast.makeText(this, "Без локации мы не найдем туры рядом", Toast.LENGTH_LONG).show()
+
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        locationPermissionLauncher.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        )
+
         setContent {
             TravelAppTheme {
                 val navHostController = rememberNavController()
@@ -42,15 +54,5 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
-    //Функция проверяет есть ли разрешение на приблизительную или точную геолокацию
-    private fun hasLocationPermission(): Boolean {
-        return listOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ).any { permission ->
-            ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
-        }
-    }
 }
 
