@@ -34,10 +34,10 @@ class LocationClientImpl @Inject constructor(
             fusedClient.getCurrentLocation(
                 Priority.PRIORITY_HIGH_ACCURACY,
                 null,
-            ).await()
-        } catch (e: Exception){
-            null
-        } as Location
+            ).await() ?: throw LocationUnavailableException("Location is null")
+        } catch (e: Exception) {
+            throw LocationUnavailableException("Failed to get location", e)
+        }
     }
 
 
@@ -74,3 +74,5 @@ class LocationClientImpl @Inject constructor(
     }
 
 }
+
+private class LocationUnavailableException(message: String, cause: Throwable? = null) : Exception(message, cause)
