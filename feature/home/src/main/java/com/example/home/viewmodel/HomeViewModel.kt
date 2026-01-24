@@ -76,13 +76,13 @@ class HomeViewModel @Inject constructor(
             }
 
             is HomeAction.OnAttractionClick -> {
-                //Открываение экрана аттракционов
+                //Открытие экрана аттракционов
             }
             is HomeAction.OnTourClick -> {
-                //Открывание экрана Туров
+                //Открытие экрана Туров
             }
             HomeAction.SeeAllAttractions -> {
-                //Открывание экрана всех атракционов обработка нажаитя на кноку
+                //Открытие экрана всех атракционов обработка нажаитя на кноку
             }
 
             HomeAction.Retry -> {
@@ -95,7 +95,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    // ТА САМАЯ УНИВЕРСАЛЬНАЯ ФУНКЦИЯ
+    //
     private fun <T> executeLoad(
         stateSelector: (HomeUiState) -> PaginationState<T>,
         updateState: (HomeUiState, PaginationState<T>) -> HomeUiState,
