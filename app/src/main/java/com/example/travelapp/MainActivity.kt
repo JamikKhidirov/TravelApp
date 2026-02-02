@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
     ) { permission ->
         if (permission[Manifest.permission.ACCESS_FINE_LOCATION] == true
             || permission[Manifest.permission.ACCESS_COARSE_LOCATION] == true){
-            //Разрешение на  геолокацию есть можем вытаскивать геолокацию
+            //Разрешение на геолокацию есть можем вытаскивать геолокацию
         }
         else {
             Toast.makeText(this, "Без локации мы не найдем туры рядом", Toast.LENGTH_LONG).show()

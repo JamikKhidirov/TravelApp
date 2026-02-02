@@ -28,8 +28,8 @@ import com.example.home.uicomponents.attractionsSection
 import com.example.home.uicomponents.citiesSection
 import com.example.home.uicomponents.toursSection
 import com.example.home.viewmodel.HomeViewModel
-import com.example.uikit.LoadingScreen.HomeSkeletonScreen
-import com.example.uikit.NetWorkErrorScreen.NoInternetScreen
+import com.example.uikit.statescreen.LoadingScreen.HomeSkeletonScreen
+import com.example.uikit.statescreen.NetWorkErrorScreen.NoInternetScreen
 import com.example.uikit.uicomponents.search.SearchCard
 import com.example.uikit.uicomponents.vidjets.TabRefresh
 

@@ -1,4 +1,4 @@
-package com.example.uikit.LoadingScreen
+package com.example.uikit.statescreen.LoadingScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

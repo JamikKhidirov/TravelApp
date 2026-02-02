@@ -1,4 +1,4 @@
-package com.example.uikit.NetWorkErrorScreen
+package com.example.uikit.statescreen.NetWorkErrorScreen
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
