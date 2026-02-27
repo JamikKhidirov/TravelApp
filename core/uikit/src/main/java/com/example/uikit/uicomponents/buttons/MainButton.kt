@@ -36,7 +36,7 @@ fun MainButton(
             text = textButton,
             fontSize = 19.sp,
             color = Color.White,
-            modifier = Modifier.padding(vertical = 5.dp)
+            modifier = Modifier.padding(vertical = 10.dp)
         )
     }
 }

@@ -6,6 +6,7 @@ import com.example.home.action.HomeAction
 import com.example.home.state.HomeUiState
 import com.example.home.state.network.UiError
 import com.example.home.state.ui.PaginationState
+import com.example.location.domain.LocationClient
 import com.example.network.setvice.WegoExcursionService
 import com.example.network.setvice.WegoExcursionServiveV3
 import com.example.network.state.WeGo
@@ -29,7 +30,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     @WeGoApi(WeGo.CITIES) private val api: WegoExcursionService,
-    @WeGoApi(WeGo.ATTRACTION) private val attractionApi: WegoExcursionServiveV3
+    @WeGoApi(WeGo.ATTRACTION) private val attractionApi: WegoExcursionServiveV3,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
