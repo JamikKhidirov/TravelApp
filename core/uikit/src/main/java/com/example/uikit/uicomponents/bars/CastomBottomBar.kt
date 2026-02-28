@@ -71,7 +71,7 @@ fun CastomBottomBar(
             .background(color = glassColor)
             .border(
                 width = 1.dp,
-                color = Color.Gray.copy(0.4f),
+                color = Color.Gray.copy(0.3f),
                 shape =  RoundedCornerShape(
                     topStart = 15.dp,
                     topEnd = 15.dp
