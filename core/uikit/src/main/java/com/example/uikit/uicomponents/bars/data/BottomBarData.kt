@@ -1,10 +1,9 @@
 package com.example.uikit.uicomponents.bars.data
 
-
-
+import androidx.compose.ui.graphics.vector.ImageVector
 
 
 data class BottomBarData(
-    val icon: Int,
-    val title: String
+    val title: String,
+    val icon: ImageVector,
 )
