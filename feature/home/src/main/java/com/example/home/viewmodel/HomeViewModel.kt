@@ -28,7 +28,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+open class HomeViewModel @Inject constructor(
     @WeGoApi(WeGo.CITIES) private val api: WegoExcursionService,
     @WeGoApi(WeGo.ATTRACTION) private val attractionApi: WegoExcursionServiveV3,
 ) : ViewModel() {

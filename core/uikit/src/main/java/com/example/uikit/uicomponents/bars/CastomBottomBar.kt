@@ -2,6 +2,7 @@ package com.example.uikit.uicomponents.bars
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -40,26 +41,42 @@ import kotlin.collections.listOf
 
 @Composable
 @Preview(showBackground = true)
-fun CustomBottomBar(
+fun CastomBottomBar(
     modifier: Modifier = Modifier,
     currentTab: Int = 0,
     onTabSelected: (Int) -> Unit = {},
 ) {
-    val tabs = listOf(
-        BottomBarData(title = "Дом", icon = Icons.Default.Home),
-        BottomBarData(title = "Поиск", icon = Icons.Default.Search),
-        BottomBarData(title = "Избранные", icon = Icons.Default.Favorite),
-        BottomBarData(title = "Профиль", icon = Icons.Default.Person),
-    )
+    val tabs = remember {
+        listOf(
+            BottomBarData(title = "Дом", icon = Icons.Default.Home),
+            BottomBarData(title = "Поиск", icon = Icons.Default.Search),
+            BottomBarData(title = "Избранные", icon = Icons.Default.Favorite),
+            BottomBarData(title = "Профиль", icon = Icons.Default.Person),
+        )
+    }
 
-    val glassColor = MaterialTheme.colorScheme.background.copy(alpha = 0.2f)
+
+    val glassColor = MaterialTheme
+        .colorScheme.surface.copy(alpha = 0.65f)
 
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(30.dp))
+            .clip(
+                RoundedCornerShape(
+                topStart = 15.dp,
+                topEnd = 15.dp
+                )
+            )
             .background(color = glassColor)
-            .padding(vertical = 5.dp)
+            .border(
+                width = 1.dp,
+                color = Color.Gray.copy(0.4f),
+                shape =  RoundedCornerShape(
+                    topStart = 15.dp,
+                    topEnd = 15.dp
+                )
+            )
     ){
         NavigationBar(
             modifier = modifier,
@@ -67,22 +84,16 @@ fun CustomBottomBar(
             tonalElevation = 0.5.dp,
             )
         {
-            Spacer(
-                modifier = Modifier.width(5.dp)
-            )
 
             tabs.forEachIndexed { index, tab ->
                 NavigationBarItem(
-                    modifier = Modifier.padding()
-                        .padding(
-                            vertical = 5.dp,
-                        ),
+                    modifier = Modifier,
                     selected = index == currentTab,
                     onClick = { onTabSelected(index) },
                     label = {
                         Text(
                             tab.title,
-                            fontSize = 14.sp
+                            fontSize = 12.sp
                         ) },
                     icon = {
                         Icon(
@@ -94,12 +105,13 @@ fun CustomBottomBar(
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color.Blue.copy(0.6f),
                         indicatorColor = Color.Transparent,
-                        selectedTextColor = Color.Blue.copy(0.6f)
+                        selectedTextColor = Color.Blue.copy(0.6f),
+                        unselectedIconColor = Color.Gray.copy(0.7f),
+                        unselectedTextColor = Color.Gray.copy(0.7f)
                     )
                 )
             }
 
-            Spacer(modifier = Modifier.width(5.dp))
         }
     }
 }
