@@ -51,7 +51,7 @@ fun BottomBarCastom(
     }
 
     val glassColor = MaterialTheme
-        .colorScheme.surface.copy(alpha = 0.63f)
+        .colorScheme.background.copy(alpha = 0.63f)
 
     Row(
         modifier
