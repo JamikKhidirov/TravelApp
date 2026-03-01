@@ -39,7 +39,7 @@ import com.example.home.uicomponents.toursSection
 import com.example.home.viewmodel.HomeViewModel
 import com.example.uikit.statescreen.LoadingScreen.HomeSkeletonScreen
 import com.example.uikit.statescreen.NetWorkErrorScreen.NoInternetScreen
-import com.example.uikit.uicomponents.bars.CastomBottomBar
+import com.example.uikit.uicomponents.bars.BottomBarCastom
 import com.example.uikit.uicomponents.search.SearchCard
 import com.example.uikit.uicomponents.vidjets.TabRefresh
 
@@ -93,7 +93,7 @@ fun HomeScreen(
             .background(MaterialTheme.colorScheme.background),
 
         bottomBar = {
-            CastomBottomBar(
+            BottomBarCastom(
                 modifier = Modifier.fillMaxWidth()
                     .padding(horizontal = 10.dp),
                 currentTab = currentTab,
@@ -195,17 +195,22 @@ fun HomeScreenWithScaffoldPreview() {
         isGlobalLoading = false
     )
 
+    var currentTab by remember { mutableStateOf(0) }
+
     val navController = rememberNavController()
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
         bottomBar = {
-            CastomBottomBar(
+            BottomBarCastom(
                 modifier = Modifier.fillMaxWidth()
-                    .padding(horizontal = 10.dp),
-                currentTab = 0,
-                onTabSelected = {}
+                    .padding(horizontal = 10.dp)
+                    .padding(bottom = 10.dp),
+                currentTab = currentTab,
+                onTabSelected = {newTab ->
+                    currentTab = newTab
+                }
             )
         }
     ) { paddingValues ->
