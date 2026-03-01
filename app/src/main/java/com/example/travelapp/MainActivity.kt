@@ -2,7 +2,9 @@ package com.example.travelapp
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -52,6 +54,7 @@ class MainActivity : ComponentActivity() {
                 Manifest.permission.ACCESS_FINE_LOCATION
             )
         )
+        window.navigationBarColor = Color.TRANSPARENT
 
         setContent {
             TravelAppTheme {
