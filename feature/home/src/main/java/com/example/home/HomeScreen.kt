@@ -96,7 +96,7 @@ fun HomeScreen(
             BottomBarCastom(
                 modifier = Modifier.fillMaxWidth()
                     .padding(horizontal = 15.dp)
-                    .padding(bottom = 25.dp),
+                    .padding(bottom = 15.dp),
                 currentTab = currentTab,
                 onTabSelected = {newTab ->
                     currentTab = newTab
