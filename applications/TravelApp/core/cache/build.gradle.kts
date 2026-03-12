@@ -6,8 +6,11 @@ plugins {
     kotlin("kapt")
 }
 
+
+
+
 android {
-    namespace = "com.example.data"
+    namespace = "com.example.cache"
     compileSdk {
         version = release(36)
     }
@@ -17,6 +20,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+
     }
 
     buildTypes {
@@ -37,18 +41,27 @@ android {
     }
 }
 
+
+
 dependencies {
+
+
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+
+    implementation(libs.androidx.room.runtime)
+    kapt(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+
+
+    implementation(project(":applications:TravelApp:core:network"))
+
+    implementation(project(":domain"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    implementation("com.google.dagger:hilt-android:2.57.2")
-    kapt("com.google.dagger:hilt-compiler:2.57.2")
-
-    implementation(project(":applications:TravelApp:core:cache"))
-    implementation(project(":applications:TravelApp:core:network"))
-    implementation(project(":domain"))
 }

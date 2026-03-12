@@ -2,13 +2,13 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("org.jetbrains.kotlin.plugin.serialization")
     id("dagger.hilt.android.plugin")
+    id("org.jetbrains.kotlin.plugin.serialization")
     kotlin("kapt")
 }
 
 android {
-    namespace = "com.example.uikit"
+    namespace = "com.example.home"
     compileSdk {
         version = release(36)
     }
@@ -36,8 +36,7 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-
-    buildFeatures{
+    buildFeatures {
         compose = true
     }
 }
@@ -61,14 +60,16 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-    implementation(project(":applications:TravelApp:core:network"))
-    implementation(project(":core:common"))
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
-    implementation(libs.androidx.compose.material3.v130)
-    implementation(libs.androidx.compose.material.icons.extended)
-    implementation(libs.coil.compose)
+
+
+    implementation(project(":core:common"))
+    implementation(project(":core:uikit"))
+    implementation(project(":core:location"))
+    implementation(project(":applications:TravelApp:core:network"))
+
 
 }
