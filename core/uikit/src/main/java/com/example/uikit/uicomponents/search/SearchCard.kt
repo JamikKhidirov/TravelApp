@@ -2,6 +2,7 @@ package com.example.uikit.uicomponents.search
 
 import android.R
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,6 +35,8 @@ fun SearchCard(
     onClickSeacrCard: () -> Unit
 ){
 
+    val backColor = MaterialTheme.colorScheme.surface.copy(0.63f)
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -44,11 +47,11 @@ fun SearchCard(
         ),
         onClick = onClickSeacrCard,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = backColor
         ),
         border = BorderStroke(
                 width = 1.dp,
-                color = MaterialTheme.colorScheme.outlineVariant
+                color = MaterialTheme.colorScheme.outlineVariant.copy(0.5f)
             )
 
 
@@ -56,7 +59,7 @@ fun SearchCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-              ,
+                .background(backColor),
             verticalAlignment = Alignment.CenterVertically,
 
         ) {
@@ -66,14 +69,12 @@ fun SearchCard(
                 modifier = Modifier
                     .padding(10.dp)
                     .size(24.dp),
-                tint = Color.Blue,
+                tint = Color.LightGray.copy(0.7f),
             )
 
             Text(
                 text = "Город, экскурсия, билет, достопримечательности",
-                modifier = Modifier
-                    .padding(end = 10.dp)
-                ,
+                modifier = Modifier,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 color = Color.Gray,
