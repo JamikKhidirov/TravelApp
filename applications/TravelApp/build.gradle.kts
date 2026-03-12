@@ -79,17 +79,19 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    implementation(project(":core:cache"))
+    implementation(project(":applications:TravelApp:core:cache"))
     implementation(project(":core:common"))
-    implementation(project(":core:network"))
+    implementation(project(":applications:TravelApp:core:network"))
     implementation(project(":core:location"))
     implementation(project(":core:uikit"))
     implementation(project(":data"))
     implementation(project(":domain"))
-    implementation(project(":features:TravelApp:home"))
-    implementation(project(":features:TravelApp:search"))
+    implementation(project(":applications:TravelApp:feature:home"))
+    implementation(project(":applications:TravelApp:feature:search"))
+    implementation(project(":applications:TravelApp:feature:favorites"))
+    implementation(project(":applications:TravelApp:navigation"))
 
-    implementation(project(":navigation"))
+
 
 
     // ... ваши зависимости

@@ -48,7 +48,7 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.57.2")
     kapt("com.google.dagger:hilt-compiler:2.57.2")
 
-    implementation(project(":core:cache"))
-    implementation(project(":core:network"))
+    implementation(project(":applications:TravelApp:core:cache"))
+    implementation(project(":applications:TravelApp:core:network"))
     implementation(project(":domain"))
 }

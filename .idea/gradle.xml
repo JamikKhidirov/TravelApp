@@ -12,12 +12,20 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/applications" />
             <option value="$PROJECT_DIR$/applications/Travel Notification" />
+            <option value="$PROJECT_DIR$/applications/Travel Notification/core" />
+            <option value="$PROJECT_DIR$/applications/Travel Notification/feature" />
             <option value="$PROJECT_DIR$/applications/TravelApp" />
+            <option value="$PROJECT_DIR$/applications/TravelApp/core" />
+            <option value="$PROJECT_DIR$/applications/TravelApp/core/cache" />
+            <option value="$PROJECT_DIR$/applications/TravelApp/core/network" />
+            <option value="$PROJECT_DIR$/applications/TravelApp/feature" />
+            <option value="$PROJECT_DIR$/applications/TravelApp/feature/favorites" />
+            <option value="$PROJECT_DIR$/applications/TravelApp/feature/home" />
+            <option value="$PROJECT_DIR$/applications/TravelApp/feature/search" />
+            <option value="$PROJECT_DIR$/applications/TravelApp/navigation" />
             <option value="$PROJECT_DIR$/core" />
-            <option value="$PROJECT_DIR$/core/cache" />
             <option value="$PROJECT_DIR$/core/common" />
             <option value="$PROJECT_DIR$/core/location" />
-            <option value="$PROJECT_DIR$/core/network" />
             <option value="$PROJECT_DIR$/core/sync" />
             <option value="$PROJECT_DIR$/core/uikit" />
             <option value="$PROJECT_DIR$/core/worker" />
@@ -25,9 +33,6 @@
             <option value="$PROJECT_DIR$/domain" />
             <option value="$PROJECT_DIR$/features" />
             <option value="$PROJECT_DIR$/features/TravelApp" />
-            <option value="$PROJECT_DIR$/features/TravelApp/favorites" />
-            <option value="$PROJECT_DIR$/features/TravelApp/home" />
-            <option value="$PROJECT_DIR$/features/TravelApp/search" />
             <option value="$PROJECT_DIR$/features/TravelNotification" />
             <option value="$PROJECT_DIR$/navigation" />
           </set>

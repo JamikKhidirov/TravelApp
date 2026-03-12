@@ -54,8 +54,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation(project(":features:TravelApp:home"))
-    implementation(project(":features:TravelApp:search"))
+    implementation(project(":applications:TravelApp:feature:home"))
+    implementation(project(":applications:TravelApp:feature:search"))
     implementation(project(":core:common"))
 
 

@@ -65,11 +65,11 @@ dependencies {
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
-    implementation(project(":core:network"))
+
     implementation(project(":core:common"))
     implementation(project(":core:uikit"))
-    implementation(project(":core:network"))
     implementation(project(":core:location"))
+    implementation(project(":applications:TravelApp:core:network"))
 
 
 }

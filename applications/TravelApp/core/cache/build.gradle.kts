@@ -54,7 +54,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
 
 
-    implementation(project(":core:network"))
+    implementation(project(":applications:TravelApp:core:network"))
 
     implementation(project(":domain"))
 
