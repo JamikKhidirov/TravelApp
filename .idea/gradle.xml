@@ -10,7 +10,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/applications" />
+            <option value="$PROJECT_DIR$/applications/Travel Notification" />
+            <option value="$PROJECT_DIR$/applications/TravelApp" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/core/cache" />
             <option value="$PROJECT_DIR$/core/common" />
@@ -21,10 +23,12 @@
             <option value="$PROJECT_DIR$/core/worker" />
             <option value="$PROJECT_DIR$/data" />
             <option value="$PROJECT_DIR$/domain" />
-            <option value="$PROJECT_DIR$/feature" />
-            <option value="$PROJECT_DIR$/feature/favorites" />
-            <option value="$PROJECT_DIR$/feature/home" />
-            <option value="$PROJECT_DIR$/feature/search" />
+            <option value="$PROJECT_DIR$/features" />
+            <option value="$PROJECT_DIR$/features/TravelApp" />
+            <option value="$PROJECT_DIR$/features/TravelApp/favorites" />
+            <option value="$PROJECT_DIR$/features/TravelApp/home" />
+            <option value="$PROJECT_DIR$/features/TravelApp/search" />
+            <option value="$PROJECT_DIR$/features/TravelNotification" />
             <option value="$PROJECT_DIR$/navigation" />
           </set>
         </option>
