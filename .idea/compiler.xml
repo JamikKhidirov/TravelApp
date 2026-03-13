@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="17" />
+    <bytecodeTargetLevel target="17">
+      <module name="TravelApp.applications.Travel Notification" target="21" />
+      <module name="TravelApp.core.cache" target="21" />
+      <module name="TravelApp.core.network" target="21" />
+      <module name="TravelApp.features.TravelApp.favorites" target="21" />
+      <module name="TravelApp.features.TravelApp.home" target="21" />
+      <module name="TravelApp.features.TravelApp.search" target="21" />
+      <module name="TravelApp.Travel_Notification" target="21" />
+      <module name="TravelApp.travelnotifi" target="21" />
+    </bytecodeTargetLevel>
   </component>
 </project>
