@@ -1,14 +1,11 @@
 package com.example.home
 
-import com.example.home.action.HomeAction
-import com.example.home.viewmodel.HomeViewModel
 import com.example.network.wegodata.attractiondata.Attraction
 import com.example.network.wegodata.citiesdata.City
 import com.example.network.wegodata.productpopular.Tour
 import com.example.network.wegodata.productpopular.TourAuthor
 import com.example.network.wegodata.productpopular.TourCity
 import com.example.network.wegodata.productpopular.TourTags
-import kotlinx.coroutines.flow.MutableStateFlow
 
 
 object FakeData {
@@ -63,10 +60,14 @@ object FakeData {
             reviewsCount = 127,
             ratingsCount = 135,
             category = "Туры",
-            city = TourCity(
+            city = City(
                 id = 1,
                 name = "Махачкала",
-                slug = "Махачкала"
+                slug = "Махачкала",
+                preview = "",
+                itemsCount = 2,
+                country = ""
+
             ),
             duration = "2 часа",
             durationMin = 120,
