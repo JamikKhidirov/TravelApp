@@ -38,7 +38,7 @@ fun SearchCard(
     onClickSeacrCard: () -> Unit
 ){
 
-    val backColor = MaterialTheme.colorScheme.surface.copy(0.53f)
+    val backColor = MaterialTheme.colorScheme.surface
 
     Card(
         modifier = modifier

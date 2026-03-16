@@ -64,6 +64,8 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.coil.compose)
 
 
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.36.0")
