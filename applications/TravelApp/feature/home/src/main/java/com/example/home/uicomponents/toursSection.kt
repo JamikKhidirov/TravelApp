@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.sp
 import com.example.home.action.HomeAction
 import com.example.home.state.HomeUiState
 import com.example.uikit.uicomponents.dowloads.items.PopularTourItemShimmer
-import com.example.uikit.uicomponents.vidjets.PopularTourItem
+import com.example.home.uikit.PopularTourItem
 
 
 fun LazyListScope.toursSection(
