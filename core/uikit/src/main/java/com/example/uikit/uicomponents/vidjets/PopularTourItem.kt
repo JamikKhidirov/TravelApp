@@ -51,8 +51,8 @@ fun PopularTourItem(
         modifier = modifier
             .fillMaxWidth()// Чуть шире, чем города, так как информации больше
             .height(380.dp)
-            .padding(vertical = 8.dp)
-            .padding(horizontal = 15.dp),
+            .padding(vertical = 10.dp)
+            .padding(horizontal = 8.dp),
         shape = RoundedCornerShape(24.dp), // Более мягкие углы
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 6.dp),
         onClick = onClick
@@ -93,23 +93,33 @@ fun PopularTourItem(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 // Верхняя часть: Рейтинг или бейдж (если есть)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Surface(
-                        color = Color.White.copy(alpha = 0.9f),
-                        shape = RoundedCornerShape(12.dp)
+                if (tour.rating != null){
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
                     ) {
-                        Text(
-                            text = "⭐ ${tour.rating}",
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Bold
-                        )
+                        Surface(
+                            color = Color.White.copy(alpha = 0.9f),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = "⭐ ${tour.rating}",
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.surface
+                            )
+                        }
                     }
+
                 }
 
+                else {
+                    /*
+                    Если рейтинг равен null тоесть если оценки нет мы говорим что
+                    экскурсия новая
+                    */
+                }
                 // Нижняя часть: Инфо о туре
                 Column {
                     Text(
@@ -118,15 +128,23 @@ fun PopularTourItem(
                         color = Color.White,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
                     )
 
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-                        text = "${tour.city.name} • ${tour.duration}",
+                        text = "Город: ${tour.city.name}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.White.copy(alpha = 0.8f)
+                        color = Color.White,
+                        fontSize = 15.sp,
+                    )
+
+                    Text(
+                        text = "Продолжительность: ${tour.duration}",
+                        color = Color.White,
+                        fontSize = 13.sp,
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
