@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.gms.google-services") version "4.4.4" // плагин Firebase
 
 
     id("dagger.hilt.android.plugin")
@@ -96,6 +97,13 @@ dependencies {
     implementation(project(":applications:TravelApp:navigation"))
 
 
+
+    implementation(platform("com.google.firebase:firebase-bom:34.11.0"))
+    implementation("com.google.firebase:firebase-messaging-ktx:24.1.2")
+    implementation("androidx.core:core-ktx:1.18.0")
+    implementation("androidx.compose.ui:ui:1.10.5")
+    implementation("androidx.compose.material3:material3:1.4.0")
+    implementation("androidx.activity:activity-compose:1.13.0")
 
 
     // ... ваши зависимости
