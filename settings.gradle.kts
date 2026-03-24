@@ -48,3 +48,4 @@ include(":applications:Travel Notification:feature")
 
 include(":applications:Travel Notification:feature:notification")
 include(":applications:Travel Notification:core:pushing")
+include(":applications:Travel Notification:core:uikit")
