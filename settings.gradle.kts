@@ -46,3 +46,5 @@ include(":applications:TravelApp:core")
 include(":applications:Travel Notification:core")
 include(":applications:Travel Notification:feature")
 
+include(":applications:Travel Notification:feature:notification")
+include(":applications:Travel Notification:core:pushing")

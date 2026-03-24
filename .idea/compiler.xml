@@ -3,6 +3,7 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="17">
       <module name="TravelApp.applications.Travel Notification" target="21" />
+      <module name="TravelApp.applications.Travel_Notification.core.pushing" target="21" />
       <module name="TravelApp.core.cache" target="21" />
       <module name="TravelApp.core.network" target="21" />
       <module name="TravelApp.features.TravelApp.favorites" target="21" />
