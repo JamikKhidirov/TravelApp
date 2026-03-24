@@ -1,9 +1,6 @@
 package com.example.network.wegodata.productpopular
 
-
-
-
-
+import com.example.network.wegodata.citiesdata.City
 
 
 data class Tour(
@@ -20,7 +17,7 @@ data class Tour(
     val reviewsCount: Int,
     val ratingsCount: Int,
     val category: String?,
-    val city: TourCity,
+    val city: City,
     val duration: String?,
     val durationMin: Int?,
     val durationMax: Int?,

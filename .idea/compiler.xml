@@ -11,6 +11,7 @@
       <module name="TravelApp.features.TravelApp.search" target="21" />
       <module name="TravelApp.Travel_Notification" target="21" />
       <module name="TravelApp.travelnotifi" target="21" />
+      <module name="TravelApp.uikit" target="21" />
     </bytecodeTargetLevel>
   </component>
 </project>

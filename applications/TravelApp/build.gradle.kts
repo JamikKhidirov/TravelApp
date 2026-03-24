@@ -79,6 +79,10 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
+    implementation("androidx.core:core-splashscreen:1.2.0")
+
+
+
     implementation(project(":applications:TravelApp:core:cache"))
     implementation(project(":core:common"))
     implementation(project(":applications:TravelApp:core:network"))

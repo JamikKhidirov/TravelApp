@@ -1,6 +1,7 @@
 package com.example.home
 
 import android.Manifest
+import android.view.Window
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -15,6 +16,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -42,6 +45,7 @@ import com.example.uikit.statescreen.NetWorkErrorScreen.NoInternetScreen
 import com.example.uikit.uicomponents.bars.BottomBarCastom
 import com.example.uikit.uicomponents.search.SearchCard
 import com.example.uikit.uicomponents.vidjets.TabRefresh
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 
 @Composable
@@ -53,7 +57,10 @@ fun HomeScreen(
 
     var currentTab by remember { mutableStateOf(0) }
 
+
     val context = LocalContext.current
+
+
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -93,15 +100,7 @@ fun HomeScreen(
             .background(MaterialTheme.colorScheme.background),
 
         bottomBar = {
-            BottomBarCastom(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(horizontal = 15.dp)
-                    .padding(bottom = 15.dp),
-                currentTab = currentTab,
-                onTabSelected = {newTab ->
-                    currentTab = newTab
-                }
-            )
+
         }
     ) {paddingValues ->
 

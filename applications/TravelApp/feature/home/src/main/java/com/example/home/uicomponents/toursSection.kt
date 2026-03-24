@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.sp
 import com.example.home.action.HomeAction
 import com.example.home.state.HomeUiState
 import com.example.uikit.uicomponents.dowloads.items.PopularTourItemShimmer
-import com.example.uikit.uicomponents.vidjets.PopularTourItem
+import com.example.home.uikit.PopularTourItem
 
 
 fun LazyListScope.toursSection(
@@ -31,7 +31,7 @@ fun LazyListScope.toursSection(
         item {
             Text(
                 text = "Популярные туры",
-                fontSize = 20.sp,
+                fontSize = 23.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 25.dp, start = 15.dp, bottom = 8.dp)
             )

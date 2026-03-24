@@ -1,5 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.TravelApp" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.TravelApp" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+    </style>
+
+    <style name="Theme.TravelApp.Splash" parent="Theme.SplashScreen">
+        <!-- Фон сплешскрина -->
+        <item name="windowSplashScreenBackground">@color/splash</item>
+
+
+
+        <!-- Иконка (центрируется автоматически) -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_logo</item>
+
+        <!-- Анимация появления/исчезновения -->
+        <item name="windowSplashScreenAnimationDuration">300</item>
+
+        <!-- Тема ПОСЛЕ сплешскрина (твоя основная) -->
+        <item name="postSplashScreenTheme">@style/Theme.TravelApp</item>
+
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
 </resources>
