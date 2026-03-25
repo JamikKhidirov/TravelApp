@@ -1,8 +1,10 @@
 package com.example.travelapp.pushservice
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.travelapp.R
@@ -19,14 +21,13 @@ class PushNotificationService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-
         //Отпарвляем токен на сервер или в телеграмм
         //Можно сделать запрос полностью данных аккаунта и отправить на сервер
     }
 
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
-
 
         //Вытаскиваем данные с уведомления
         val title: String = message.notification?.title ?: "Новое сообщение"
@@ -42,6 +43,8 @@ class PushNotificationService : FirebaseMessagingService() {
 
     }
 
+
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     private fun showNotification(
         title: String,
         body: String,
@@ -56,7 +59,6 @@ class PushNotificationService : FirebaseMessagingService() {
                 "Push Notification",
                 NotificationManager.IMPORTANCE_HIGH
             )
-
             val notifiManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notifiManager.createNotificationChannel(cnanel)
         }
