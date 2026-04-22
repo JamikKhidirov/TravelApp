@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // ✅ 2. ПРИНУДИТЕЛЬНО делаем nav bar прозрачным ПОСЛЕ setContent
+        //ПРИНУДИТЕЛЬНО делаем nav bar прозрачным
         WindowCompat.getInsetsController(window, window.decorView)
             .isAppearanceLightNavigationBars = false
         window.navigationBarColor = Color.TRANSPARENT

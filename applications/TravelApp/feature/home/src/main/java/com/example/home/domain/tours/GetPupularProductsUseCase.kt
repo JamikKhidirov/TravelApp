@@ -1,9 +1,8 @@
-package com.example.home.domain
+package com.example.home.domain.tours
 
 import com.example.network.setvice.WegoExcursionService
 import com.example.network.state.WeGo
 import com.example.network.state.WeGoApi
-import com.example.network.wegodata.citiesdata.CityResponse
 import com.example.network.wegodata.productpopular.TourResponse
 import jakarta.inject.Inject
 import retrofit2.Response
@@ -17,7 +16,7 @@ class GetPupularProductsUseCase @Inject constructor(
     @WeGoApi(WeGo.CITIES) private val api: WegoExcursionService
 ){
     suspend operator fun invoke(
-        page: Int,
+        page: Int, 
         attraction: Int? = null,
         country: Int? = null,
         popularity: String?

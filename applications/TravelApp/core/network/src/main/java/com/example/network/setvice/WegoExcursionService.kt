@@ -44,6 +44,8 @@ interface WegoExcursionService {
 
 
 
+
+    //Поиск городов и экскурсий
     @GET("search")
     suspend fun searchList(
         // Строковый поисковый запрос Любые строковые

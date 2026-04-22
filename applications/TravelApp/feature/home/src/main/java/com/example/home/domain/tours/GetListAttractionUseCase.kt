@@ -1,4 +1,4 @@
-package com.example.home.domain
+package com.example.home.domain.tours
 
 import com.example.network.setvice.WegoExcursionServiveV3
 import com.example.network.state.WeGo
