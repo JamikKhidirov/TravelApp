@@ -1,6 +1,7 @@
 package com.example.travelapp
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
@@ -8,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -26,6 +28,7 @@ import com.example.navigation.NavHostApp
 import com.example.travelapp.ui.theme.TravelAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -48,6 +51,13 @@ class MainActivity : ComponentActivity() {
         if (permission[Manifest.permission.ACCESS_FINE_LOCATION] == true
             || permission[Manifest.permission.ACCESS_COARSE_LOCATION] == true){
             //Разрешение на геолокацию есть можем вытаскивать геолокацию
+
+
+            // В колбэке разрешений:
+            manageLocationService(LocationService.ACTION_START)
+            startLocationUpdates()
+
+
         }
         else {
             Toast.makeText(this, "Без локации мы не найдем туры рядом", Toast.LENGTH_LONG).show()
@@ -98,6 +108,38 @@ class MainActivity : ComponentActivity() {
         window.navigationBarColor = Color.TRANSPARENT
         window.isNavigationBarContrastEnforced = false
     }
+
+    private fun startLocationUpdates() {
+        lifecycleScope.launch {
+            // Используем твой метод Flow
+            location.getLocationUpdates(5000L) // например, каждые 5 сек
+                .catch { e ->
+                    // Обработка ошибок (например, если GPS выключен)
+                    Log.e("Location", "Ошибка получения локации: ${e.message}")
+                }
+                .collect { location ->
+                    if (location != null) {
+                        currentLocation = location
+                        Log.d("Location", "Новая локация: ${location.latitude}, ${location.longitude}")
+                        // Здесь можно обновить состояние или отправить данные в ViewModel
+                    }
+                }
+        }
+    }
+
+
+    private fun manageLocationService(action: String) {
+        val intent = Intent(this, LocationService::class.java).apply {
+            this.action = action
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
+        }
+    }
+
+
 
 
 }
