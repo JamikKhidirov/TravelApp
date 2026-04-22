@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
 
         // 3. Таймер на 2 секунды
         lifecycleScope.launch {
-            delay(1500)
+            delay(1000)
             keepSplashScreen = false
         }
 
