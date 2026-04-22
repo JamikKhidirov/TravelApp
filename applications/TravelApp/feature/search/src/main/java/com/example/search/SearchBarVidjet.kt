@@ -53,7 +53,7 @@ fun SearchBarVidjet(
                     .size(24.dp)
                     .clip(RoundedCornerShape(30.dp))// Фиксированный размер
                     .clickable { navHostController.popBackStack() },
-                tint = Color.Black
+                tint = MaterialTheme.colorScheme.onSurface
 
             )
 

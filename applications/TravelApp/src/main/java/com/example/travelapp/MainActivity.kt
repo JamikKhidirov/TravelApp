@@ -6,6 +6,8 @@ import android.graphics.Color
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,14 +15,18 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.core.os.postDelayed
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.example.location.data.LocationClientImpl
 import com.example.location.domain.LocationClient
 import com.example.navigation.NavHostApp
 import com.example.travelapp.ui.theme.TravelAppTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -32,6 +38,9 @@ class MainActivity : ComponentActivity() {
 
     //Текущая геолокация
     var currentLocation: Location? = null
+
+
+    private var keepSplashScreen: Boolean = true
 
     private val locationPermissionLauncher = registerForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -49,10 +58,22 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         val splashScreen = installSplashScreen()
+
+        //Устанавливаем условие удержания сплеша
+        splashScreen.setKeepOnScreenCondition {
+            keepSplashScreen
+        }
+
+        // 3. Таймер на 2 секунды
+        lifecycleScope.launch {
+            delay(1500)
+            keepSplashScreen = false
+        }
 
         locationPermissionLauncher.launch(
             arrayOf(

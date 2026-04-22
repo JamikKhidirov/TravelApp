@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
@@ -55,7 +56,10 @@ fun SearchBar(
             .height(56.dp)
             .then(focusModifier),
         singleLine = true,
-        textStyle = TextStyle(fontSize = 19.sp),
+        cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+        textStyle = TextStyle(
+            fontSize = 19.sp,
+            color = MaterialTheme.colorScheme.onSurface),
         // Здесь мы настраиваем внешний вид через DecorationBox
         decorationBox = { innerTextField ->
             TextFieldDefaults.DecorationBox(
@@ -91,10 +95,10 @@ fun SearchBar(
                     unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                     focusedContainerColor = MaterialTheme.colorScheme.surface,
                     disabledContainerColor = MaterialTheme.colorScheme.surface,
-
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
+                    disabledIndicatorColor = Color.Transparent,
+                    cursorColor = MaterialTheme.colorScheme.onSurface
                 )
             )
         }
