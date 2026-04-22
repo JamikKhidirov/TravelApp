@@ -64,7 +64,7 @@ fun SearchBar(
                 singleLine = true,
                 visualTransformation = VisualTransformation.None,
                 interactionSource = remember { MutableInteractionSource() },
-                contentPadding = PaddingValues(start = 15.dp),
+                contentPadding = PaddingValues(),
                 placeholder = {
                     Text(
                         text = "Город, экскурсия, билет, доставка",
