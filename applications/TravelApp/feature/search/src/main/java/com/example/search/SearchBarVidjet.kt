@@ -44,7 +44,7 @@ fun SearchBarVidjet(
             verticalAlignment = Alignment.CenterVertically,
         ) {
 
-            // ← ИСПРАВЛЕНО: Icon + clickable вместо IconButton
+
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "Кнопка назад",
