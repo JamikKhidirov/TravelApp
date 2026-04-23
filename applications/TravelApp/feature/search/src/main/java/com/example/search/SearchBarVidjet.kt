@@ -45,17 +45,26 @@ fun SearchBarVidjet(
         ) {
 
 
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Кнопка назад",
+            IconButton(
                 modifier = Modifier
                     .padding(start = 16.dp)
-                    .size(24.dp)
-                    .clip(RoundedCornerShape(30.dp))// Фиксированный размер
-                    .clickable { navHostController.popBackStack() },
-                tint = MaterialTheme.colorScheme.onSurface
+                    .size(24.dp),
+                onClick = {
+                    navHostController.popBackStack()
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Кнопка назад",
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(30.dp)),// Фиксированный размер
+                    tint = MaterialTheme.colorScheme.onSurface
 
-            )
+                )
+            }
+
+
+
 
 
             SearchBar(

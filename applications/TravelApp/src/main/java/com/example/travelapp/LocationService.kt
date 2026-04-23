@@ -35,12 +35,6 @@ class LocationService : Service() {
     override fun onBind(intent: Intent): IBinder? = null
 
 
-    override fun onCreate() {
-        super.onCreate()
-
-    }
-
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
         when (intent?.action) {
@@ -52,7 +46,7 @@ class LocationService : Service() {
     }
 
     private fun start() {
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         val channelId = "location_channel"
 
         // Создаем канал уведомлений (для Android 8.0+)
@@ -80,8 +74,7 @@ class LocationService : Service() {
                     Log.d("LocationService", "Новая позиция: ${it.latitude}, ${it.longitude}")
                     // Здесь можно отправить EventBus, Broadcast или обновить БД
                 }
-            }
-            .launchIn(serviceScope)
+            }.launchIn(serviceScope)
     }
 
     private fun stop() {
