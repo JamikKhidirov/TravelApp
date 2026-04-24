@@ -56,7 +56,6 @@ dependencies {
 
     implementation(project(":applications:TravelApp:core:network"))
 
-    implementation(project(":domain"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

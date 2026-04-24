@@ -89,8 +89,6 @@ dependencies {
     implementation(project(":applications:TravelApp:core:network"))
     implementation(project(":core:location"))
     implementation(project(":core:uikit"))
-    implementation(project(":data"))
-    implementation(project(":domain"))
     implementation(project(":applications:TravelApp:feature:home"))
     implementation(project(":applications:TravelApp:feature:search"))
     implementation(project(":applications:TravelApp:feature:favorites"))
