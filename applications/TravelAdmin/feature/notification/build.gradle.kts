@@ -41,7 +41,7 @@ android {
 
 dependencies {
 
-    implementation(project(":applications:Travel Notification:core:uikit"))
+    implementation(project(":applications:TravelAdmin:core:uikit"))
 
     //Зависимости только для этой фичи
 
