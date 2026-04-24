@@ -64,9 +64,6 @@ fun SearchBarVidjet(
             }
 
 
-
-
-
             SearchBar(
                 modifier = Modifier
                     .weight(1f)
