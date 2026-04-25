@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/splash_logo_dental"
+    android:insetLeft="35dp"
+    android:insetTop="60dp"
+    android:insetRight="35dp"
+    android:insetBottom="60dp"
+    />

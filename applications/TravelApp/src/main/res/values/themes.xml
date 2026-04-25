@@ -15,9 +15,8 @@
 
 
         <!-- Иконка (центрируется автоматически) -->
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_logo</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_inset_icon</item>
 
-        <item name="android:windowSplashScreenBrandingImage" tools:targetApi="31">@drawable/splash_logo_dental</item>
         <!-- Анимация появления/исчезновения -->
         <item name="windowSplashScreenAnimationDuration">300</item>
 
