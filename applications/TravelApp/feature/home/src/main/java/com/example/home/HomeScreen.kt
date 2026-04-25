@@ -104,19 +104,23 @@ fun HomeScreen(
         }
     ) {paddingValues ->
 
-        when{
+        when {
+            // Только ИЗНАЧАЛЬНО пусто + глобальный loading
             uiState.isGlobalLoading &&
                     uiState.citiesState.items.isEmpty() &&
+                    uiState.attractionState.items.isEmpty() &&  // ← Добавлено
                     uiState.popularToursState.items.isEmpty() -> {
                 HomeSkeletonScreen()
             }
-
-            uiState.error == UiError.NoInternet -> {
+            // Глобальная ошибка ТОЛЬКО если ВСЕ пусто
+            uiState.error != null &&
+                    uiState.citiesState.items.isEmpty() &&
+                    uiState.attractionState.items.isEmpty() &&
+                    uiState.popularToursState.items.isEmpty() -> {
                 NoInternetScreen(onRetry = {
                     viewModel.handleAction(HomeAction.Retry)
                 })
             }
-
             else -> {
                 BottomHomeScreen(
                     paddingValues = paddingValues,
@@ -126,7 +130,6 @@ fun HomeScreen(
                 )
             }
         }
-
     }
 }
 

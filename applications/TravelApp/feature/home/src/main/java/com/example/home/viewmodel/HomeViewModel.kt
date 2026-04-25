@@ -94,42 +94,48 @@ open class HomeViewModel @Inject constructor(
         if (currentPagination.isLoading || currentPagination.isEndReached) return
 
         _uiState.update { state ->
-            val pState = stateSelector(state)
-            updateState(state, pState.copy(isLoading = true))
+            val pState = stateSelector(state).copy(isLoading = true, error = null)  // ← Сброс локальной ошибки
+            updateState(state, pState)
         }
 
         try {
             val response = call(currentPagination.page)
             if (response.isSuccessful) {
                 val newItems = extractList<T>(response)
-
                 _uiState.update { state ->
                     val pState = stateSelector(state)
                     updateState(state, pState.copy(
                         items = pState.items + newItems,
                         page = pState.page + 1,
                         isLoading = false,
-                        isEndReached = newItems.isEmpty()
+                        isEndReached = newItems.isEmpty(),
+                        error = null  // ← Сброс при успехе
                     ))
                 }
             } else {
-                _uiState.update { it.copy(error = UiError.Unknown("Ошибка сервера: ${response.code()}")) }
+                // ← ЛОКАЛЬНАЯ ошибка!
+                _uiState.update { state ->
+                    val pState = stateSelector(state).copy(
+                        error = UiError.Unknown("Ошибка сервера: ${response.code()}"),
+                        isLoading = false
+                    )
+                    updateState(state, pState)
+                }
             }
         } catch (e: Exception) {
-            // ЛОГИКА ПРОВЕРКИ ИНТЕРНЕТА
             val errorType = when (e) {
                 is java.net.UnknownHostException,
                 is java.net.ConnectException,
                 is java.io.IOException -> UiError.NoInternet
                 else -> UiError.Unknown(e.message)
             }
-
-            _uiState.update { it.copy(error = errorType) }
-        } finally {
-            // Всегда выключаем индикатор загрузки для конкретной секции
+            // ← ЛОКАЛЬНАЯ ошибка!
             _uiState.update { state ->
-                val pState = stateSelector(state)
-                updateState(state, pState.copy(isLoading = false))
+                val pState = stateSelector(state).copy(
+                    error = errorType,
+                    isLoading = false
+                )
+                updateState(state, pState)
             }
         }
     }
