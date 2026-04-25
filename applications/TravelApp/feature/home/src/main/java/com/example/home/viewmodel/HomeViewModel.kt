@@ -3,6 +3,9 @@ package com.example.home.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.home.action.HomeAction
+import com.example.home.domain.tours.GetListAttractionUseCase
+import com.example.home.domain.tours.GetListCitiesUseCase
+import com.example.home.domain.tours.GetPupularProductsUseCase
 import com.example.home.state.HomeUiState
 import com.example.home.state.network.UiError
 import com.example.home.state.ui.PaginationState
@@ -29,8 +32,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 open class HomeViewModel @Inject constructor(
-    @WeGoApi(WeGo.CITIES) private val api: WegoExcursionService,
-    @WeGoApi(WeGo.ATTRACTION) private val attractionApi: WegoExcursionServiveV3,
+    private val getListAttractionUseCase: GetListAttractionUseCase,
+    private val getListCitiesUseCase: GetListCitiesUseCase,
+    private val getPupularProductsUseCase: GetPupularProductsUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -143,17 +147,17 @@ open class HomeViewModel @Inject constructor(
     private suspend fun loadCities() = executeLoadInternal(
         stateSelector = { it.citiesState },
         updateState = { old, new -> old.copy(citiesState = new) }
-    ) { page -> api.getListCities(page = page, popular = _uiState.value.isPopularTab) }
+    ) { page -> getListCitiesUseCase(page = page, popular = _uiState.value.isPopularTab) }
 
     private suspend fun loadAttractions() = executeLoadInternal(
         stateSelector = { it.attractionState },
         updateState = { old, new -> old.copy(attractionState = new) }
-    ) { page -> attractionApi.getListattraction(page = page) }
+    ) { page -> getListAttractionUseCase(page = page) }
 
     private suspend fun loadTours() = executeLoadInternal(
         stateSelector = { it.popularToursState },
         updateState = { old, new -> old.copy(popularToursState = new) }
-    ) { page -> api.getPopularProducts(page = page, attraction = null, country = null, popularity = "popularity") }
+    ) { page -> getPupularProductsUseCase(page = page, country = null, attraction = null, popularity = "popularity") }
 
     @Suppress("UNCHECKED_CAST")
     private fun <T> extractList(response: Response<*>): List<T> {

@@ -15,7 +15,7 @@ class GetListCitiesUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         page: Int,
-        country: Int,
+        country: Int = 0,
         popular: Boolean,
     ): Response<CityResponse>
     {
