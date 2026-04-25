@@ -27,7 +27,6 @@ import javax.inject.Inject
 
 
 
-
 @HiltViewModel
 open class HomeViewModel @Inject constructor(
     @WeGoApi(WeGo.CITIES) private val api: WegoExcursionService,
@@ -41,74 +40,59 @@ open class HomeViewModel @Inject constructor(
         initialLoad()
     }
 
-
-
-    // 1. ПАРАЛЛЕЛЬНАЯ ЗАГРУЗКА ВСЕГО
     private fun initialLoad() {
         viewModelScope.launch {
-            // Включаем общий лоадер перед стартом всех задач
+            // Сбрасываем старую ошибку и включаем лоадер
             _uiState.update { it.copy(isGlobalLoading = true, error = null) }
 
-            // Запускаем 3 дочерние корутины параллельно
+            // Запускаем параллельно
             val cities = launch { loadCities() }
             val attractions = launch { loadAttractions() }
             val tours = launch { loadTours() }
 
-            // Ждем, пока ВСЕ ТРИ завершатся (успешно или с ошибкой)
             joinAll(cities, attractions, tours)
 
-            // Выключаем лоадер только когда всё закончилось
             _uiState.update { it.copy(isGlobalLoading = false) }
         }
     }
 
-    // 4. ОБРАБОТКА ЭКШЕНОВ (теперь проще)
     fun handleAction(action: HomeAction) {
         when (action) {
             HomeAction.LoadMoreCities -> viewModelScope.launch { loadCities() }
             HomeAction.LoadMoreAttractions -> viewModelScope.launch { loadAttractions() }
             HomeAction.LoadMoreTours -> viewModelScope.launch { loadTours() }
-            HomeAction.Retry -> initialLoad()
+
+            HomeAction.Retry -> {
+                // Полный перезапуск данных
+                initialLoad()
+            }
+
             is HomeAction.ChangeTab -> {
-                _uiState.update { it.copy(isPopularTab = action.isPopular, citiesState = PaginationState()) }
+                _uiState.update {
+                    it.copy(
+                        isPopularTab = action.isPopular,
+                        citiesState = PaginationState(),
+                        error = null // Сбрасываем ошибку при смене таба
+                    )
+                }
                 viewModelScope.launch { loadCities() }
             }
 
-            is HomeAction.OnCityClick -> {
-                // Здесь будет: navigationController.navigate("city/${action.city.id}")
-            }
-
-            is HomeAction.OnAttractionClick -> {
-                //Открытие экрана аттракционов
-            }
-            is HomeAction.OnTourClick -> {
-                //Открытие экрана Туров
-            }
-            HomeAction.SeeAllAttractions -> {
-                //Открытие экрана всех атракционов обработка нажаитя на кноку
-            }
-
-            HomeAction.Retry -> {
-                _uiState.update { it.copy(error = null) }
-
-                handleAction(HomeAction.LoadMoreCities)
-                handleAction(HomeAction.LoadMoreAttractions)
-                handleAction(HomeAction.LoadMoreTours)
-            }
+            is HomeAction.OnCityClick -> { /* Navigation */ }
+            is HomeAction.OnAttractionClick -> { /* Navigation */ }
+            is HomeAction.OnTourClick -> { /* Navigation */ }
+            HomeAction.SeeAllAttractions -> { /* Navigation */ }
         }
     }
 
-    //
     private suspend fun <T> executeLoadInternal(
         stateSelector: (HomeUiState) -> PaginationState<T>,
         updateState: (HomeUiState, PaginationState<T>) -> HomeUiState,
         call: suspend (Int) -> Response<*>
     ) {
-        // Берем текущее состояние пагинации
         val currentPagination = stateSelector(_uiState.value)
         if (currentPagination.isLoading || currentPagination.isEndReached) return
 
-        // Помечаем, что конкретно эта секция начала грузиться
         _uiState.update { state ->
             val pState = stateSelector(state)
             updateState(state, pState.copy(isLoading = true))
@@ -129,11 +113,20 @@ open class HomeViewModel @Inject constructor(
                     ))
                 }
             } else {
-                throw Exception("API Error")
+                _uiState.update { it.copy(error = UiError.Unknown("Ошибка сервера: ${response.code()}")) }
             }
         } catch (e: Exception) {
-            _uiState.update { it.copy(error = UiError.Unknown(e.message)) }
-            // Не забываем сбросить флаг загрузки даже при ошибке
+            // ЛОГИКА ПРОВЕРКИ ИНТЕРНЕТА
+            val errorType = when (e) {
+                is java.net.UnknownHostException,
+                is java.net.ConnectException,
+                is java.io.IOException -> UiError.NoInternet
+                else -> UiError.Unknown(e.message)
+            }
+
+            _uiState.update { it.copy(error = errorType) }
+        } finally {
+            // Всегда выключаем индикатор загрузки для конкретной секции
             _uiState.update { state ->
                 val pState = stateSelector(state)
                 updateState(state, pState.copy(isLoading = false))
@@ -141,7 +134,6 @@ open class HomeViewModel @Inject constructor(
         }
     }
 
-    // 3. ОБЕРТКИ ДЛЯ КОНКРЕТНЫХ ЗАПРОСОВ
     private suspend fun loadCities() = executeLoadInternal(
         stateSelector = { it.citiesState },
         updateState = { old, new -> old.copy(citiesState = new) }
@@ -157,19 +149,14 @@ open class HomeViewModel @Inject constructor(
         updateState = { old, new -> old.copy(popularToursState = new) }
     ) { page -> api.getPopularProducts(page = page, attraction = null, country = null, popularity = "popularity") }
 
-
-
-    // Пример того, как мы "выпрямляем" разные ответы API
+    @Suppress("UNCHECKED_CAST")
     private fun <T> extractList(response: Response<*>): List<T> {
         val body = response.body() ?: return emptyList()
-
         return when (body) {
-            is CityResponse -> body.data.results as List<T>  // Берем из data.results
-            is AttractionResponse -> body.results as List<T> // Берем напрямую из results
+            is CityResponse -> body.data.results as List<T>
+            is AttractionResponse -> body.results as List<T>
             is TourResponse -> body.data.results as List<T>
             else -> emptyList()
         }
     }
-
-
 }
