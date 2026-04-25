@@ -145,11 +145,13 @@ fun PopularTourItem(
                         fontSize = 15.sp,
                     )
 
-                    Text(
-                        text = "Продолжительность: ${tour.duration}",
-                        color = Color.White,
-                        fontSize = 13.sp,
-                    )
+                   if (tour.duration != null){
+                       Text(
+                           text = "Продолжительность: ${tour.duration}",
+                           color = Color.White,
+                           fontSize = 13.sp,
+                       )
+                   }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
