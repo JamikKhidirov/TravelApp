@@ -18,6 +18,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.io.IOException
@@ -37,39 +38,40 @@ open class HomeViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
-        // Первичная загрузка
-        handleAction(HomeAction.LoadMoreCities)
-        handleAction(HomeAction.LoadMoreAttractions)
-        handleAction(HomeAction.LoadMoreTours)
+        initialLoad()
     }
 
+
+
+    // 1. ПАРАЛЛЕЛЬНАЯ ЗАГРУЗКА ВСЕГО
+    private fun initialLoad() {
+        viewModelScope.launch {
+            // Включаем общий лоадер перед стартом всех задач
+            _uiState.update { it.copy(isGlobalLoading = true, error = null) }
+
+            // Запускаем 3 дочерние корутины параллельно
+            val job1 = launch { loadCities() }
+            val job2 = launch { loadAttractions() }
+            val job3 = launch { loadTours() }
+
+            // Ждем, пока ВСЕ ТРИ завершатся (успешно или с ошибкой)
+            joinAll(job1, job2, job3)
+
+            // Выключаем лоадер только когда всё закончилось
+            _uiState.update { it.copy(isGlobalLoading = false) }
+        }
+    }
+
+    // 4. ОБРАБОТКА ЭКШЕНОВ (теперь проще)
     fun handleAction(action: HomeAction) {
         when (action) {
+            HomeAction.LoadMoreCities -> viewModelScope.launch { loadCities() }
+            HomeAction.LoadMoreAttractions -> viewModelScope.launch { loadAttractions() }
+            HomeAction.LoadMoreTours -> viewModelScope.launch { loadTours() }
+            HomeAction.Retry -> initialLoad()
             is HomeAction.ChangeTab -> {
-                // Сбрасываем только города при смене таба
-                _uiState.update { it.copy(
-                    isPopularTab = action.isPopular,
-                    citiesState = PaginationState()
-                ) }
-                handleAction(HomeAction.LoadMoreCities)
-            }
-            HomeAction.LoadMoreCities -> {
-                executeLoad(
-                    stateSelector = { it.citiesState },
-                    updateState = { old, new -> old.copy(citiesState = new) }
-                ) { page -> api.getListCities(page = page, popular = _uiState.value.isPopularTab) }
-            }
-            HomeAction.LoadMoreAttractions -> {
-                executeLoad(
-                    stateSelector = { it.attractionState },
-                    updateState = { old, new -> old.copy(attractionState = new) }
-                ) { page -> attractionApi.getListattraction(page = page) }
-            }
-            HomeAction.LoadMoreTours -> {
-                executeLoad(
-                    stateSelector = { it.popularToursState },
-                    updateState = { old, new -> old.copy(popularToursState = new) }
-                ) { page -> api.getPopularProducts(page = page, attraction = null, country = null, popularity = "popularity") }
+                _uiState.update { it.copy(isPopularTab = action.isPopular, citiesState = PaginationState()) }
+                viewModelScope.launch { loadCities() }
             }
 
             is HomeAction.OnCityClick -> {
@@ -97,61 +99,63 @@ open class HomeViewModel @Inject constructor(
     }
 
     //
-    private fun <T> executeLoad(
+    private suspend fun <T> executeLoadInternal(
         stateSelector: (HomeUiState) -> PaginationState<T>,
         updateState: (HomeUiState, PaginationState<T>) -> HomeUiState,
         call: suspend (Int) -> Response<*>
     ) {
+        // Берем текущее состояние пагинации
         val currentPagination = stateSelector(_uiState.value)
         if (currentPagination.isLoading || currentPagination.isEndReached) return
 
-        viewModelScope.launch {
-            _uiState.update {
-                it.copy(
-                    isGlobalLoading = true,
-                    error = null
-                )
+        // Помечаем, что конкретно эта секция начала грузиться
+        _uiState.update { state ->
+            val pState = stateSelector(state)
+            updateState(state, pState.copy(isLoading = true))
+        }
+
+        try {
+            val response = call(currentPagination.page)
+            if (response.isSuccessful) {
+                val newItems = extractList<T>(response)
+
+                _uiState.update { state ->
+                    val pState = stateSelector(state)
+                    updateState(state, pState.copy(
+                        items = pState.items + newItems,
+                        page = pState.page + 1,
+                        isLoading = false,
+                        isEndReached = newItems.isEmpty()
+                    ))
+                }
+            } else {
+                throw Exception("API Error")
             }
-
-            try {
-                val response = call(currentPagination.page)
-
-                if (response.isSuccessful) {
-                    val newItems = extractList<T>(response)
-
-                    _uiState.update { state ->
-                        updateState(
-                            state.copy(isGlobalLoading = false),
-                            currentPagination.copy(
-                                items = currentPagination.items + newItems,
-                                page = currentPagination.page + 1,
-                                isLoading = false,
-                                isEndReached = newItems.isEmpty()
-                            )
-                        )
-                    }
-                } else {
-                    throw Exception("Server error")
-                }
-
-            } catch (e: IOException) {
-                //НЕТ ИНТЕРНЕТА
-                _uiState.update {
-                    it.copy(
-                        isGlobalLoading = false,
-                        error = UiError.NoInternet
-                    )
-                }
-            } catch (e: Exception) {
-                _uiState.update {
-                    it.copy(
-                        isGlobalLoading = false,
-                        error = UiError.Unknown(e.message)
-                    )
-                }
+        } catch (e: Exception) {
+            _uiState.update { it.copy(error = UiError.Unknown(e.message)) }
+            // Не забываем сбросить флаг загрузки даже при ошибке
+            _uiState.update { state ->
+                val pState = stateSelector(state)
+                updateState(state, pState.copy(isLoading = false))
             }
         }
     }
+
+    // 3. ОБЕРТКИ ДЛЯ КОНКРЕТНЫХ ЗАПРОСОВ
+    private suspend fun loadCities() = executeLoadInternal(
+        stateSelector = { it.citiesState },
+        updateState = { old, new -> old.copy(citiesState = new) }
+    ) { page -> api.getListCities(page = page, popular = _uiState.value.isPopularTab) }
+
+    private suspend fun loadAttractions() = executeLoadInternal(
+        stateSelector = { it.attractionState },
+        updateState = { old, new -> old.copy(attractionState = new) }
+    ) { page -> attractionApi.getListattraction(page = page) }
+
+    private suspend fun loadTours() = executeLoadInternal(
+        stateSelector = { it.popularToursState },
+        updateState = { old, new -> old.copy(popularToursState = new) }
+    ) { page -> api.getPopularProducts(page = page, attraction = null, country = null, popularity = "popularity") }
 
 
 
