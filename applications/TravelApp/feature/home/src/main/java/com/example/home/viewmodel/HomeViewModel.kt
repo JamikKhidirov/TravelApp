@@ -50,12 +50,12 @@ open class HomeViewModel @Inject constructor(
             _uiState.update { it.copy(isGlobalLoading = true, error = null) }
 
             // Запускаем 3 дочерние корутины параллельно
-            val job1 = launch { loadCities() }
-            val job2 = launch { loadAttractions() }
-            val job3 = launch { loadTours() }
+            val cities = launch { loadCities() }
+            val attractions = launch { loadAttractions() }
+            val tours = launch { loadTours() }
 
             // Ждем, пока ВСЕ ТРИ завершатся (успешно или с ошибкой)
-            joinAll(job1, job2, job3)
+            joinAll(cities, attractions, tours)
 
             // Выключаем лоадер только когда всё закончилось
             _uiState.update { it.copy(isGlobalLoading = false) }
