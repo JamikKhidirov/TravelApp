@@ -31,7 +31,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-open class HomeViewModel @Inject constructor(
+class HomeViewModel @Inject constructor(
     private val getListAttractionUseCase: GetListAttractionUseCase,
     private val getListCitiesUseCase: GetListCitiesUseCase,
     private val getPupularProductsUseCase: GetPupularProductsUseCase,
@@ -47,7 +47,7 @@ open class HomeViewModel @Inject constructor(
     private fun initialLoad() {
         viewModelScope.launch {
             // Сбрасываем старую ошибку и включаем лоадер
-            _uiState.update { it.copy(isGlobalLoading = true, error = null) }
+            _uiState.update { it.copy(isGlobalLoading = true) }
 
             // Запускаем параллельно
             val cities = launch { loadCities() }
@@ -76,7 +76,6 @@ open class HomeViewModel @Inject constructor(
                     it.copy(
                         isPopularTab = action.isPopular,
                         citiesState = PaginationState(),
-                        error = null // Сбрасываем ошибку при смене таба
                     )
                 }
                 viewModelScope.launch { loadCities() }
@@ -130,7 +129,7 @@ open class HomeViewModel @Inject constructor(
             val errorType = when (e) {
                 is java.net.UnknownHostException,
                 is java.net.ConnectException,
-                is java.io.IOException -> UiError.NoInternet
+                is IOException -> UiError.NoInternet
                 else -> UiError.Unknown(e.message)
             }
             // ← ЛОКАЛЬНАЯ ошибка!
