@@ -1,11 +1,6 @@
 package com.example.home
 
 import android.Manifest
-import android.annotation.SuppressLint
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.Network
-import android.view.Window
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,7 +15,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,10 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -50,14 +41,12 @@ import com.example.uikit.statescreen.NetWorkErrorScreen.NoInternetScreen
 import com.example.uikit.uicomponents.bars.BottomBarCastom
 import com.example.uikit.uicomponents.search.SearchCard
 import com.example.uikit.uicomponents.vidjets.TabRefresh
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
-
 
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    navHostController: NavHostController
+    navHostController: NavHostController,
 ){
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -100,7 +89,8 @@ fun HomeScreen(
 
 
     Scaffold(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
 
         bottomBar = {
@@ -108,32 +98,36 @@ fun HomeScreen(
         }
     ) {paddingValues ->
 
+        val hasNoInternetError =
+            uiState.citiesState.error is UiError.NoInternet ||
+                    uiState.attractionState.error is UiError.NoInternet ||
+                    uiState.popularToursState.error is UiError.NoInternet
+
+        val allListsEmpty =
+            uiState.citiesState.items.isEmpty() &&
+                    uiState.attractionState.items.isEmpty() &&
+                    uiState.popularToursState.items.isEmpty()
+
         when {
             // Только ИЗНАЧАЛЬНО пусто + глобальный loading
-            uiState.isGlobalLoading &&
-                    uiState.citiesState.items.isEmpty() &&
-                    uiState.attractionState.items.isEmpty() &&  // ← Добавлено
-                    uiState.popularToursState.items.isEmpty() -> {
+            uiState.isGlobalLoading && allListsEmpty -> {
                 HomeSkeletonScreen()
             }
-            // Глобальная ошибка ТОЛЬКО если ВСЕ пусто
-            uiState.error != null &&
-                    uiState.citiesState.items.isEmpty() &&
-                    uiState.attractionState.items.isEmpty() &&
-                    uiState.popularToursState.items.isEmpty() -> {
-                NoInternetScreen(onRetry = {
+
+            hasNoInternetError && allListsEmpty ->  {
+                NoInternetScreen {
                     viewModel.handleAction(HomeAction.Retry)
-                })
+                }
             }
             else -> {
                 BottomHomeScreen(
-                    paddingValues = paddingValues,
                     uiState = uiState,
+                    paddingValues = paddingValues,
                     onAction = viewModel::handleAction,
                     navHostController = navHostController
                 )
             }
-        }
+    }
     }
 
 }
@@ -144,7 +138,7 @@ fun BottomHomeScreen(
     uiState: HomeUiState,
     paddingValues: PaddingValues,
     onAction: (HomeAction) -> Unit,
-    navHostController: NavHostController
+    navHostController: NavHostController,
 ) {
     val state = rememberLazyListState()
 
@@ -162,8 +156,7 @@ fun BottomHomeScreen(
         stickyHeader {
             SearchCard(
                 modifier = Modifier
-                    .statusBarsPadding()
-                    ,
+                    .statusBarsPadding(),
                 onClickSeacrCard = {
                     navHostController.navigate(ScreenDestination.SearchScreen)
                 }
@@ -192,14 +185,12 @@ fun BottomHomeScreen(
 
 
 @Composable
-@Preview(showBackground = true)
 fun HomeScreenWithScaffoldPreview() {
     val fakeUiState = HomeUiState(
         citiesState = PaginationState(items = FakeData.fakeCities),
         attractionState = PaginationState(items = FakeData.fakeAttractions),
         popularToursState = PaginationState(items = FakeData.fakeTours),
         isPopularTab = true,
-        error = null,
         isGlobalLoading = false
     )
 
@@ -208,11 +199,13 @@ fun HomeScreenWithScaffoldPreview() {
     val navController = rememberNavController()
 
     Scaffold(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
         bottomBar = {
             BottomBarCastom(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(horizontal = 10.dp)
                     .padding(bottom = 20.dp),
                 currentTab = currentTab,
@@ -230,3 +223,5 @@ fun HomeScreenWithScaffoldPreview() {
         )
     }
 }
+
+

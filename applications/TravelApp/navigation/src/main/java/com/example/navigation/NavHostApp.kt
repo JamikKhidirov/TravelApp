@@ -19,7 +19,7 @@ fun NavHostApp(
 
         composable<ScreenDestination.HomeScreen>{
             HomeScreen(
-                navHostController = navHostController
+                navHostController = navHostController,
             )
         }
 

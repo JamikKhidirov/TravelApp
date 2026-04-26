@@ -12,7 +12,5 @@ data class HomeUiState(
     val attractionState: PaginationState<Attraction> = PaginationState(),
     val popularToursState: PaginationState<Tour> = PaginationState(),
     val isPopularTab: Boolean = true,
-
-    val error: UiError? = null,
     val isGlobalLoading: Boolean = false
 )
