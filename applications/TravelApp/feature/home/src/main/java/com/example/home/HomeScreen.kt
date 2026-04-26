@@ -122,8 +122,7 @@ fun HomeScreen(
                 })
             }
             else -> {
-                BottomHomeScreen(
-                    paddingValues = paddingValues,
+                HomeScreenContent(
                     uiState = uiState,
                     onAction = viewModel::handleAction,
                     navHostController = navHostController
@@ -135,9 +134,8 @@ fun HomeScreen(
 
 
 @Composable
-fun BottomHomeScreen(
+fun HomeScreenContent(
     uiState: HomeUiState,
-    paddingValues: PaddingValues,
     onAction: (HomeAction) -> Unit,
     navHostController: NavHostController
 ) {
@@ -151,7 +149,6 @@ fun BottomHomeScreen(
     LazyColumn(
         state = state,
         modifier = Modifier.fillMaxSize(),
-        contentPadding = paddingValues
     ) {
         // 1. Поиск
         stickyHeader {
@@ -217,9 +214,8 @@ fun HomeScreenWithScaffoldPreview() {
             )
         }
     ) { paddingValues ->
-        BottomHomeScreen(
+        HomeScreenContent(
             uiState = fakeUiState,
-            paddingValues = paddingValues,
             onAction = {},
             navHostController = navController
         )
