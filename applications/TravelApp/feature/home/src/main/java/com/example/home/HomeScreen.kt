@@ -1,6 +1,10 @@
 package com.example.home
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
 import android.view.Window
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -27,6 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -48,6 +53,7 @@ import com.example.uikit.uicomponents.vidjets.TabRefresh
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 
+
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
@@ -57,9 +63,7 @@ fun HomeScreen(
 
     var currentTab by remember { mutableStateOf(0) }
 
-
     val context = LocalContext.current
-
 
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -131,6 +135,7 @@ fun HomeScreen(
             }
         }
     }
+
 }
 
 

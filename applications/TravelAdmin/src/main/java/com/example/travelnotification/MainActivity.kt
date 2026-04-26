@@ -1,4 +1,4 @@
-package com.example.travelnotification
+package com.example.traveladmin
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

@@ -31,7 +31,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-open class HomeViewModel @Inject constructor(
+class HomeViewModel @Inject constructor(
     private val getListAttractionUseCase: GetListAttractionUseCase,
     private val getListCitiesUseCase: GetListCitiesUseCase,
     private val getPupularProductsUseCase: GetPupularProductsUseCase,
@@ -130,7 +130,7 @@ open class HomeViewModel @Inject constructor(
             val errorType = when (e) {
                 is java.net.UnknownHostException,
                 is java.net.ConnectException,
-                is java.io.IOException -> UiError.NoInternet
+                is IOException -> UiError.NoInternet
                 else -> UiError.Unknown(e.message)
             }
             // ← ЛОКАЛЬНАЯ ошибка!
