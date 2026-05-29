@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.profile.viewmodel.ProfileViewModel
 
 @Composable
@@ -56,7 +57,9 @@ fun ProfileScreen(
                 text = "Функция скоро появится",
                 fontSize = 16.sp,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 8.dp, horizontal = 32.dp),
+                modifier = Modifier.padding(top = 8.dp)
+                    .padding(horizontal = 32.dp),
+
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
@@ -66,5 +69,5 @@ fun ProfileScreen(
 @Preview(showBackground = true)
 @Composable
 private fun ProfilePreview() {
-    ProfileScreen(navHostController = NavHostController(null))
+    ProfileScreen(navHostController = rememberNavController())
 }

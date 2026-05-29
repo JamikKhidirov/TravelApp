@@ -1,6 +1,6 @@
 package com.example.home.state.ui
 
-import com.example.home.state.network.UiError
+import com.example.common.UiError
 
 // Вспомогательный класс для хранения состояния конкретного списка
 data class PaginationState<T>(

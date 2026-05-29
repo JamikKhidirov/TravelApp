@@ -3,7 +3,7 @@ package com.example.search.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.home.domain.tours.GetPupularProductsUseCase
-import com.example.home.state.network.UiError
+import com.example.common.UiError
 import com.example.search.action.SearchAction
 import com.example.search.domain.tours.GetSearchUseCase
 import com.example.search.state.SearchUiState

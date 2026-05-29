@@ -1,6 +1,6 @@
 package com.example.search.state
 
-import com.example.home.state.network.UiError
+import com.example.common.UiError
 import com.example.network.wegodata.productpopular.Tour
 import com.example.network.wegodata.searchdata.CityDetail
 

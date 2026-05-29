@@ -30,8 +30,8 @@ class DetailViewModelTest {
 
     @Test
     fun `error state`() {
-        val error = com.example.home.state.network.UiError.Unknown("test error")
+        val error = com.example.common.UiError.Unknown("test error")
         val state = DetailUiState(error = error)
-        assertEquals("test error", (state.error as com.example.home.state.network.UiError.Unknown).message)
+        assertEquals("test error", (state.error as com.example.common.UiError.Unknown).message)
     }
 }

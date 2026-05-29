@@ -1,4 +1,4 @@
-package com.example.home.uikit
+package com.example.uikit.uicomponents.items
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape

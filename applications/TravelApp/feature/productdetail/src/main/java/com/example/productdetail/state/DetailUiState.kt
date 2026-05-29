@@ -1,6 +1,6 @@
 package com.example.productdetail.state
 
-import com.example.home.state.network.UiError
+import com.example.common.UiError
 import com.example.network.wegodata.productdatailinfodata.TourFullInfo
 
 data class DetailUiState(

@@ -31,7 +31,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.favorites.action.FavoritesAction
 import com.example.favorites.state.FavoritesUiState
 import com.example.favorites.viewmodel.FavoritesViewModel
-import com.example.home.uikit.PopularTourItem
+import com.example.uikit.uicomponents.items.PopularTourItem
 import com.example.uikit.uicomponents.dowloads.items.PopularTourItemShimmer
 
 @Composable
@@ -87,7 +87,7 @@ private fun FavoritesEmpty(modifier: Modifier = Modifier) {
             text = "Добавляйте понравившиеся туры\nв избранное",
             fontSize = 16.sp,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 8.dp, horizontal = 32.dp),
+            modifier = Modifier.padding(start = 32.dp, top = 8.dp, end = 32.dp),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }

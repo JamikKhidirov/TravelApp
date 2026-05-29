@@ -7,7 +7,7 @@ import com.example.home.domain.tours.GetListAttractionUseCase
 import com.example.home.domain.tours.GetListCitiesUseCase
 import com.example.home.domain.tours.GetPupularProductsUseCase
 import com.example.home.state.HomeUiState
-import com.example.home.state.network.UiError
+import com.example.common.UiError
 import com.example.home.state.ui.PaginationState
 import com.example.location.domain.LocationClient
 import com.example.network.setvice.WegoExcursionService

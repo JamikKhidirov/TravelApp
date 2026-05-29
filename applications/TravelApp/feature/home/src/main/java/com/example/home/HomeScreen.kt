@@ -32,7 +32,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.common.ScreenDestination
 import com.example.home.action.HomeAction
 import com.example.home.state.HomeUiState
-import com.example.home.state.network.UiError
+import com.example.common.UiError
 import com.example.home.state.ui.PaginationState
 import com.example.home.uicomponents.attractionsSection
 import com.example.home.uicomponents.citiesSection

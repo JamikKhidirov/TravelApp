@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.allproducts.action.AllProductsAction
 import com.example.allproducts.domain.tours.GetAllProductsUseCase
 import com.example.allproducts.state.AllProductsUiState
-import com.example.home.state.network.UiError
+import com.example.common.UiError
 import com.example.home.state.ui.PaginationState
 import com.example.network.wegodata.productpopular.TourResponse
 import dagger.hilt.android.lifecycle.HiltViewModel

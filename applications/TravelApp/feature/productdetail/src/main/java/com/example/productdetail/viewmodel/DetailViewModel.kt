@@ -3,7 +3,7 @@ package com.example.productdetail.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.home.state.network.UiError
+import com.example.common.UiError
 import com.example.productdetail.action.DetailAction
 import com.example.productdetail.domain.tours.GetProductDetailUseCase
 import com.example.productdetail.state.DetailUiState

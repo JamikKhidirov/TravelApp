@@ -18,19 +18,14 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -51,7 +46,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.home.state.network.UiError
+import com.example.common.UiError
 import com.example.network.wegodata.productdatailinfodata.TourFullInfo
 import com.example.network.wegodata.productdatailinfodata.TourImage
 import com.example.productdetail.action.DetailAction
@@ -59,8 +54,8 @@ import com.example.productdetail.state.DetailUiState
 import com.example.productdetail.viewmodel.DetailViewModel
 import com.example.uikit.statescreen.NetWorkErrorScreen.NoInternetScreen
 import com.example.uikit.uicomponents.dowloads.items.PopularTourItemShimmer
+import com.example.uikit.uicomponents.topbars.BackTopAppBar
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetailScreen(
     viewModel: DetailViewModel = hiltViewModel(),
@@ -71,16 +66,9 @@ fun ProductDetailScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
         topBar = {
-            TopAppBar(
-                title = { Text(uiState.tour?.title ?: "Детали тура", maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                navigationIcon = {
-                    IconButton(onClick = { navHostController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
+            BackTopAppBar(
+                title = uiState.tour?.title ?: "Детали тура",
+                onBackClick = { navHostController.popBackStack() }
             )
         }
     ) { paddingValues ->

@@ -39,8 +39,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.home.state.network.UiError
-import com.example.home.uikit.PopularTourItem
+import com.example.common.UiError
+import com.example.uikit.uicomponents.items.PopularTourItem
 import com.example.network.wegodata.productpopular.Tour
 import com.example.network.wegodata.searchdata.CityDetail
 import com.example.search.action.SearchAction
