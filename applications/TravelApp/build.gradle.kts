@@ -93,6 +93,7 @@ dependencies {
     implementation(project(":applications:TravelApp:feature:home"))
     implementation(project(":applications:TravelApp:feature:search"))
     implementation(project(":applications:TravelApp:feature:favorites"))
+    implementation(project(":applications:TravelApp:feature:profile"))
     implementation(project(":applications:TravelApp:navigation"))
 
 

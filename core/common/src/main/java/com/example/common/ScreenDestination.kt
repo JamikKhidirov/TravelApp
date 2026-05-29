@@ -22,4 +22,10 @@ sealed interface ScreenDestination {
 
     @Serializable
     data class ProductDetail(val id: Int): ScreenDestination
+
+    @Serializable
+    data object FavoritesScreen: ScreenDestination
+
+    @Serializable
+    data object ProfileScreen: ScreenDestination
 }

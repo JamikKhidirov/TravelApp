@@ -7,8 +7,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.allproducts.AllProductsScreen
 import com.example.common.ScreenDestination
+import com.example.favorites.FavoritesScreen
 import com.example.home.HomeScreen
 import com.example.productdetail.ProductDetailScreen
+import com.example.profile.ProfileScreen
 import com.example.search.SearchScreen
 
 
@@ -39,6 +41,18 @@ fun NavHostApp(
 
         composable<ScreenDestination.ProductDetail>{
             ProductDetailScreen(
+                navHostController = navHostController
+            )
+        }
+
+        composable<ScreenDestination.FavoritesScreen>{
+            FavoritesScreen(
+                navHostController = navHostController
+            )
+        }
+
+        composable<ScreenDestination.ProfileScreen>{
+            ProfileScreen(
                 navHostController = navHostController
             )
         }

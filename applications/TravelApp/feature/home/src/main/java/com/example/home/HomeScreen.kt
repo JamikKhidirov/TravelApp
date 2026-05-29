@@ -1,7 +1,6 @@
 package com.example.home
 
 import android.Manifest
-import android.view.Window
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -57,10 +55,7 @@ fun HomeScreen(
 
     var currentTab by remember { mutableStateOf(0) }
 
-
     val context = LocalContext.current
-
-
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -71,14 +66,10 @@ fun HomeScreen(
         }
         else {
             Toast.makeText(context, "Без локации мы не найдем туры рядом", Toast.LENGTH_LONG).show()
-
         }
     }
 
-
-    LaunchedEffect(
-        Unit
-    ) {
+    LaunchedEffect(Unit) {
        permissionLauncher.launch(
            arrayOf(
                Manifest.permission.ACCESS_FINE_LOCATION,
@@ -87,32 +78,41 @@ fun HomeScreen(
        )
     }
 
-
     val state = rememberLazyListState()
 
     val isFirstLoading = uiState.isGlobalLoading &&
             uiState.citiesState.items.isEmpty() &&
             uiState.popularToursState.items.isEmpty()
 
-
     Scaffold(
         modifier = Modifier.fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
-
         bottomBar = {
-
+            BottomBarCastom(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(horizontal = 10.dp)
+                    .padding(bottom = 20.dp),
+                currentTab = currentTab,
+                onTabSelected = { index ->
+                    currentTab = index
+                    when (index) {
+                        0 -> {} // Home
+                        1 -> navHostController.navigate(ScreenDestination.SearchScreen)
+                        2 -> navHostController.navigate(ScreenDestination.FavoritesScreen)
+                        3 -> navHostController.navigate(ScreenDestination.ProfileScreen)
+                    }
+                }
+            )
         }
     ) {paddingValues ->
 
         when {
-            // Только ИЗНАЧАЛЬНО пусто + глобальный loading
             uiState.isGlobalLoading &&
                     uiState.citiesState.items.isEmpty() &&
-                    uiState.attractionState.items.isEmpty() &&  // ← Добавлено
+                    uiState.attractionState.items.isEmpty() &&
                     uiState.popularToursState.items.isEmpty() -> {
                 HomeSkeletonScreen()
             }
-            // Глобальная ошибка ТОЛЬКО если ВСЕ пусто
             uiState.error != null &&
                     uiState.citiesState.items.isEmpty() &&
                     uiState.attractionState.items.isEmpty() &&
@@ -124,7 +124,19 @@ fun HomeScreen(
             else -> {
                 HomeScreenContent(
                     uiState = uiState,
-                    onAction = viewModel::handleAction,
+                    onAction = { action ->
+                        when (action) {
+                            is HomeAction.OnTourClick ->
+                                navHostController.navigate(ScreenDestination.ProductDetail(action.value.id))
+                            is HomeAction.OnCityClick ->
+                                navHostController.navigate(ScreenDestination.AllProducts)
+                            is HomeAction.OnAttractionClick ->
+                                navHostController.navigate(ScreenDestination.AllProducts)
+                            HomeAction.SeeAllAttractions ->
+                                navHostController.navigate(ScreenDestination.AllProducts)
+                            else -> viewModel.handleAction(action)
+                        }
+                    },
                     navHostController = navHostController
                 )
             }
@@ -141,7 +153,6 @@ fun HomeScreenContent(
 ) {
     val state = rememberLazyListState()
 
-    // Слушаем конец списка для туров
     OnBottomReached(state = state) {
         onAction(HomeAction.LoadMoreTours)
     }
@@ -150,7 +161,6 @@ fun HomeScreenContent(
         state = state,
         modifier = Modifier.fillMaxSize(),
     ) {
-        // 1. Поиск
         stickyHeader {
             SearchCard(
                 modifier = Modifier
@@ -162,7 +172,6 @@ fun HomeScreenContent(
             )
         }
 
-        // 2. Табы
         item {
             TabRefresh(
                 onItemSelected = { tab ->
@@ -171,13 +180,10 @@ fun HomeScreenContent(
             )
         }
 
-        // Секция Городов
         citiesSection(uiState, onAction)
 
-        //Секция Достопримечательностей
         attractionsSection(uiState, onAction)
 
-        //Вертикальный список Туров
         toursSection(uiState, onAction)
     }
 }

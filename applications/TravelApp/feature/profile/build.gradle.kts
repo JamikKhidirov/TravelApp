@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.favorites"
+    namespace = "com.example.profile"
     compileSdk { version = release(36) }
 
     defaultConfig {
@@ -41,7 +41,6 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation(libs.coil.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -56,7 +55,4 @@ dependencies {
 
     implementation(project(":core:common"))
     implementation(project(":core:uikit"))
-    implementation(project(":applications:TravelApp:core:network"))
-    implementation(project(":applications:TravelApp:feature:home"))
-    implementation(project(":applications:TravelApp:feature:productdetail"))
 }
