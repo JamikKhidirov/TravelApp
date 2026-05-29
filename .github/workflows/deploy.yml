@@ -1,0 +1,88 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: 'Fastlane lane to run'
+        required: true
+        default: 'deploy_rustore'
+        type: choice
+        options:
+          - deploy_rustore
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy to RuStore
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: temurin
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Decode google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        if: env.GOOGLE_SERVICES_JSON != null
+        run: echo "$GOOGLE_SERVICES_JSON" > applications/TravelApp/google-services.json
+
+      - name: Decode keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        if: env.KEYSTORE_BASE64 != null
+        run: echo "$KEYSTORE_BASE64" | base64 --decode > keystore.jks
+
+      - name: Run tests
+        run: ./gradlew testDebugUnitTest --stacktrace --no-daemon
+
+      - name: Build release APK
+        run: ./gradlew assembleRelease --stacktrace --no-daemon
+        env:
+          KEYSTORE_PATH: ${{ github.workspace }}/keystore.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Upload release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: travel-app-release
+          path: applications/TravelApp/build/outputs/apk/release/*.apk
+          retention-days: 30
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2
+
+      - name: Install fastlane
+        run: |
+          gem install bundler
+          bundle init
+          bundle add fastlane
+          bundle install
+
+      - name: Deploy to RuStore
+        run: bundle exec fastlane deploy_rustore
+        env:
+          RUSTORE_CLIENT_ID: ${{ secrets.RUSTORE_CLIENT_ID }}
+          RUSTORE_CLIENT_SECRET: ${{ secrets.RUSTORE_CLIENT_SECRET }}
+          KEYSTORE_PATH: ${{ github.workspace }}/keystore.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
