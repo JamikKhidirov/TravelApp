@@ -16,4 +16,10 @@ sealed interface ScreenDestination {
 
     @Serializable
     data object SearchScreen: ScreenDestination
+
+    @Serializable
+    data object AllProducts: ScreenDestination
+
+    @Serializable
+    data class ProductDetail(val id: Int): ScreenDestination
 }

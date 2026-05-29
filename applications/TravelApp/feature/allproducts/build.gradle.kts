@@ -2,15 +2,13 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-
-    id("org.jetbrains.kotlin.plugin.serialization")
-
     id("dagger.hilt.android.plugin")
+    id("org.jetbrains.kotlin.plugin.serialization")
     kotlin("kapt")
 }
 
 android {
-    namespace = "com.example.search"
+    namespace = "com.example.allproducts"
     compileSdk {
         version = release(36)
     }
@@ -24,7 +22,6 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -38,8 +35,7 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-
-    buildFeatures{
+    buildFeatures {
         compose = true
     }
 }
@@ -55,6 +51,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.material)
+    implementation(libs.androidx.foundation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -63,12 +60,9 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    // Для типобезопасности также нужна библиотека сериализации
-    implementation(libs.kotlinx.serialization.json)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
-    implementation(libs.androidx.compose.material3.v130)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.coil.compose)
 
@@ -76,6 +70,4 @@ dependencies {
     implementation(project(":core:uikit"))
     implementation(project(":applications:TravelApp:core:network"))
     implementation(project(":applications:TravelApp:feature:home"))
-
-
 }
