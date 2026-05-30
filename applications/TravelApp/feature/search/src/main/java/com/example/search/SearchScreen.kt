@@ -270,7 +270,7 @@ private fun CitySearchItem(
                     .data(city.preview)
                     .crossfade(true)
                     .build(),
-                contentDescription = city.name,
+                    contentDescription = city.displayName,
                 modifier = Modifier.size(90.dp).clip(RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp)),
                 contentScale = ContentScale.Crop
             )
@@ -279,7 +279,7 @@ private fun CitySearchItem(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = city.name,
+                    text = city.displayName,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
                     maxLines = 1,
@@ -287,7 +287,7 @@ private fun CitySearchItem(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = city.country.name,
+                    text = city.country?.name.orEmpty(),
                     fontSize = 13.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

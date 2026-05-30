@@ -11,22 +11,19 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/applications" />
-            <option value="$PROJECT_DIR$/applications/TravelAdmin" />
-            <option value="$PROJECT_DIR$/applications/TravelAdmin/core" />
-            <option value="$PROJECT_DIR$/applications/TravelAdmin/core/pushing" />
-            <option value="$PROJECT_DIR$/applications/TravelAdmin/core/uikit" />
-            <option value="$PROJECT_DIR$/applications/TravelAdmin/feature" />
-            <option value="$PROJECT_DIR$/applications/TravelAdmin/feature/notification" />
+            <option value="$PROJECT_DIR$/applications/Travel Notification" />
+            <option value="$PROJECT_DIR$/applications/Travel Notification/core" />
+            <option value="$PROJECT_DIR$/applications/Travel Notification/core/pushing" />
+            <option value="$PROJECT_DIR$/applications/Travel Notification/core/uikit" />
+            <option value="$PROJECT_DIR$/applications/Travel Notification/feature" />
+            <option value="$PROJECT_DIR$/applications/Travel Notification/feature/notification" />
             <option value="$PROJECT_DIR$/applications/TravelApp" />
             <option value="$PROJECT_DIR$/applications/TravelApp/core" />
             <option value="$PROJECT_DIR$/applications/TravelApp/core/cache" />
             <option value="$PROJECT_DIR$/applications/TravelApp/core/network" />
             <option value="$PROJECT_DIR$/applications/TravelApp/feature" />
-            <option value="$PROJECT_DIR$/applications/TravelApp/feature/allproducts" />
             <option value="$PROJECT_DIR$/applications/TravelApp/feature/favorites" />
             <option value="$PROJECT_DIR$/applications/TravelApp/feature/home" />
-            <option value="$PROJECT_DIR$/applications/TravelApp/feature/productdetail" />
-            <option value="$PROJECT_DIR$/applications/TravelApp/feature/profile" />
             <option value="$PROJECT_DIR$/applications/TravelApp/feature/search" />
             <option value="$PROJECT_DIR$/applications/TravelApp/navigation" />
             <option value="$PROJECT_DIR$/core" />
@@ -36,6 +33,7 @@
             <option value="$PROJECT_DIR$/core/uikit" />
             <option value="$PROJECT_DIR$/core/worker" />
             <option value="$PROJECT_DIR$/fastlane" />
+            <option value="$PROJECT_DIR$/navigation" />
           </set>
         </option>
       </GradleProjectSettings>

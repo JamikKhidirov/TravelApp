@@ -17,7 +17,7 @@ data class Tour(
     val reviewsCount: Int,
     val ratingsCount: Int,
     val category: String?,
-    val city: City,
+    val city: TourCity,
     val duration: String?,
     val durationMin: Int?,
     val durationMax: Int?,

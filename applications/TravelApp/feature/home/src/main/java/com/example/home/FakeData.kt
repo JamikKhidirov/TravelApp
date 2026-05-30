@@ -60,14 +60,10 @@ object FakeData {
             reviewsCount = 127,
             ratingsCount = 135,
             category = "Туры",
-            city = City(
+            city = TourCity(
                 id = 1,
                 name = "Махачкала",
-                slug = "Махачкала",
-                preview = "",
-                itemsCount = 2,
-                country = ""
-
+                slug = "Махачкала"
             ),
             duration = "2 часа",
             durationMin = 120,

@@ -157,9 +157,9 @@ private fun DetailContent(
                         tint = Color(0xFFFF8C00),
                         modifier = Modifier.size(20.dp)
                     )
-                    if (tour.author.rating > 0) {
+                    if (tour.author != null && tour.author!!.rating > 0) {
                         Text(
-                            text = " ${tour.author.rating}",
+                            text = " ${tour.author!!.rating}",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -278,12 +278,13 @@ private fun DetailContent(
                     }
                 }
 
-                if (tour.author.name.isNotEmpty()) {
+                val author = tour.author ?: return@item
+                if (author.name.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current)
-                                .data(tour.author.avatar)
+                                .data(author.avatar)
                                 .crossfade(true)
                                 .build(),
                             contentDescription = null,
@@ -295,12 +296,12 @@ private fun DetailContent(
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
                             Text(
-                                text = tour.author.name,
+                                text = author.name,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.SemiBold
                             )
                             Text(
-                                text = tour.author.bio,
+                                text = author.bio,
                                 fontSize = 13.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

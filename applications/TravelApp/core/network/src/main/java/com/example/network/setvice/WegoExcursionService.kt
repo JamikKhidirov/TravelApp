@@ -20,7 +20,7 @@ import retrofit2.http.Query
 interface WegoExcursionService {
 
 
-    @GET("countries")
+    @GET("countries/")
     //Получения списка стран
     suspend fun getCountries(
         //Плагинатор сколько стран мы хотим показать
@@ -46,7 +46,7 @@ interface WegoExcursionService {
 
 
     //Поиск городов и экскурсий
-    @GET("search")
+    @GET("search/")
     suspend fun searchList(
         // Строковый поисковый запрос Любые строковые
         @Query("query") query: String,
@@ -79,7 +79,7 @@ interface WegoExcursionService {
     ): Response<TourResponse>
 
 
-    @GET("products/{ID}")
+    @GET("products/{ID}/")
     suspend fun getInfoProducts(
         @Path("ID") id: Int,
         @Query("currency") currency: String = "RUB"
@@ -87,7 +87,7 @@ interface WegoExcursionService {
 
 
     //Получение отзывов
-    @GET("products/{ID}/reviews")
+    @GET("products/{ID}/reviews/")
     suspend fun getReviews(
         @Path("ID") id: Int,
         @Query("page") page: Int

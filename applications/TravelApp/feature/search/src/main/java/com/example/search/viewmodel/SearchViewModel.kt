@@ -77,7 +77,7 @@ class SearchViewModel @Inject constructor(
             try {
                 val response = getPupularProductsUseCase(page = 1, popularity = "popularity")
                 if (response.isSuccessful) {
-                    val tours = response.body()?.data?.results ?: emptyList()
+                    val tours = response.body()?.results ?: emptyList()
                     _uiState.update { it.copy(popularTours = tours, isInitialLoading = false) }
                 } else {
                     _uiState.update { it.copy(isInitialLoading = false) }

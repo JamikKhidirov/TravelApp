@@ -54,7 +54,7 @@ class AllProductsViewModel @Inject constructor(
         try {
             val response = getAllProductsUseCase(page = current.page)
             if (response.isSuccessful) {
-                val newItems = response.body()?.data?.results ?: emptyList()
+                val newItems = response.body()?.results ?: emptyList()
                 _uiState.update { state ->
                     val pState = state.toursState
                     state.copy(toursState = pState.copy(

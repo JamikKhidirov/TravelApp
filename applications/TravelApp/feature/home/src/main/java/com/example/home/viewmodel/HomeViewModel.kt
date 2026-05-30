@@ -165,7 +165,7 @@ open class HomeViewModel @Inject constructor(
         return when (body) {
             is CityResponse -> body.data.results as List<T>
             is AttractionResponse -> body.results as List<T>
-            is TourResponse -> body.data.results as List<T>
+            is TourResponse -> body.results as List<T>
             else -> emptyList()
         }
     }
