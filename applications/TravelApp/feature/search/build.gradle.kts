@@ -72,5 +72,10 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.coil.compose)
 
+    implementation(project(":core:common"))
+    implementation(project(":core:uikit"))
+    implementation(project(":applications:TravelApp:core:network"))
+    implementation(project(":applications:TravelApp:feature:home"))
+
 
 }

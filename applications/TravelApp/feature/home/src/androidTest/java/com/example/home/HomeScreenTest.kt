@@ -5,7 +5,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.navigation.compose.rememberNavController
 import com.example.home.HomeScreenContent
 import com.example.home.state.HomeUiState
-import com.example.home.state.network.UiError
+import com.example.common.UiError
 import com.example.home.state.ui.PaginationState
 import org.junit.Rule
 import org.junit.Test

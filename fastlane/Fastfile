@@ -1,17 +1,33 @@
 default_platform(:android)
 
 platform :android do
+  desc "Запуск всех unit-тестов"
+  lane :test do
+    gradle(task: "testDebugUnitTest")
+  end
+
+  desc "Сборка debug APK для TravelApp и TravelAdmin"
+  lane :build_debug do
+    gradle(task: "assembleDebug")
+  end
+
+  desc "Сборка release APK для TravelApp"
+  lane :build_release do
+    gradle(
+      task: "assembleRelease",
+      print_command: true
+    )
+  end
+
   desc "Сборка релизного APK и отправка в RuStore"
   lane :deploy_rustore do
-    # 1. Собираем проект командой Gradle (чистим и собираем release)
     gradle(task: "clean assembleRelease")
 
-    # 2. Отправляем готовый файл в RuStore
     rustore_sdk_publish(
       client_id: ENV["RUSTORE_CLIENT_ID"],
       client_secret: ENV["RUSTORE_CLIENT_SECRET"],
       package_name: "com.example.travelapp",
-      apk_path: "app/build/outputs/apk/release/app-release.apk"
+      apk_path: "applications/TravelApp/build/outputs/apk/release/app-release.apk"
     )
   end
 end

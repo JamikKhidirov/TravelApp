@@ -56,6 +56,10 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(project(":applications:TravelApp:feature:home"))
     implementation(project(":applications:TravelApp:feature:search"))
+    implementation(project(":applications:TravelApp:feature:allproducts"))
+    implementation(project(":applications:TravelApp:feature:productdetail"))
+    implementation(project(":applications:TravelApp:feature:favorites"))
+    implementation(project(":applications:TravelApp:feature:profile"))
     implementation(project(":core:common"))
 
 

@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, main, master, 'feature/**', 'update/**']
+  pull_request:
+    branches: [develop, main, master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: temurin
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts', '**/gradle-wrapper.properties', '**/libs.versions.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Decode google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        if: env.GOOGLE_SERVICES_JSON != null
+        run: echo "$GOOGLE_SERVICES_JSON" > applications/TravelApp/google-services.json
+
+      - name: Run unit tests
+        run: ./gradlew testDebugUnitTest --stacktrace --no-daemon
+
+      - name: Run lint
+        run: ./gradlew lintDebug --stacktrace --no-daemon
+
+      - name: Build debug APKs
+        run: ./gradlew assembleDebug --stacktrace --no-daemon
+
+      - name: Upload debug APK (TravelApp)
+        uses: actions/upload-artifact@v4
+        with:
+          name: travel-app-debug
+          path: applications/TravelApp/build/outputs/apk/debug/*.apk
+          retention-days: 3
+
+      - name: Upload debug APK (TravelAdmin)
+        uses: actions/upload-artifact@v4
+        with:
+          name: travel-admin-debug
+          path: applications/TravelAdmin/build/outputs/apk/debug/*.apk
+          retention-days: 3
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: '**/build/reports/tests/'
+          retention-days: 7
