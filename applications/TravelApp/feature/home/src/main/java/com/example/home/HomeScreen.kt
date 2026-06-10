@@ -51,27 +51,20 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     var currentTab by remember { mutableStateOf(0) }
-
     val context = LocalContext.current
-
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) {permission ->
         if (permission[Manifest.permission.ACCESS_FINE_LOCATION] == true
             || permission[Manifest.permission.ACCESS_COARSE_LOCATION] == true){
-            //Разрешение на точную геолокацию выдан вытвскиваем геолокацию
         }
         else {
             Toast.makeText(context, "Без локации мы не найдем туры рядом", Toast.LENGTH_LONG).show()
-
         }
     }
 
-
-    LaunchedEffect(
-        Unit
-    ) {
+    LaunchedEffect(Unit) {
        permissionLauncher.launch(
            arrayOf(
                Manifest.permission.ACCESS_FINE_LOCATION,
@@ -80,41 +73,29 @@ fun HomeScreen(
        )
     }
 
+    val hasNoInternetError =
+        uiState.citiesState.error is UiError.NoInternet ||
+            uiState.attractionState.error is UiError.NoInternet ||
+            uiState.popularToursState.error is UiError.NoInternet
 
-    val state = rememberLazyListState()
-
-    val isFirstLoading = uiState.isGlobalLoading &&
-            uiState.citiesState.items.isEmpty() &&
+    val allListsEmpty =
+        uiState.citiesState.items.isEmpty() &&
+            uiState.attractionState.items.isEmpty() &&
             uiState.popularToursState.items.isEmpty()
-
 
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
-
         bottomBar = {
 
         }
-    ) {paddingValues ->
-
-        val hasNoInternetError =
-            uiState.citiesState.error is UiError.NoInternet ||
-                    uiState.attractionState.error is UiError.NoInternet ||
-                    uiState.popularToursState.error is UiError.NoInternet
-
-        val allListsEmpty =
-            uiState.citiesState.items.isEmpty() &&
-                    uiState.attractionState.items.isEmpty() &&
-                    uiState.popularToursState.items.isEmpty()
-
+    ) { paddingValues ->
         when {
-            // Только ИЗНАЧАЛЬНО пусто + глобальный loading
             uiState.isGlobalLoading && allListsEmpty -> {
                 HomeSkeletonScreen()
             }
-
-            hasNoInternetError && allListsEmpty ->  {
+            hasNoInternetError && allListsEmpty -> {
                 NoInternetScreen {
                     viewModel.handleAction(HomeAction.Retry)
                 }
@@ -127,9 +108,8 @@ fun HomeScreen(
                     navHostController = navHostController
                 )
             }
+        }
     }
-    }
-
 }
 
 
