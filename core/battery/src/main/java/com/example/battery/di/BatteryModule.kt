@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.BatteryManager
 import com.example.battery.data.BatteryDataSourceImpl
 import com.example.battery.domain.BatteryDataSource
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,22 +16,24 @@ import javax.inject.Singleton
 
 @InstallIn(ActivityRetainedComponent::class)
 @Module
-object BatteryModule {
+abstract class BatteryModule {
 
 
-    @Provides
-    @ActivityRetainedScoped
-    fun provideBatteryManager(
-        @ApplicationContext context: Context
-    ): BatteryManager {
-        return context.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
+    @Binds
+    @Singleton
+    abstract fun bindBatteryDataSource(
+        impl: BatteryDataSourceImpl
+    ): BatteryDataSource
+
+    companion object {
+        @Provides
+        @ActivityRetainedScoped
+        fun provideBatteryManager(
+            @ApplicationContext context: Context
+        ): BatteryManager {
+            return context.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
+        }
     }
 
-    @Provides
-    @ActivityRetainedScoped
-    fun provideBatteryDataSource(
-        batteryManager: BatteryManager
-    ): BatteryDataSource {
-        return BatteryDataSourceImpl(batteryManager)
-    }
+
 }
