@@ -97,21 +97,20 @@ class HomeViewModel @Inject constructor(
     private suspend fun fetchCities(page: Int, isPopular: Boolean): List<City> {
         val response = getListCitiesUseCase(page = page, popular = isPopular)
         if (!response.isSuccessful) throw HttpException(response)
-        return extractList(response)
+        return response.body()?.data?.results ?: emptyList()
     }
 
     private suspend fun fetchAttractions(page: Int): List<Attraction> {
         val response = getListAttractionUseCase(page = page)
         if (!response.isSuccessful) throw HttpException(response)
-        return extractList(response)
+        return response.body()?.results ?: emptyList()
     }
 
     private suspend fun fetchTours(page: Int): List<Tour> {
         val response = getPupularProductsUseCase(page = page, country = null, attraction = null, popularity = "popularity")
         if (!response.isSuccessful) throw HttpException(response)
-        return extractList(response)
+        return response.body()?.data?.results ?: emptyList()
     }
-
     // --- Обработка экшенов ---
 
     fun handleAction(action: HomeAction) {
