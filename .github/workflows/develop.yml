@@ -17,6 +17,7 @@ env:
   GRADLE_OPTS: "-Dorg.gradle.parallel=true -Dorg.gradle.caching=true -Dorg.gradle.daemon=false"
 
 jobs:
+  # Проверка – нужно ли запускать сборку
   validate:
     runs-on: ubuntu-latest
     outputs:
@@ -32,9 +33,14 @@ jobs:
         uses: fkirc/skip-duplicate-actions@v5
         with:
           skip_after_successful_duplicate: 'true'
-          paths: |
-            ["**/*.md", "**/*.txt", ".gitignore", "docs/**"]
+          # Исправлено: передаём список в формате YAML (была ошибка с многострочным блоком)
+          paths:
+            - "**/*.md"
+            - "**/*.txt"
+            - ".gitignore"
+            - "docs/**"
 
+  # Запуск линтера и тестов
   test:
     needs: validate
     if: needs.validate.outputs.should_skip != 'true'
@@ -71,6 +77,7 @@ jobs:
             **/build/test-results/
           retention-days: 7
 
+  # Сборка обоих приложений параллельно
   build:
     needs: [validate, test]
     if: needs.validate.outputs.should_skip != 'true'
@@ -157,6 +164,7 @@ jobs:
             meta/
           retention-days: 14
 
+  # Отправка в Telegram
   send:
     needs: [validate, build]
     if: |
@@ -168,7 +176,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts/
-          pattern: *-develop
+          # Исправлено: pattern обёрнут в кавычки, чтобы не конфликтовать с YAML-якорями
+          pattern: '*-develop'
           merge-multiple: true
 
       - name: Load Meta Info
@@ -237,18 +246,21 @@ jobs:
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           document: artifacts/apks_to_send/TravelAdmin_*.apk
 
+  # Очистка старых артефактов
   cleanup:
     needs: [send]
     if: always()
     runs-on: ubuntu-latest
     steps:
       - name: Delete old artifacts
-        uses: actions/delete-artifact@v5
+        # Исправлено: версия v4 (v5 не существует)
+        uses: actions/delete-artifact@v4
         with:
           pattern: |
             *-develop
             test-reports-develop
 
+  # Уведомление об ошибке
   notify_failure:
     needs: [build, test]
     if: failure()
