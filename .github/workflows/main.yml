@@ -8,15 +8,16 @@ on:
 env:
   VERSION_NAME: "1.0.${{ github.run_number }}"
   VERSION_CODE: "${{ github.run_number }}"
-  # Включаем параллельную сборку и переиспользование конфигурации Gradle
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.caching=true"
+  GRADLE_OPTS: "-Dorg.gradle.parallel=true -Dorg.gradle.caching=true"
 
 jobs:
-  test:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Позволяет прочитать историю коммитов
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -24,65 +25,35 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # Нативный кеш Gradle для ускорения зависимостей и сборки
       - name: Setup Gradle Cache
         uses: gradle/actions/setup-gradle@v3
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+
+      - name: Extract Commit Information
+        run: |
+          echo "COMMIT_TITLE=$(git log -1 --format='%s')" >> $GITHUB_ENV
+          # Заменяем переносы строк на \n, чтобы передать многострочный текст в env
+          echo "COMMIT_BODY<<EOF" >> $GITHUB_ENV
+          git log -1 --format='%b' >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Run Unit Tests
         continue-on-error: true
         run: ./gradlew test --continue
 
-  build:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      # Нативный кеш Gradle
-      - name: Setup Gradle Cache
-        uses: gradle/actions/setup-gradle@v3
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Build APKs
+      - name: Build Release APKs
         run: |
-          ./gradlew assembleDebug \
+          ./gradlew assembleRelease \
             -PversionCode=${{ env.VERSION_CODE }} \
             -PversionName="${{ env.VERSION_NAME }}"
 
       - name: Prepare APK Artifacts
         run: |
           mkdir -p apks_to_send
-          cp applications/TravelApp/build/outputs/apk/debug/*.apk apks_to_send/TravelApp_v${{ env.VERSION_NAME }}.apk || true
-          cp applications/TravelAdmin/build/outputs/apk/debug/*.apk apks_to_send/TravelAdmin_v${{ env.VERSION_NAME }}.apk || true
-
-      - name: Upload APK Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-apks
-          path: apks_to_send/
-          retention-days: 1
-
-  send:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download APK Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: android-apks
-          path: apks_to_send
+          cp applications/TravelApp/build/outputs/apk/release/*.apk apks_to_send/TravelApp_v${{ env.VERSION_NAME }}.apk || true
+          cp applications/TravelAdmin/build/outputs/apk/release/*.apk apks_to_send/TravelAdmin_v${{ env.VERSION_NAME }}.apk || true
 
       - name: Send TravelApp to Telegram
         uses: appleboy/telegram-action@master
@@ -90,10 +61,18 @@ jobs:
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          format: markdown
           message: |
-            📱 **TravelApp** (Клиент)
-            Версия: `${{ env.VERSION_NAME }}`
-            Сборка #${{ env.VERSION_CODE }} завершена!
+            📱 **TravelApp (Release)**
+            
+            📌 **Версия:** `${{ env.VERSION_NAME }}` (Сборка #${{ env.VERSION_CODE }})
+            👤 **Автор:** `${{ github.actor }}`
+            
+            📝 **Коммит:**
+            _${{ env.COMMIT_TITLE }}_
+            
+            📄 **Описание:**
+            ${{ env.COMMIT_BODY }}
           document: apks_to_send/TravelApp_v${{ env.VERSION_NAME }}.apk
 
       - name: Send TravelAdmin to Telegram
@@ -102,8 +81,16 @@ jobs:
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          format: markdown
           message: |
-            🛠 **TravelAdmin** (Админка)
-            Версия: `${{ env.VERSION_NAME }}`
-            Сборка #${{ env.VERSION_CODE }} завершена!
+            🛠 **TravelAdmin (Release)**
+            
+            📌 **Версия:** `${{ env.VERSION_NAME }}` (Сборка #${{ env.VERSION_CODE }})
+            👤 **Автор:** `${{ github.actor }}`
+            
+            📝 **Коммит:**
+            _${{ env.COMMIT_TITLE }}_
+            
+            📄 **Описание:**
+            ${{ env.COMMIT_BODY }}
           document: apks_to_send/TravelAdmin_v${{ env.VERSION_NAME }}.apk
