@@ -1,0 +1,269 @@
+name: Android CI/CD Pipeline - Develop
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+    inputs:
+      force_build:
+        description: 'Force build even without changes'
+        type: boolean
+        default: false
+
+env:
+  VERSION_NAME: "2.0.${{ github.run_number }}-dev"
+  VERSION_CODE: "${{ github.run_number }}"
+  GRADLE_OPTS: "-Dorg.gradle.parallel=true -Dorg.gradle.caching=true -Dorg.gradle.daemon=false"
+  JAVA_HOME: "/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.9-9/x64"
+
+jobs:
+  # 1. Проверка кода и тесты
+  validate:
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Skip if only documentation changed
+        id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          skip_after_successful_duplicate: 'true'
+          paths: '["**/*.md", "**/*.txt", ".gitignore", "docs/**"]'
+
+  # 2. Тесты
+  test:
+    needs: validate
+    if: needs.validate.outputs.should_skip != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle Cache
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run Lint
+        run: ./gradlew lintRelease --continue
+
+      - name: Run Unit Tests
+        run: ./gradlew testRelease --continue
+
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-develop
+          path: |
+            **/build/reports/
+            **/build/test-results/
+          retention-days: 7
+
+  # 3. Сборка
+  build:
+    needs: [validate, test]
+    if: needs.validate.outputs.should_skip != 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [TravelApp, TravelAdmin]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle Cache
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-read-only: false
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Extract Commit Information
+        id: commit_info
+        run: |
+          mkdir -p meta
+          echo "COMMIT_TITLE<<EOF" >> $GITHUB_ENV
+          git log -1 --format='%s' >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          
+          echo "COMMIT_BODY<<EOF" >> $GITHUB_ENV
+          git log -1 --format='%b' >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          
+          echo "COMMIT_AUTHOR=$(git log -1 --format='%an')" >> $GITHUB_ENV
+          echo "COMMIT_DATE=$(git log -1 --format='%ai')" >> $GITHUB_ENV
+          echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: Build ${{ matrix.app }} APK
+        run: |
+          ./gradlew :applications:${{ matrix.app }}:assembleRelease \
+            -PversionCode=${{ env.VERSION_CODE }} \
+            -PversionName="${{ env.VERSION_NAME }}" \
+            -PbuildNumber=${{ github.run_number }}
+
+      - name: Verify APK
+        run: |
+          APK_PATH="applications/${{ matrix.app }}/build/outputs/apk/release/"
+          if [ ! -f "$APK_PATH/*.apk" ]; then
+            echo "❌ APK not found!"
+            exit 1
+          fi
+          echo "✅ APK built successfully"
+
+      - name: Prepare APK Artifacts
+        run: |
+          mkdir -p apks_to_send
+          cp applications/${{ matrix.app }}/build/outputs/apk/release/*.apk \
+            apks_to_send/${{ matrix.app }}_v${{ env.VERSION_NAME }}_dev.apk || true
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.app }}-develop
+          path: |
+            apks_to_send/
+            meta/
+          retention-days: 14
+
+  # 4. Отправка в Telegram
+  send:
+    needs: [validate, build]
+    if: |
+      needs.validate.outputs.should_skip != 'true' && 
+      (github.ref_name == 'develop' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+          pattern: *-develop
+          merge-multiple: true
+
+      - name: Load Meta Info
+        run: |
+          if [ -f artifacts/meta/commit_info.txt ]; then
+            cat artifacts/meta/commit_info.txt >> $GITHUB_ENV
+          fi
+
+      - name: Setup Telegram Message
+        id: telegram
+        run: |
+          COMMIT_MSG="${{ env.COMMIT_TITLE }}"
+          COMMIT_BODY="${{ env.COMMIT_BODY }}"
+          
+          # Ограничиваем длину сообщения
+          if [ ${#COMMIT_MSG} -gt 200 ]; then
+            COMMIT_MSG="${COMMIT_MSG:0:197}..."
+          fi
+          
+          if [ ${#COMMIT_BODY} -gt 500 ]; then
+            COMMIT_BODY="${COMMIT_BODY:0:497}..."
+          fi
+          
+          echo "commit_msg=$COMMIT_MSG" >> $GITHUB_OUTPUT
+          echo "commit_body=$COMMIT_BODY" >> $GITHUB_OUTPUT
+
+      - name: Send to Telegram
+        uses: appleboy/telegram-action@master
+        continue-on-error: false
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID_DEV }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          format: markdown
+          message: |
+            🔧 **DEVELOPMENT BUILD**
+            
+            📱 **TravelApp & TravelAdmin**
+            
+            📌 **Версия:** `${{ env.VERSION_NAME }}` (Сборка #${{ env.VERSION_CODE }})
+            🌿 **Ветка:** `develop`
+            👤 **Автор:** `${{ github.actor }}`
+            🔗 **Коммит:** `${{ env.COMMIT_HASH }}`
+            
+            📝 **Коммит:**
+            _${{ steps.telegram.outputs.commit_msg }}_
+            
+            📄 **Описание:**
+            ${{ steps.telegram.outputs.commit_body }}
+            
+            ⏱ **Время сборки:** `${{ github.run_started_at }}`
+            
+            📊 **Статус:** ✅ Успешно
+
+      - name: Send APKs to Telegram
+        uses: appleboy/telegram-action@master
+        continue-on-error: true
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID_DEV }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          document: artifacts/apks_to_send/TravelApp_*.apk
+
+      - name: Send Admin APK to Telegram
+        uses: appleboy/telegram-action@master
+        continue-on-error: true
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID_DEV }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          document: artifacts/apks_to_send/TravelAdmin_*.apk
+
+  # 5. Очистка (опционально)
+  cleanup:
+    needs: [send]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old artifacts
+        uses: actions/delete-artifact@v2
+        with:
+          name: |
+            TravelApp-develop
+            TravelAdmin-develop
+            test-reports-develop
+
+  # 6. Уведомление об ошибке
+  notify_failure:
+    needs: [build, test]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send failure notification
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID_DEV }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          format: markdown
+          message: |
+            ❌ **BUILD FAILED**
+            
+            📱 **TravelApp (Develop)**
+            
+            🌿 **Ветка:** `develop`
+            👤 **Автор:** `${{ github.actor }}`
+            
+            🔗 **Ссылка:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            
+            ⏱ **Время:** `${{ github.run_started_at }}`
