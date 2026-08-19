@@ -15,7 +15,6 @@ env:
   VERSION_NAME: "2.0.${{ github.run_number }}-dev"
   VERSION_CODE: "${{ github.run_number }}"
   GRADLE_OPTS: "-Dorg.gradle.parallel=true -Dorg.gradle.caching=true -Dorg.gradle.daemon=false"
-  JAVA_HOME: "/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.9-9/x64"
 
 jobs:
   validate:
@@ -102,17 +101,30 @@ jobs:
         id: commit_info
         run: |
           mkdir -p meta
+          COMMIT_TITLE=$(git log -1 --format='%s')
+          COMMIT_BODY=$(git log -1 --format='%b')
+          COMMIT_AUTHOR=$(git log -1 --format='%an')
+          COMMIT_DATE=$(git log -1 --format='%ai')
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+
           echo "COMMIT_TITLE<<EOF" >> $GITHUB_ENV
-          git log -1 --format='%s' >> $GITHUB_ENV
+          echo "$COMMIT_TITLE" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-          
+
           echo "COMMIT_BODY<<EOF" >> $GITHUB_ENV
-          git log -1 --format='%b' >> $GITHUB_ENV
+          echo "$COMMIT_BODY" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-          
-          echo "COMMIT_AUTHOR=$(git log -1 --format='%an')" >> $GITHUB_ENV
-          echo "COMMIT_DATE=$(git log -1 --format='%ai')" >> $GITHUB_ENV
-          echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+          echo "COMMIT_AUTHOR=$COMMIT_AUTHOR" >> $GITHUB_ENV
+          echo "COMMIT_DATE=$COMMIT_DATE" >> $GITHUB_ENV
+          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+
+          # Запись в файл метаданных для других jobs
+          {
+            echo "COMMIT_TITLE=$COMMIT_TITLE"
+            echo "COMMIT_AUTHOR=$COMMIT_AUTHOR"
+            echo "COMMIT_HASH=$COMMIT_HASH"
+          } > meta/commit_info.txt
 
       - name: Build ${{ matrix.app }} APK
         run: |
@@ -123,8 +135,8 @@ jobs:
 
       - name: Verify APK
         run: |
-          APK_PATH="applications/${{ matrix.app }}/build/outputs/apk/release/"
-          if [ ! -f "$APK_PATH/*.apk" ]; then
+          APK_PATH="applications/${{ matrix.app }}/build/outputs/apk/release"
+          if ! ls $APK_PATH/*.apk 1> /dev/null 2>&1; then
             echo "❌ APK not found!"
             exit 1
           fi
@@ -231,11 +243,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Delete old artifacts
-        uses: actions/delete-artifact@v2
+        uses: actions/delete-artifact@v5
         with:
-          name: |
-            TravelApp-develop
-            TravelAdmin-develop
+          pattern: |
+            *-develop
             test-reports-develop
 
   notify_failure:
