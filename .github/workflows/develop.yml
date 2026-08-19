@@ -144,13 +144,32 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts/
-          pattern: '*-develop'   # кавычки обязательны
+          pattern: '*-develop'
           merge-multiple: true
+
+      - name: Debug - List downloaded files
+        run: |
+          echo "=== Проверка скачанных файлов ==="
+          echo "Содержимое artifacts/:"
+          ls -la artifacts/ || echo "❌ artifacts/ не существует!"
+          echo ""
+          echo "Содержимое artifacts/apks_to_send/:"
+          ls -la artifacts/apks_to_send/ || echo "❌ apks_to_send не существует!"
+          echo ""
+          echo "Содержимое artifacts/meta/:"
+          ls -la artifacts/meta/ || echo "❌ meta не существует!"
+          echo ""
+          echo "Поиск всех APK в artifacts/:"
+          find artifacts/ -name "*.apk" 2>/dev/null || echo "APK не найдены"
 
       - name: Load Meta Info
         run: |
           if [ -f artifacts/meta/commit_info.txt ]; then
             cat artifacts/meta/commit_info.txt >> $GITHUB_ENV
+          else
+            echo "COMMIT_TITLE=Unknown commit" >> $GITHUB_ENV
+            echo "COMMIT_BODY=No description" >> $GITHUB_ENV
+            echo "COMMIT_HASH=unknown" >> $GITHUB_ENV
           fi
 
       - name: Setup Telegram Message
@@ -197,21 +216,31 @@ jobs:
             
             📊 **Статус:** ✅ Успешно
 
-      - name: Send APKs to Telegram
+      - name: Send TravelApp APK to Telegram
         uses: appleboy/telegram-action@master
         continue-on-error: true
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID_DEV }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          document: artifacts/apks_to_send/TravelApp_*.apk
+          document: artifacts/apks_to_send/TravelApp_v${{ env.VERSION_NAME }}_dev.apk
 
-      - name: Send Admin APK to Telegram
+      - name: Send TravelAdmin APK to Telegram
         uses: appleboy/telegram-action@master
         continue-on-error: true
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID_DEV }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          document: artifacts/apks_to_send/TravelAdmin_*.apk
+          document: artifacts/apks_to_send/TravelAdmin_v${{ env.VERSION_NAME }}_dev.apk
+
+      # Если не нашли по точному имени, пробуем через wildcard
+      - name: Alternative - Send with wildcard
+        if: failure()
+        uses: appleboy/telegram-action@master
+        continue-on-error: true
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID_DEV }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          document: artifacts/apks_to_send/*.apk
 
   notify_failure:
     needs: [build, test]
