@@ -1,8 +1,11 @@
 package com.example.network.wegodata.productpopular
 
+import androidx.annotation.Keep
 import com.example.network.wegodata.citiesdata.City
 
 
+
+@Keep
 data class Tour(
     val id: Int,
     val title: String,

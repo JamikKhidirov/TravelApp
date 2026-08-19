@@ -1,7 +1,9 @@
 package com.example.network.wegodata.citiesdata
 
+import androidx.annotation.Keep
 
 
+@Keep
 data class CityData(
     val count: Int,
     val pages: Int,

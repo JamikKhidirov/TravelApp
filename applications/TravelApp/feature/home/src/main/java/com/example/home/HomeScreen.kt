@@ -47,59 +47,56 @@ import com.example.uikit.uicomponents.vidjets.TabRefresh
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     navHostController: NavHostController,
-){
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    var currentTab by remember { mutableStateOf(0) }
     val context = LocalContext.current
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
-    ) {permission ->
-        if (permission[Manifest.permission.ACCESS_FINE_LOCATION] == true
-            || permission[Manifest.permission.ACCESS_COARSE_LOCATION] == true){
-        }
-        else {
+    ) { permission ->
+        if (permission[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+            permission[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        ) {
+            // Геолокация получена
+        } else {
             Toast.makeText(context, "Без локации мы не найдем туры рядом", Toast.LENGTH_LONG).show()
         }
     }
 
     LaunchedEffect(Unit) {
-       permissionLauncher.launch(
-           arrayOf(
-               Manifest.permission.ACCESS_FINE_LOCATION,
-               Manifest.permission.ACCESS_COARSE_LOCATION
-           )
-       )
+        permissionLauncher.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
     }
-
-    val hasNoInternetError =
-        uiState.citiesState.error is UiError.NoInternet ||
-            uiState.attractionState.error is UiError.NoInternet ||
-            uiState.popularToursState.error is UiError.NoInternet
-
-    val allListsEmpty =
-        uiState.citiesState.items.isEmpty() &&
-            uiState.attractionState.items.isEmpty() &&
-            uiState.popularToursState.items.isEmpty()
 
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        bottomBar = {
-
-        }
+            .background(MaterialTheme.colorScheme.background)
     ) { paddingValues ->
+
+        // Проверяем наличие ошибок загрузки
+        val hasError = uiState.citiesState.error != null ||
+                uiState.attractionState.error != null ||
+                uiState.popularToursState.error != null
+
         when {
-            uiState.isGlobalLoading && allListsEmpty -> {
+            // 1. Пока идет глобальная загрузка — ВСЕГДА показываем шиммер
+            uiState.isGlobalLoading -> {
                 HomeSkeletonScreen()
             }
-            hasNoInternetError && allListsEmpty -> {
+
+            // 2. Если глобальная загрузка завершилась с ошибкой и данных нет
+            hasError && uiState.citiesState.items.isEmpty() -> {
                 NoInternetScreen {
                     viewModel.handleAction(HomeAction.Retry)
                 }
             }
+
+            // 3. Успешный экран с данными
             else -> {
                 BottomHomeScreen(
                     uiState = uiState,
