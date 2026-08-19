@@ -32,7 +32,8 @@ jobs:
         uses: fkirc/skip-duplicate-actions@v5
         with:
           skip_after_successful_duplicate: 'true'
-          paths: '["**/*.md", "**/*.txt", ".gitignore", "docs/**"]'
+          paths: |
+            ["**/*.md", "**/*.txt", ".gitignore", "docs/**"]
 
   test:
     needs: validate
@@ -119,7 +120,6 @@ jobs:
           echo "COMMIT_DATE=$COMMIT_DATE" >> $GITHUB_ENV
           echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
 
-          # Запись в файл метаданных для других jobs
           {
             echo "COMMIT_TITLE=$COMMIT_TITLE"
             echo "COMMIT_AUTHOR=$COMMIT_AUTHOR"
