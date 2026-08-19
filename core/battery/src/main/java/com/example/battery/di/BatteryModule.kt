@@ -14,25 +14,25 @@ import dagger.hilt.android.scopes.ActivityRetainedScoped
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-@InstallIn(ActivityRetainedComponent::class)
+@InstallIn(SingletonComponent::class)
 @Module
-abstract class BatteryModule {
+object  BatteryModule {
 
 
-    @Binds
+    @Provides
     @Singleton
-    abstract fun bindBatteryDataSource(
-        impl: BatteryDataSourceImpl
-    ): BatteryDataSource
+    fun provideBatteryManager(
+        @ApplicationContext context: Context
+    ): BatteryManager {
+        return context.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
+    }
 
-    companion object {
-        @Provides
-        @ActivityRetainedScoped
-        fun provideBatteryManager(
-            @ApplicationContext context: Context
-        ): BatteryManager {
-            return context.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
-        }
+    @Provides
+    @Singleton
+    fun provideBatteryDataSource(
+        impl: BatteryDataSourceImpl
+    ): BatteryDataSource {
+        return impl
     }
 
 
