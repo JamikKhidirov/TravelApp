@@ -17,33 +17,7 @@ env:
   GRADLE_OPTS: "-Dorg.gradle.parallel=true -Dorg.gradle.caching=true -Dorg.gradle.daemon=false"
 
 jobs:
-  # Проверка – нужно ли запускать сборку
-  validate:
-    runs-on: ubuntu-latest
-    outputs:
-      should_skip: ${{ steps.skip_check.outputs.should_skip }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Skip if only documentation changed
-        id: skip_check
-        uses: fkirc/skip-duplicate-actions@v5
-        with:
-          skip_after_successful_duplicate: 'true'
-          # Исправлено: передаём список в формате YAML (была ошибка с многострочным блоком)
-          paths:
-            - "**/*.md"
-            - "**/*.txt"
-            - ".gitignore"
-            - "docs/**"
-
-  # Запуск линтера и тестов
   test:
-    needs: validate
-    if: needs.validate.outputs.should_skip != 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -77,10 +51,8 @@ jobs:
             **/build/test-results/
           retention-days: 7
 
-  # Сборка обоих приложений параллельно
   build:
-    needs: [validate, test]
-    if: needs.validate.outputs.should_skip != 'true'
+    needs: test
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -164,20 +136,15 @@ jobs:
             meta/
           retention-days: 14
 
-  # Отправка в Telegram
   send:
-    needs: [validate, build]
-    if: |
-      needs.validate.outputs.should_skip != 'true' && 
-      (github.ref_name == 'develop' || github.event_name == 'workflow_dispatch')
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts/
-          # Исправлено: pattern обёрнут в кавычки, чтобы не конфликтовать с YAML-якорями
-          pattern: '*-develop'
+          pattern: '*-develop'   # кавычки обязательны
           merge-multiple: true
 
       - name: Load Meta Info
@@ -246,21 +213,6 @@ jobs:
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           document: artifacts/apks_to_send/TravelAdmin_*.apk
 
-  # Очистка старых артефактов
-  cleanup:
-    needs: [send]
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Delete old artifacts
-        # Исправлено: версия v4 (v5 не существует)
-        uses: actions/delete-artifact@v4
-        with:
-          pattern: |
-            *-develop
-            test-reports-develop
-
-  # Уведомление об ошибке
   notify_failure:
     needs: [build, test]
     if: failure()
