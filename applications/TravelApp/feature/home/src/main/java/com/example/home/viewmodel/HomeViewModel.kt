@@ -32,8 +32,7 @@ import retrofit2.HttpException
 import retrofit2.Response
 import java.io.IOException
 import javax.inject.Inject
-
-
+import kotlin.coroutines.cancellation.CancellationException
 
 
 @HiltViewModel
@@ -52,13 +51,11 @@ class HomeViewModel @Inject constructor(
 
     private fun initialLoad() {
         viewModelScope.launch {
-            // Сбрасываем все прошлые данные и ошибки перед первичной/перезагрузкой
             _uiState.update {
                 HomeUiState(isGlobalLoading = true)
             }
 
             try {
-                // coroutineScope упадет СРАЗУ ЖЕ, если упадет ХОТЯ БЫ один из async-блоков
                 coroutineScope {
                     val citiesDeferred = async { fetchCities(1, _uiState.value.isPopularTab) }
                     val attractionsDeferred = async { fetchAttractions(1) }
@@ -68,7 +65,6 @@ class HomeViewModel @Inject constructor(
                     val attractions = attractionsDeferred.await()
                     val tours = toursDeferred.await()
 
-                    // Если ВСЕ 3 запроса прошли успешно, обновляем UI
                     _uiState.update { state ->
                         state.copy(
                             isGlobalLoading = false,
@@ -78,21 +74,20 @@ class HomeViewModel @Inject constructor(
                         )
                     }
                 }
+            } catch (e: CancellationException) {
+                // Пробрасываем корутинную отмену дальше, не считаем её ошибкой сети
+                throw e
             } catch (e: Exception) {
-                // Если хоть один запрос упал - сбрасываем глобальный лоадер и ставим ошибку
                 val errorType = parseError(e)
                 _uiState.update { state ->
                     state.copy(
                         isGlobalLoading = false,
-                        // Записываем ошибку в состояние, чтобы UI показал экран ошибки
                         citiesState = state.citiesState.copy(error = errorType)
                     )
                 }
             }
         }
     }
-
-    // --- Вспомогательные чистые функции загрузки для первички (выбрасывают Exception) ---
 
     private suspend fun fetchCities(page: Int, isPopular: Boolean): List<City> {
         val response = getListCitiesUseCase(page = page, popular = isPopular)
@@ -111,7 +106,6 @@ class HomeViewModel @Inject constructor(
         if (!response.isSuccessful) throw HttpException(response)
         return response.body()?.data?.results ?: emptyList()
     }
-    // --- Обработка экшенов ---
 
     fun handleAction(action: HomeAction) {
         when (action) {
@@ -125,7 +119,7 @@ class HomeViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isPopularTab = action.isPopular,
-                        citiesState = PaginationState(), // Сброс списка городов при смене таба
+                        citiesState = PaginationState() // Сброс списка городов
                     )
                 }
                 viewModelScope.launch { loadMoreCitiesInternal() }
@@ -137,8 +131,6 @@ class HomeViewModel @Inject constructor(
             HomeAction.SeeAllAttractions -> { /* Navigation */ }
         }
     }
-
-    // --- Логика пагинации (Load More) ---
 
     private suspend fun loadMoreCitiesInternal() {
         executePagingLoad(
@@ -200,6 +192,8 @@ class HomeViewModel @Inject constructor(
                     updateState(state, pState)
                 }
             }
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             _uiState.update { state ->
                 val pState = stateSelector(state).copy(
@@ -211,11 +205,20 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    // Расширенная обработка ошибок HTTP и сети
     private fun parseError(e: Throwable): UiError = when (e) {
         is java.net.UnknownHostException,
         is java.net.ConnectException,
+        is java.net.SocketTimeoutException,
         is IOException -> UiError.NoInternet
-        else -> UiError.Unknown(e.message)
+
+        is HttpException -> {
+            when (e.code()) {
+                in 500..599 -> UiError.Unknown("Ошибка на сервере (${e.code()})")
+                else -> UiError.Unknown("Ошибка сети: ${e.code()}")
+            }
+        }
+        else -> UiError.Unknown(e.message ?: "Неизвестная ошибка")
     }
 
     @Suppress("UNCHECKED_CAST")
