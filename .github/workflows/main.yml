@@ -11,13 +11,36 @@ env:
   GRADLE_OPTS: "-Dorg.gradle.parallel=true -Dorg.gradle.caching=true"
 
 jobs:
-  build-and-deploy:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle Cache
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run Unit Tests
+        continue-on-error: true
+        run: ./gradlew test --continue
+
+  build:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Позволяет прочитать историю коммитов
+          fetch-depth: 0 # Позволяет читать историю коммитов
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -33,15 +56,11 @@ jobs:
 
       - name: Extract Commit Information
         run: |
-          echo "COMMIT_TITLE=$(git log -1 --format='%s')" >> $GITHUB_ENV
-          # Заменяем переносы строк на \n, чтобы передать многострочный текст в env
-          echo "COMMIT_BODY<<EOF" >> $GITHUB_ENV
-          git log -1 --format='%b' >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
-      - name: Run Unit Tests
-        continue-on-error: true
-        run: ./gradlew test --continue
+          mkdir -p meta
+          echo "COMMIT_TITLE=$(git log -1 --format='%s')" >> meta/commit_info.txt
+          echo "COMMIT_BODY<<EOF" >> meta/commit_info.txt
+          git log -1 --format='%b' >> meta/commit_info.txt
+          echo "EOF" >> meta/commit_info.txt
 
       - name: Build Release APKs
         run: |
@@ -54,6 +73,28 @@ jobs:
           mkdir -p apks_to_send
           cp applications/TravelApp/build/outputs/apk/release/*.apk apks_to_send/TravelApp_v${{ env.VERSION_NAME }}.apk || true
           cp applications/TravelAdmin/build/outputs/apk/release/*.apk apks_to_send/TravelAdmin_v${{ env.VERSION_NAME }}.apk || true
+
+      - name: Upload APKs & Meta Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-build-data
+          path: |
+            apks_to_send/
+            meta/
+          retention-days: 1
+
+  send:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: android-build-data
+
+      - name: Load Commit Info to Environment
+        run: |
+          cat meta/commit_info.txt >> $GITHUB_ENV
 
       - name: Send TravelApp to Telegram
         uses: appleboy/telegram-action@master
