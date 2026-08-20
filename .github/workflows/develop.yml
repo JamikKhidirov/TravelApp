@@ -1,0 +1,387 @@
+name: Android CI/CD Pipeline - Develop
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+    inputs:
+      force_build:
+        description: 'Force build even without changes'
+        type: boolean
+        default: false
+
+env:
+  VERSION_NAME: "2.0.${{ github.run_number }}-dev"
+  VERSION_CODE: "${{ github.run_number }}"
+  GRADLE_OPTS: "-Dorg.gradle.parallel=true -Dorg.gradle.caching=true -Dorg.gradle.daemon=false"
+
+jobs:
+  # ============================================================
+  # JOB 1: ТЕСТЫ С ДЕТАЛЬНЫМ ЛОГОМ
+  # ============================================================
+  test:
+    runs-on: ubuntu-latest
+    outputs:
+      test_result: ${{ steps.test_result.outputs.result }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle Cache
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run Lint
+        run: ./gradlew lintRelease --continue || true
+
+      # ============================================================
+      # ГЛАВНЫЙ ШАГ: Запуск тестов с сохранением логов
+      # ============================================================
+      - name: Run Unit Tests with detailed logs
+        id: test_step
+        continue-on-error: true
+        run: |
+          # Запускаем тесты с детальным выводом
+          ./gradlew testRelease --continue --stacktrace 2>&1 | tee test_output.log
+          
+          # Проверяем, есть ли ошибки
+          if grep -q "BUILD FAILED" test_output.log; then
+            echo "❌ Тесты упали!"
+            echo "error_detected=true" >> $GITHUB_OUTPUT
+          
+            # Создаем папку для логов ошибок
+            mkdir -p error_logs
+          
+            # Сохраняем полный лог
+            cp test_output.log error_logs/
+          
+            # Извлекаем ОСНОВНУЮ ошибку (первую)
+            echo "=== ОСНОВНАЯ ОШИБКА ===" > error_logs/main_error.txt
+            grep -A 20 "FAILURE:" test_output.log | head -30 >> error_logs/main_error.txt
+            echo "" >> error_logs/main_error.txt
+          
+            echo "=== ЧТО ПОШЛО НЕ ТАК ===" >> error_logs/main_error.txt
+            grep -A 10 "What went wrong:" test_output.log >> error_logs/main_error.txt
+            echo "" >> error_logs/main_error.txt
+          
+            # Извлекаем КОНКРЕТНУЮ ошибку компиляции
+            echo "=== ОШИБКИ КОМПИЛЯЦИИ ===" > error_logs/compilation_errors.txt
+            grep -B 3 -A 10 "error:" test_output.log >> error_logs/compilation_errors.txt 2>/dev/null || echo "Нет ошибок компиляции" >> error_logs/compilation_errors.txt
+            echo "" >> error_logs/compilation_errors.txt
+          
+            echo "=== НЕИЗВЕСТНЫЕ ССЫЛКИ ===" >> error_logs/compilation_errors.txt
+            grep -B 3 -A 5 "unresolved reference" test_output.log >> error_logs/compilation_errors.txt 2>/dev/null || echo "Нет неизвестных ссылок" >> error_logs/compilation_errors.txt
+            echo "" >> error_logs/compilation_errors.txt
+          
+            echo "=== НЕСОВМЕСТИМЫЕ ТИПЫ ===" >> error_logs/compilation_errors.txt
+            grep -B 3 -A 5 "Type mismatch" test_output.log >> error_logs/compilation_errors.txt 2>/dev/null || echo "Нет проблем с типами" >> error_logs/compilation_errors.txt
+          
+            # Собираем краткую информацию
+            {
+              echo "📄 КРАТКАЯ ИНФОРМАЦИЯ ОБ ОШИБКЕ"
+              echo ""
+              echo "Упавший модуль:"
+              grep "Task :" test_output.log | grep "FAILED" | head -5
+              echo ""
+              echo "Причина:"
+              grep "What went wrong:" test_output.log | head -3
+            } > error_logs/summary.txt
+          
+          else
+            echo "✅ Тесты прошли успешно!"
+            echo "error_detected=false" >> $GITHUB_OUTPUT
+          fi
+
+      # ============================================================
+      # СОХРАНЯЕМ ЛОГИ КАК АРТЕФАКТЫ
+      # ============================================================
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-develop
+          path: |
+            **/build/reports/
+            **/build/test-results/
+            test_output.log
+            error_logs/
+          retention-days: 14
+
+      - name: Set test result output
+        id: test_result
+        if: always()
+        run: |
+          if [ "${{ steps.test_step.outputs.error_detected }}" == "true" ]; then
+            echo "result=failure" >> $GITHUB_OUTPUT
+          else
+            echo "result=success" >> $GITHUB_OUTPUT
+          fi
+
+  # ============================================================
+  # JOB 2: СБОРКА (только если тесты прошли)
+  # ============================================================
+  build:
+    needs: test
+    if: needs.test.outputs.test_result == 'success'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [TravelApp, TravelAdmin]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle Cache
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-read-only: false
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Extract Commit Information
+        id: commit_info
+        run: |
+          mkdir -p meta
+          COMMIT_TITLE=$(git log -1 --format='%s')
+          COMMIT_BODY=$(git log -1 --format='%b')
+          COMMIT_AUTHOR=$(git log -1 --format='%an')
+          COMMIT_DATE=$(git log -1 --format='%ai')
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+
+          echo "COMMIT_TITLE<<EOF" >> $GITHUB_ENV
+          echo "$COMMIT_TITLE" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+          echo "COMMIT_BODY<<EOF" >> $GITHUB_ENV
+          echo "$COMMIT_BODY" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+          echo "COMMIT_AUTHOR=$COMMIT_AUTHOR" >> $GITHUB_ENV
+          echo "COMMIT_DATE=$COMMIT_DATE" >> $GITHUB_ENV
+          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+
+          {
+            echo "COMMIT_TITLE=$COMMIT_TITLE"
+            echo "COMMIT_AUTHOR=$COMMIT_AUTHOR"
+            echo "COMMIT_HASH=$COMMIT_HASH"
+          } > meta/commit_info.txt
+
+      - name: Build ${{ matrix.app }} APK
+        run: |
+          ./gradlew :applications:${{ matrix.app }}:assembleRelease \
+            -PversionCode=${{ env.VERSION_CODE }} \
+            -PversionName="${{ env.VERSION_NAME }}" \
+            -PbuildNumber=${{ github.run_number }}
+
+      - name: Verify APK
+        run: |
+          APK_PATH="applications/${{ matrix.app }}/build/outputs/apk/release"
+          if ! ls $APK_PATH/*.apk 1> /dev/null 2>&1; then
+            echo "❌ APK not found!"
+            exit 1
+          fi
+          echo "✅ APK built successfully"
+
+      - name: Prepare APK Artifacts
+        run: |
+          mkdir -p apks_to_send
+          cp applications/${{ matrix.app }}/build/outputs/apk/release/*.apk \
+            apks_to_send/${{ matrix.app }}_v${{ env.VERSION_NAME }}_dev.apk || true
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.app }}-develop
+          path: |
+            apks_to_send/
+            meta/
+          retention-days: 14
+
+  # ============================================================
+  # JOB 3: ОТПРАВКА В TELEGRAM (если сборка успешна)
+  # ============================================================
+  send:
+    needs: [test, build]
+    if: needs.test.outputs.test_result == 'success' && needs.build.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+          pattern: '*-develop'
+          merge-multiple: true
+
+      - name: Debug - List downloaded files
+        run: |
+          echo "=== Проверка скачанных файлов ==="
+          ls -la artifacts/ || echo "❌ artifacts/ не существует!"
+          ls -la artifacts/apks_to_send/ || echo "❌ apks_to_send не существует!"
+          ls -la artifacts/meta/ || echo "❌ meta не существует!"
+
+      - name: Load Meta Info
+        run: |
+          if [ -f artifacts/meta/commit_info.txt ]; then
+            cat artifacts/meta/commit_info.txt >> $GITHUB_ENV
+          else
+            echo "COMMIT_TITLE=Unknown commit" >> $GITHUB_ENV
+            echo "COMMIT_BODY=No description" >> $GITHUB_ENV
+            echo "COMMIT_HASH=unknown" >> $GITHUB_ENV
+          fi
+
+      - name: Setup Telegram Message
+        id: telegram
+        run: |
+          COMMIT_MSG="${{ env.COMMIT_TITLE }}"
+          COMMIT_BODY="${{ env.COMMIT_BODY }}"
+          
+          if [ ${#COMMIT_MSG} -gt 200 ]; then
+            COMMIT_MSG="${COMMIT_MSG:0:197}..."
+          fi
+          
+          if [ ${#COMMIT_BODY} -gt 500 ]; then
+            COMMIT_BODY="${COMMIT_BODY:0:497}..."
+          fi
+          
+          echo "commit_msg=$COMMIT_MSG" >> $GITHUB_OUTPUT
+          echo "commit_body=$COMMIT_BODY" >> $GITHUB_OUTPUT
+
+      - name: Send to Telegram
+        uses: appleboy/telegram-action@master
+        continue-on-error: false
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID_DEV }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          format: markdown
+          message: |
+            ✅ **УСПЕШНАЯ СБОРКА**
+            
+            📱 **TravelApp & TravelAdmin**
+            
+            📌 **Версия:** `${{ env.VERSION_NAME }}` (Сборка #${{ env.VERSION_CODE }})
+            🌿 **Ветка:** `develop`
+            👤 **Автор:** `${{ github.actor }}`
+            🔗 **Коммит:** `${{ env.COMMIT_HASH }}`
+            
+            📝 **Коммит:**
+            _${{ steps.telegram.outputs.commit_msg }}_
+            
+            📄 **Описание:**
+            ${{ steps.telegram.outputs.commit_body }}
+            
+            ⏱ **Время сборки:** `${{ github.run_started_at }}`
+
+      - name: Send TravelApp APK
+        uses: appleboy/telegram-action@master
+        continue-on-error: true
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID_DEV }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          document: artifacts/apks_to_send/TravelApp_v${{ env.VERSION_NAME }}_dev.apk
+
+      - name: Send TravelAdmin APK
+        uses: appleboy/telegram-action@master
+        continue-on-error: true
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID_DEV }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          document: artifacts/apks_to_send/TravelAdmin_v${{ env.VERSION_NAME }}_dev.apk
+
+  # ============================================================
+  # JOB 4: ОТПРАВКА ОШИБКИ В TELEGRAM
+  # ============================================================
+  notify_failure:
+    needs: [test, build]
+    if: always() && (needs.test.outputs.test_result == 'failure' || needs.build.result == 'failure')
+    runs-on: ubuntu-latest
+    steps:
+      # Скачиваем логи ошибок
+      - name: Download error logs
+        if: always()
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          path: error-logs/
+          pattern: error-logs-develop
+          merge-multiple: true
+
+      - name: Download test logs
+        if: always()
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          path: test-logs/
+          pattern: test-reports-develop
+          merge-multiple: true
+
+      # Формируем сообщение с ошибкой
+      - name: Get error details
+        id: error_details
+        run: |
+          # Проверяем, какие логи есть
+          if [ -f error-logs/compilation_errors.txt ]; then
+            echo "📄 Найдены ошибки компиляции"
+            ERROR_TEXT=$(cat error-logs/compilation_errors.txt | head -50)
+          elif [ -f error-logs/main_error.txt ]; then
+            echo "📄 Найдена основная ошибка"
+            ERROR_TEXT=$(cat error-logs/main_error.txt | head -50)
+          elif [ -f error-logs/summary.txt ]; then
+            echo "📄 Найдена краткая информация"
+            ERROR_TEXT=$(cat error-logs/summary.txt)
+          elif [ -f test-logs/test_output.log ]; then
+            echo "📄 Найден лог тестов"
+            ERROR_TEXT=$(cat test-logs/test_output.log | grep -A 30 "FAILURE:" | head -50)
+          else
+            echo "❌ Не найдены логи ошибок"
+            ERROR_TEXT="Логи не найдены. Проверьте артефакты в GitHub Actions."
+          fi
+
+          # Определяем, что именно упало
+          if [ "${{ needs.test.outputs.test_result }}" == "failure" ]; then
+            FAILED_PART="🧪 **Ошибка в тестах**"
+          elif [ "${{ needs.build.result }}" == "failure" ]; then
+            FAILED_PART="🔨 **Ошибка в сборке**"
+          else
+            FAILED_PART="❌ **Неизвестная ошибка**"
+          fi
+
+          # Формируем сообщение
+          cat << 'EOF' > error_message.txt
+          ❌ **СБОРКА ПРОВАЛИЛАСЬ**
+
+          📱 **Проект:** TravelApp (Develop)
+
+          📌 **Версия:** ${{ env.VERSION_NAME }}
+          🌿 **Ветка:** `develop`
+          👤 **Автор:** ${{ github.actor }}
+          🔗 **Коммит:** ${{ github.sha }}
+
+          📝 **Сообщение коммита:**
+          ${{ github.event.head_commit.message }}
+
+          🔍 **Что упало:**
+          $FAILED_PART
+
+          📊 **Статус:**
+          - Тесты: ${{ needs.test.outputs.test_result == 'success' && '✅' || '❌' }}
+          - Сборка: ${{ needs.build.result == 'success' && '✅' || '❌' }}
+
+          🔧 **Детали ошибки:**

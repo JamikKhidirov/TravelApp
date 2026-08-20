@@ -24,7 +24,8 @@
             android:name=".LocationService"
             android:enabled="true"
             android:exported="true"
-            android:foregroundServiceType="location">
+            android:foregroundServiceType="location"
+            tools:ignore="ForegroundServicePermission">
 
         </service>
 
