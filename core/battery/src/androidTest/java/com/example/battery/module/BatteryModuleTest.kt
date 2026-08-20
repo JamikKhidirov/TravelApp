@@ -28,7 +28,7 @@ class BatteryModuleTest {
         batteryDataSource = BatteryDataSourceImpl(context, batteryManager)
     }
 
-    @Test  // ✅ Должна быть эта аннотация!
+    @Test
     fun dependencies_shouldBeCreated() {
         assertNotNull("Context should be created", context)
         assertNotNull("BatteryManager should be created", batteryManager)
