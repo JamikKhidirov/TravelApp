@@ -107,6 +107,7 @@ dependencies {
 
     // ... ваши зависимости
     implementation(libs.hilt.android)
+    debugImplementation(libs.leakcanary)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 

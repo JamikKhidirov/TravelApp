@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,7 +29,7 @@ fun LazyListScope.toursSection(
 
     // 1. Заголовок
     if (toursState.items.isNotEmpty()) {
-        item {
+        item(key = "tours_header") { // Добавьте key для статического item
             Text(
                 text = "Популярные туры",
                 fontSize = 23.sp,
@@ -40,26 +41,30 @@ fun LazyListScope.toursSection(
 
     // 2. Первоначальная загрузка (Шиммер)
     if (toursState.items.isEmpty() && toursState.isLoading) {
-        item {
+        item(key = "tours_shimmer") {
             PopularTourItemShimmer()
         }
     }
 
     // 3. Основной список
-    // Используем уникальный ID для оптимизации Compose
     items(
         items = toursState.items,
         key = { it.id }
     ) { tour ->
+        // Запоминаем клик, чтобы не создавать новую функцию при каждом вызове
+        val onClick = remember(tour.id, onAction) {
+            { onAction(HomeAction.OnTourClick(tour)) }
+        }
+
         PopularTourItem(
             tour = tour,
-            onClick = { onAction(HomeAction.OnTourClick(tour)) }
+            onClick = onClick
         )
     }
 
-    // 4. Индикатор дозагрузки в самом низу (Footer)
+    // 4. Индикатор дозагрузки (Footer)
     if (toursState.isLoading && toursState.items.isNotEmpty()) {
-        item {
+        item(key = "tours_loader") {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
