@@ -119,11 +119,16 @@ fun BottomHomeScreen(
 ) {
     val state = rememberLazyListState()
 
-    // Слушаем конец списка для туров
-    OnBottomReached(state = state) {
-        onAction(HomeAction.LoadMoreTours)
-    }
-
+    // Передаем актуальные состояния туров
+    OnBottomReached(
+        state = state,
+        buffer = 2, // Начинаем подгрузку за 2 элемента до конца
+        isLoading = uiState.popularToursState.isLoading,
+        isEndReached = uiState.popularToursState.isEndReached,
+        onLoadMore = {
+            onAction(HomeAction.LoadMoreTours)
+        }
+    )
     LazyColumn(
         state = state,
         modifier = Modifier.fillMaxSize(),

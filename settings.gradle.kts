@@ -53,3 +53,8 @@ include(":core:device")
 include(":core:battery")
 include(":core:sensors")
 include(":core:network-info")
+include(":core:network")
+include(":core:network:apis")
+include(":core:network:firebase")
+include(":core:network:supabase")
+
