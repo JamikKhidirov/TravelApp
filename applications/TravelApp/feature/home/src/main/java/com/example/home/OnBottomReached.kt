@@ -14,14 +14,13 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @Composable
 fun OnBottomReached(
     state: LazyListState,
-    buffer: Int = 0,
+    buffer: Int = 2,
+    isLoading: Boolean,      // Флаг: прямо сейчас идёт загрузка
+    isEndReached: Boolean,   // Флаг: данные на бекенде закончились
     onLoadMore: () -> Unit
 ) {
-    // 1. Запоминаем событие с помощью rememberUpdatedState,
-    // чтобы не перезапускать Effect при смене лямбды
     val currentOnLoadMore by rememberUpdatedState(onLoadMore)
 
-    // 2. Вычисляем состояние без подписки в UI-потоке
     val shouldLoadMore = remember(state, buffer) {
         derivedStateOf {
             val lastVisibleItem = state.layoutInfo.visibleItemsInfo.lastOrNull()
@@ -32,12 +31,16 @@ fun OnBottomReached(
         }
     }
 
-    // 3. Запускаем эффект единожды и подписываемся на поток значений
-    LaunchedEffect(shouldLoadMore) {
+    // Передаем флаги в ключи LaunchedEffect или проверяем внутри snapshotFlow
+    LaunchedEffect(shouldLoadMore, isLoading, isEndReached) {
         snapshotFlow { shouldLoadMore.value }
-            .distinctUntilChanged() // Пропускаем только если значение реально изменилось
+            .distinctUntilChanged()
             .collect { isReached ->
-                if (isReached) {
+                // ВЫЗЫВАЕМ ТОЛЬКО ЕСЛИ:
+                // 1. Достигли конца
+                // 2. Прямо сейчас ничего не загружается
+                // 3. Данные на бекенде ЕЩЁ НЕ ЗАКОНЧИЛИСЬ
+                if (isReached && !isLoading && !isEndReached) {
                     currentOnLoadMore()
                 }
             }
