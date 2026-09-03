@@ -1,6 +1,5 @@
 package com.example.network_info.data
 
-import android.annotation.SuppressLint
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
@@ -15,6 +14,7 @@ import com.example.network_info.domain.repository.NetworkDataSource
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.conflate
 import javax.inject.Inject
 
 
@@ -42,10 +42,10 @@ class AndroidNetworkDataSource @Inject constructor(
         val isMetered = !capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
 
         val primaryType = when {
+            isVpn -> NetworkType.VPN
             capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> NetworkType.WIFI
             capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> NetworkType.CELLULAR
             capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> NetworkType.ETHERNET
-            isVpn -> NetworkType.VPN
             else -> NetworkType.UNKNOWN
         }
 
@@ -78,59 +78,93 @@ class AndroidNetworkDataSource @Inject constructor(
         awaitClose {
             connectiviManager.unregisterNetworkCallback(callback)
         }
-    }
+    }.conflate()
 
-    @SuppressLint("MissingPermission")
     private fun fetchWifiDetails(capabilities: NetworkCapabilities): WifiDetails {
-        val wifiInfo: WifiInfo? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            capabilities.transportInfo as? WifiInfo
-        } else {
-            @Suppress("DEPRECATION")
-            wifiManager.connectionInfo
+        return try {
+            val wifiInfo: WifiInfo? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                capabilities.transportInfo as? WifiInfo
+            } else {
+                @Suppress("DEPRECATION")
+                wifiManager.connectionInfo
+            }
+
+            val rawSsid = wifiInfo?.ssid
+            // Используем removeSurrounding для безопасного удаления кавычек
+            val cleanSsid = rawSsid?.removeSurrounding("\"") ?: "<unknown>"
+
+            WifiDetails(
+                ssid = if (cleanSsid == "<unknown ssid>" || cleanSsid == "<unknown>") "Permission / Location Required" else cleanSsid,
+                rssi = wifiInfo?.rssi ?: 0,
+                linkSpeedMbps = wifiInfo?.linkSpeed ?: 0,
+                frequencyMhz = wifiInfo?.frequency ?: 0
+            )
+        } catch (e: SecurityException) {
+            // Если нет прав (ACCESS_FINE_LOCATION / ACCESS_WIFI_STATE), не крашимся, а возвращаем заглушку
+            WifiDetails(
+                ssid = "Permission Denied",
+                rssi = 0,
+                linkSpeedMbps = 0,
+                frequencyMhz = 0
+            )
         }
-
-        val rawSsid = wifiInfo?.ssid ?: "<unknown>"
-        val cleanSsid = if (rawSsid.startsWith("\"") && rawSsid.endsWith("\"")) {
-            rawSsid.substring(1, rawSsid.length - 1)
-        } else rawSsid
-
-        return WifiDetails(
-            ssid = if (cleanSsid == "<unknown ssid>") "Permission / Location Required" else cleanSsid,
-            rssi = wifiInfo?.rssi ?: 0,
-            linkSpeedMbps = wifiInfo?.linkSpeed ?: 0,
-            frequencyMhz = wifiInfo?.frequency ?: 0
-        )
     }
 
-    @SuppressLint("MissingPermission")
+    // Убираем @SuppressLint, заменяем на безопасный try-catch
     private fun fetchCellularDetails(): CellularDetails {
-        val operatorName = telephonyManager.networkOperatorName.ifEmpty { "Unknown" }
-        val isRoaming = telephonyManager.isNetworkRoaming
+        return try {
+            val operatorName = telephonyManager.networkOperatorName.ifEmpty { "Unknown" }
+            val isRoaming = telephonyManager.isNetworkRoaming
 
-        val gen = try {
-            when (telephonyManager.dataNetworkType) {
-                TelephonyManager.NETWORK_TYPE_GPRS, TelephonyManager.NETWORK_TYPE_EDGE -> "2G"
-                TelephonyManager.NETWORK_TYPE_UMTS, TelephonyManager.NETWORK_TYPE_HSDPA,
-                TelephonyManager.NETWORK_TYPE_HSPA, TelephonyManager.NETWORK_TYPE_HSPAP -> "3G"
+            val gen = when (telephonyManager.dataNetworkType) {
+                TelephonyManager.NETWORK_TYPE_GPRS,
+                TelephonyManager.NETWORK_TYPE_EDGE,
+                TelephonyManager.NETWORK_TYPE_CDMA,
+                TelephonyManager.NETWORK_TYPE_1xRTT -> "2G"
+
+                TelephonyManager.NETWORK_TYPE_UMTS,
+                TelephonyManager.NETWORK_TYPE_HSDPA,
+                TelephonyManager.NETWORK_TYPE_HSPA,
+                TelephonyManager.NETWORK_TYPE_HSPAP,
+                TelephonyManager.NETWORK_TYPE_EVDO_0,
+                TelephonyManager.NETWORK_TYPE_EVDO_A,
+                TelephonyManager.NETWORK_TYPE_EVDO_B -> "3G"
+
                 TelephonyManager.NETWORK_TYPE_LTE -> "4G (LTE)"
                 TelephonyManager.NETWORK_TYPE_NR -> "5G"
                 else -> "Unknown"
             }
+
+            val simState = when (telephonyManager.simState) {
+                TelephonyManager.SIM_STATE_READY -> "Ready"
+                TelephonyManager.SIM_STATE_ABSENT -> "Absent"
+                TelephonyManager.SIM_STATE_PIN_REQUIRED -> "PIN Required"
+                TelephonyManager.SIM_STATE_PUK_REQUIRED -> "PUK Required"
+                else -> "Not Ready"
+            }
+
+            CellularDetails(
+                operatorName = operatorName,
+                networkType = gen,
+                simState = simState,
+                isRoaming = isRoaming
+            )
+        } catch (e: SecurityException) {
+            // Если нет прав (READ_PHONE_STATE), не крашимся
+            CellularDetails(
+                operatorName = "Permission Denied",
+                networkType = "Unknown",
+                simState = "Unknown",
+                isRoaming = false
+            )
         } catch (e: Exception) {
-            "Permission Required"
+            // Ловим любые другие неожиданности (например, если модем недоступен)
+            CellularDetails(
+                operatorName = "Error",
+                networkType = "Unknown",
+                simState = "Unknown",
+                isRoaming = false
+            )
         }
-
-        val simState = when (telephonyManager.simState) {
-            TelephonyManager.SIM_STATE_READY -> "Ready"
-            TelephonyManager.SIM_STATE_ABSENT -> "Absent"
-            else -> "Not Ready"
-        }
-
-        return CellularDetails(
-            operatorName = operatorName,
-            networkType = gen,
-            simState = simState,
-            isRoaming = isRoaming
-        )
     }
 }
