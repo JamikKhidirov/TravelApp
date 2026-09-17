@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 160" width="1200" height="160" role="img" aria-label="Сделано с любовью для путешественников">
+  <title>TravelApp footer</title>
+  <defs>
+    <linearGradient id="footBg2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#050B16"/>
+      <stop offset="50%" stop-color="#102A52"/>
+      <stop offset="100%" stop-color="#050B16"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="160" fill="url(#footBg2)"/>
+
+  <!-- Волна 1 (медленная) -->
+  <g fill="#2D78FF" fill-opacity="0.18">
+    <animateTransform attributeName="transform" type="translate" values="0 0;-1200 0" dur="18s" repeatCount="indefinite"/>
+    <path d="M0 92 C 200 52, 400 132, 600 92 C 800 52, 1000 132, 1200 92 L1200 160 L0 160 Z"/>
+    <path d="M1200 92 C 1400 52, 1600 132, 1800 92 C 2000 52, 2200 132, 2400 92 L2400 160 L1200 160 Z"/>
+    <path d="M2400 92 C 2600 52, 2800 132, 3000 92 C 3200 52, 3400 132, 3600 92 L3600 160 L2400 160 Z"/>
+  </g>
+
+  <!-- Волна 2 (быстрая, оранжевая) -->
+  <g fill="#FF8C00" fill-opacity="0.14">
+    <animateTransform attributeName="transform" type="translate" values="0 0;-1200 0" dur="11s" repeatCount="indefinite"/>
+    <path d="M0 116 C 200 84, 400 148, 600 116 C 800 84, 1000 148, 1200 116 L1200 160 L0 160 Z"/>
+    <path d="M1200 116 C 1400 84, 1600 148, 1800 116 C 2000 84, 2200 148, 2400 116 L2400 160 L1200 160 Z"/>
+    <path d="M2400 116 C 2600 84, 2800 148, 3000 116 C 3200 84, 3400 148, 3600 116 L3600 160 L2400 160 Z"/>
+  </g>
+
+  <!-- Пульсирующее сердце -->
+  <g transform="translate(600 36)">
+    <g fill="#FF4D6D">
+      <animateTransform attributeName="transform" type="scale" values="1;1.18;1;1.12;1" keyTimes="0;0.25;0.5;0.75;1" dur="2.4s" repeatCount="indefinite"/>
+      <path d="M0 5 C 0 0, -6 -3, -10 1 C -14 5, -11 10, 0 18 C 11 10, 14 5, 10 1 C 6 -3, 0 0, 0 5 Z"/>
+    </g>
+  </g>
+
+  <g font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" text-anchor="middle">
+    <text x="600" y="88" font-size="18" fill="#C9D6E8">Сделано с любовью для путешественников</text>
+    <text x="600" y="112" font-size="13" fill="#7E96B4">Поставь звезду, если проект тебе полезен</text>
+  </g>
+</svg>
