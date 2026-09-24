@@ -19,9 +19,6 @@
   </a>
 </p>
 
-<p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1500&color=FF8C00&center=true&vCenter=true&width=820&height=45&lines=Поиск+туров%2C+городов+и+мест;;Многомодульная+архитектура+%2836+модулей%29;;Kotlin+2.1+%2B+Jetpack+Compose+%2B+Hilt;;CI%2FCD+%D0%B8+%D0%B4%D0%BE%D1%81%D1%82%D0%B0%D0%B2%D0%BA%D0%B0+APK+%D0%B2+Telegram" alt="Анимированный слоган">
-</p>
 
 <p align="center">
   <img src="https://skillicons.dev/icons?i=kotlin,androidstudio,gradle,firebase,githubactions,gitlab,github,git,sqlite" alt="Технологии">
