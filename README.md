@@ -446,19 +446,9 @@ flowchart LR
 ## 📊 Активность
 
 <p align="center">
-  <a href="https://github.com/JamikKhidirov/TravelApp">
-    <img src="https://github-readme-stats.vercel.app/api/pin/?username=JamikKhidirov&repo=TravelApp&bg_color=0D1B31&title_color=FF8C00&text_color=C9D6E8&icon_color=2D78FF&hide_border=true" alt="Карточка репозитория TravelApp">
-  </a>
-</p>
-
-<p align="center">
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=JamikKhidirov&layout=compact&langs_count=8&bg_color=0D1B31&title_color=FF8C00&text_color=C9D6E8&hide_border=true" alt="Языки">
   <img src="https://streak-stats.demolab.com?user=JamikKhidirov&background=0D1B31&border=2D78FF&stroke=2D78FF&ring=FF8C00&fire=FF8C00&currStreakNum=FFFFFF&sideNums=FFFFFF&currStreakLabel=C9D6E8&sideLabels=C9D6E8&dates=7E96B4&hide_border=true" alt="Серия коммитов">
 </p>
 
-<p align="center">
-  <img src="https://github-readme-activity-graph.vercel.app/graph?username=JamikKhidirov&bg_color=0D1B31&color=C9D6E8&line=2D78FF&point=FF8C00&area=true&hide_border=true" alt="График активности" width="100%">
-</p>
 
 ---
 
